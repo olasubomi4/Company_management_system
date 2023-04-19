@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using System.Text.Json;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Mvc;
 using NuGet.Protocol;
 using ObaGoupDataAccess.Repository.IRepository;
@@ -29,6 +30,7 @@ public class CalenderController: Controller
         return View(eventViewModel);
     }
     
+   
     public IActionResult Upsert(int? id)
     {
         EventViewModel eventViewModel = new EventViewModel();
@@ -76,6 +78,7 @@ public class CalenderController: Controller
 
      
         _unitOfWork.Save();
+        
         return Redirect("index");
     }
 
@@ -126,5 +129,21 @@ public class CalenderController: Controller
         }
 
         return endValue;
+    }
+    
+    [HttpGet]
+    public IActionResult GetCsrfToken()
+    {
+        var antiForgery = HttpContext.RequestServices.GetService<IAntiforgery>();
+        var tokens = antiForgery.GetAndStoreTokens(HttpContext);
+       
+               // Take request token (which is different from a cookie token)
+               var headerToken = tokens.RequestToken;
+               // Set another cookie for a request token
+               Response.Cookies.Append("XSRF-TOKEN", headerToken, new CookieOptions
+               {
+                   HttpOnly = false
+               });
+               return NoContent();
     }
 }

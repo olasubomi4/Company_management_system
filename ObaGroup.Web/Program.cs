@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using BulkyBook.DataAccess.DbInitializer;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
@@ -28,6 +29,12 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IDbIntializer, DbInitalizer>();
 builder.Services.AddSingleton<IEmailSender, EmailSender>();
 builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
+/*builder.Services.AddAntiforgery(options =>
+{
+    options.Cookie.Name = "X-CSRF-TOKEN";
+    options.HeaderName = "X-CSRF-TOKEN";
+});
+*/
 /*builder.Services.Configure<FormOptions>(options =>
 {
     options.MultipartBodyLengthLimit =  500 * 1024 * 1024; // 50 MB

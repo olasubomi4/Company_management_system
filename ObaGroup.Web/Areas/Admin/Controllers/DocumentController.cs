@@ -1,6 +1,7 @@
 
 using System.Text;
 using System.Text.Json;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -52,10 +53,9 @@ public class DocumentController : Controller
     
      
     [HttpPost]
-    [ValidateAntiForgeryToken]
     [RequestFormLimits(MultipartBodyLengthLimit = 6104857600)]
     [RequestSizeLimit(6104857600)]
-    public IActionResult Upsert(Documents documents,IFormFileCollection d )
+    public IActionResult Upsert([FromForm] Documents documents,IFormFileCollection d )
     {
         Document obj = documents.Document;
         List<string> documentsUrl = new List<string>();
@@ -185,6 +185,7 @@ public class DocumentController : Controller
 
        return extension;
    }
+
    
 
 }
