@@ -54,8 +54,7 @@ public class CalenderController: Controller
         {
             return Redirect("index");
         }
-
-    
+        
         if (eventViewModel.id == 0)
         {
             eventViewModel.UserId=_unitOfWork.ApplicationUser.GetFirstOrDefault(u=>u.Email==User.Identity.Name).Id;
@@ -106,7 +105,6 @@ public class CalenderController: Controller
         }
         
         return Json(events.ToArray() );
-        
     }
 
     private string getEndDateAndTimeStringValue(EventViewModel calendarEvents)

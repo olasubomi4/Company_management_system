@@ -17,15 +17,10 @@ namespace Oba_group2.Areas.Admin.Controllers;
 [Area("Admin")]
 public class AccountController : Controller
 {
-    // GET
-   /* public IActionResult Index()
-    {
-        return View();
-    }
-    */
-   private readonly SignInManager<IdentityUser> _signInManager;
-   private readonly ILogger<LoginModel> _logger;
-   private readonly UserManager<IdentityUser> _userManager;
+ 
+       private readonly SignInManager<IdentityUser> _signInManager;
+       private readonly ILogger<LoginModel> _logger;
+       private readonly UserManager<IdentityUser> _userManager;
         private readonly IUserStore<IdentityUser> _userStore;
         private readonly IUserEmailStore<IdentityUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger2;
@@ -55,7 +50,6 @@ public class AccountController : Controller
    
    
    [HttpPost]
-   [ValidateAntiForgeryToken]
    public async Task<IActionResult> Login([FromForm] LoginModel Input )
     {
       //  returnUrl ??= Url.Content("~/");
@@ -65,8 +59,6 @@ public class AccountController : Controller
 
         if (ModelState.IsValid)
         {
-            // This doesn't count login failures towards account lockout
-            // To enable password failures to trigger account lockout, set lockoutOnFailure: true
             var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
             if (result.Succeeded)
             {
@@ -75,14 +67,17 @@ public class AccountController : Controller
                 responseModel.StatusCode=200;
                 return Ok(responseModel);
             }
+            
             ModelState.AddModelError(string.Empty, "Invalid login attempt.");
             responseModel.StatusCode = 400;
             responseModel.Message = "Invalid login attempt.";
+            
             var errors = ModelState.Values.SelectMany(v => v.Errors)
                 .Select(e => e.ErrorMessage);
             return BadRequest(new {responseModel, Errors =errors});
         }
-        
+        responseModel.Message = "Bad Request";
+        responseModel.StatusCode = 400;
         var errors2 = ModelState.Values.SelectMany(v => v.Errors)
             .Select(e => e.ErrorMessage);
         return BadRequest(new {responseModel, Errors =errors2 });
@@ -125,11 +120,8 @@ public class AccountController : Controller
                         var userId = await _userManager.GetUserIdAsync(user);
                         var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                         code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                        var callbackUrl = Url.Page(
-                            "/Account/ConfirmEmail",
-                            pageHandler: null,
-                            values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
-                            protocol: Request.Scheme);
+                        var callbackUrl =$"{Request.Scheme}://{Request.Host}/Admin/Account/ConfirmEmail?userId={userId}&code={code}&returnUrl={returnUrl}";
+                        
 
                         await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                             $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
@@ -143,7 +135,7 @@ public class AccountController : Controller
                         {*/
                             //await _signInManager.SignInAsync(user, isPersistent: false);
                             
-                            responseModel.Message = "User created a new account with password.";
+                            responseModel.Message = "User created a new account with password, please confirm your account by click on the link sent to your email ";
                             responseModel.StatusCode=200;
                             return Ok(responseModel);
                         //}
@@ -155,12 +147,172 @@ public class AccountController : Controller
                     }
                 }
 
+                responseModel.Message = "Bad Request";
+                responseModel.StatusCode = 400;
                 var errors2 = ModelState.Values.SelectMany(v => v.Errors)
                     .Select(e => e.ErrorMessage);
                 return BadRequest(new {responseModel, Errors =errors2 });
             }
-   
-   private ApplicationUser CreateUser()
+         
+      [HttpPost]
+      public async Task<IActionResult> ConfirmEmail(string userId, string code)
+      {
+          ConfirmEmail confirmEmail = new ConfirmEmail();
+          ResponseModel responseModel = new ResponseModel();
+          if (userId == null || code == null)
+          {
+              responseModel.Message = "User does not exist";
+              responseModel.StatusCode = 404;
+              return NotFound(responseModel);
+          }
+
+          var user = await _userManager.FindByIdAsync(userId);
+          if (user == null)
+          {
+              responseModel.Message = "User does not exist";
+              responseModel.StatusCode = 404;
+              return NotFound(responseModel);
+          }
+
+          code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
+          var result = await _userManager.ConfirmEmailAsync(user, code);
+          confirmEmail.StatusMessage = result.Succeeded ? "Thank you for confirming your email." : "Error confirming your email.";
+          if (result.Succeeded)
+          {
+              responseModel.StatusCode = 200;
+              responseModel.Message = confirmEmail.StatusMessage;
+              return Ok(responseModel);
+          }
+          else
+          {
+              responseModel.StatusCode = 400;
+              responseModel.Message = confirmEmail.StatusMessage;
+              foreach (var error in result.Errors)
+              {
+                  ModelState.AddModelError(string.Empty, error.Description);
+              }
+              var errors2 = ModelState.Values.SelectMany(v => v.Errors)
+                  .Select(e => e.ErrorMessage);
+              return BadRequest(new {responseModel, Errors =errors2 });
+          }
+      }
+      
+      public async Task<IActionResult> ForgotPassword([FromForm] ForgotPassword Input)
+      {
+          ResponseModel responseModel = new ResponseModel();
+          if (ModelState.IsValid)
+          {
+              var user = await _userManager.FindByEmailAsync(Input.Email);
+              if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+              {
+                  responseModel.StatusCode = 200;
+                  responseModel.Message="If an account with the confirmed email address you provided exists in our system," +
+                                        " we have sent you an email with instructions on how to reset your password." +
+                                        " Please check your email and follow the instructions provided. " +
+                                        "If you don't receive the email within a few minutes, " +
+                                        "please check your spam folder or try again with a different email address.";
+                  return Ok(responseModel);
+              }
+              
+              var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+              code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+             
+              var callbackUrl =  $"{Request.Scheme}://{Request.Host}/Admin/Account/ResetPassword?code={code}";
+
+              await _emailSender.SendEmailAsync(
+                  Input.Email,
+                  "Reset Password",
+                  $"Please reset your password by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+
+              responseModel.StatusCode = 200;
+              responseModel.Message = "Please reset your password by clicking on the link sent to your email";
+              return Ok(responseModel);
+          }
+          responseModel.Message = "Bad Request";
+          responseModel.StatusCode = 400;
+          var errors2 = ModelState.Values.SelectMany(v => v.Errors)
+              .Select(e => e.ErrorMessage);
+          return BadRequest(new {responseModel, Errors =errors2 });
+      }
+      public async Task<IActionResult> ResetPassword([FromForm] ResetPassword Input)
+      {
+          ResponseModel responseModel = new ResponseModel();
+          if (!ModelState.IsValid)
+          {
+              responseModel.Message = "Bad Request";
+              responseModel.StatusCode = 400;
+              var errors2 = ModelState.Values.SelectMany(v => v.Errors)
+                  .Select(e => e.ErrorMessage);
+              return BadRequest(new {responseModel, Errors =errors2 });
+          }
+
+          Input.Code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(Input.Code));
+          var user = await _userManager.FindByEmailAsync(Input.Email);
+          if (user == null)
+          {
+              // Don't reveal that the user does not exist
+              responseModel.StatusCode = 404;
+              responseModel.Message = "User does not exist.";
+              return NotFound(responseModel);
+          }
+
+          var result = await _userManager.ResetPasswordAsync(user, Input.Code, Input.Password);
+          if (result.Succeeded)
+          {
+              responseModel.StatusCode = 200;
+              responseModel.Message = "Your password has been reset.";
+              return Ok(responseModel);
+          }
+          responseModel.Message = "Bad Request";
+          responseModel.StatusCode = 400;
+          
+          foreach (var error in result.Errors)
+          {
+              ModelState.AddModelError(string.Empty, error.Description);
+          }
+          var errors = ModelState.Values.SelectMany(v => v.Errors)
+              .Select(e => e.ErrorMessage);
+          return BadRequest(new {responseModel, Errors =errors });
+      }
+      
+      public async Task<IActionResult> ResendEmailVerification([FromForm] EmailVerification Input)
+      {
+          ResponseModel responseModel = new ResponseModel();
+          if (!ModelState.IsValid)
+          {
+              responseModel.StatusCode = 400;
+              responseModel.Message = "Bad request";
+              var errors = ModelState.Values.SelectMany(v => v.Errors)
+                  .Select(e => e.ErrorMessage);
+              return BadRequest(new {responseModel, Errors =errors });
+          }
+
+          var user = await _userManager.FindByEmailAsync(Input.Email);
+          if (user == null)
+          {
+              ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");
+              responseModel.StatusCode = 200;
+              responseModel.Message = "Verification email sent. Please check your email.";
+              return Ok(responseModel);
+          }
+
+          var userId = await _userManager.GetUserIdAsync(user);
+          var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+          code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+          var callbackUrl =$"{Request.Scheme}://{Request.Host}/Admin/Account/ConfirmEmail?userId={userId}&code={code}";
+          
+          await _emailSender.SendEmailAsync(
+              Input.Email,
+              "Confirm your email",
+              $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+
+          ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");
+          responseModel.StatusCode = 200;
+          responseModel.Message = "Verification email sent. Please check your email.";
+          return Ok(responseModel);
+      }
+      
+      private ApplicationUser CreateUser()
    {
        try
        {

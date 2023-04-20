@@ -55,6 +55,7 @@ public class DocumentController : Controller
     [HttpPost]
     [RequestFormLimits(MultipartBodyLengthLimit = 6104857600)]
     [RequestSizeLimit(6104857600)]
+    [Route("Admin/Dashboard/Document/Upsert")]
     public IActionResult Upsert([FromForm] Documents documents,IFormFileCollection d )
     {
         Document obj = documents.Document;
