@@ -22,4 +22,6 @@ public class ApplicationUser : IdentityUser
     [ValidateNever]
     [Display(Name = "Address")]
     public string? Address { get; set; }
+    
+    public string? ImageUrl { get; set; }
 }

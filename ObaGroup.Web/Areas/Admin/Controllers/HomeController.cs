@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Mvc;
 using Oba_group2.Models;
 
@@ -28,5 +29,22 @@ public class HomeController : Controller
     public IActionResult Error()
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+    }
+    
+    [HttpGet]
+    [Route("Admin/Dashboard/Calendar/GetCsrfToken")]
+    public IActionResult GetCsrfToken()
+    {
+        var antiForgery = HttpContext.RequestServices.GetService<IAntiforgery>();
+        var tokens = antiForgery.GetAndStoreTokens(HttpContext);
+       
+        // Take request token (which is different from a cookie token)
+        var headerToken = tokens.RequestToken;
+        // Set another cookie for a request token
+        Response.Cookies.Append("XSRF-TOKEN", headerToken, new CookieOptions
+        {
+            HttpOnly = false
+        });
+        return NoContent();
     }
 }

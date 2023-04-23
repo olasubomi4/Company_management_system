@@ -51,19 +51,33 @@ public class DocumentController : Controller
     }
     
     
+    [HttpGet]
+    [Route("Admin/Dashboard/Document/")]
+    public IActionResult GetById(int? id)
+    {
+        Document document = _unitOfWork.document.GetFirstOrDefault(x=> x.Id == id);
+        return Ok(document);
+    }
      
     [HttpPost]
     [RequestFormLimits(MultipartBodyLengthLimit = 6104857600)]
     [RequestSizeLimit(6104857600)]
     [Route("Admin/Dashboard/Document/Upsert")]
-    public IActionResult Upsert([FromForm] Documents documents,IFormFileCollection d )
+    public IActionResult Upsert([FromForm] Documents documents )
     {
+        Boolean isCreate = false;
+        string message;
         Document obj = documents.Document;
         List<string> documentsUrl = new List<string>();
+        ResponseModel responseModel = new ResponseModel();
 
         if (!ModelState.IsValid)
         {
-            return Redirect("index");
+            responseModel.Message = "Bad Request";
+            responseModel.StatusCode = 400;
+            var errors2 = ModelState.Values.SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage);
+            return BadRequest(new {responseModel, Errors =errors2 });
         }
 
         string type = obj.Type;
@@ -74,7 +88,7 @@ public class DocumentController : Controller
         {
             if (file != null)
             {
-                string fileName = Guid.NewGuid().ToString();
+                string fileName = file.FileName+Guid.NewGuid().ToString();
                 var uploads = Path.Combine(wwwRootPath, @"documents");
                 var extension = Path.GetExtension(file.FileName);
 
@@ -97,73 +111,123 @@ public class DocumentController : Controller
         }
 
         obj.Type = type;
-        obj.DocumentUrl = JsonSerializer.Serialize(documentsUrl);
+      
 
         if (obj.Id == 0)
         {
+            obj.DocumentUrl = JsonSerializer.Serialize(documentsUrl);
             _unitOfWork.document.Add(obj);
+            isCreate = true;
         }
         else
         {
+            obj.DocumentUrl = obj.DocumentUrl + JsonSerializer.Serialize(documentsUrl);
             _unitOfWork.document.Update(obj);
         }
     
         _unitOfWork.Save();
-        if (obj.Id == 0)
+        if (isCreate)
         {
-            TempData["success"] = "Document created successfully";
+            message ="Document created successfully";
         }
         else
         {
-            TempData["success"] = "Document Updated successfully";
+            message = "Document Updated successfully";
         }
 
-        return RedirectToAction("Index");
+        responseModel.Message = message;
+        responseModel.StatusCode = 200;
+        return Ok(new {responseModel});
     }
-   /* [HttpPost]
-    [ValidateAntiForgeryToken]
-    public IActionResult Create(Category obj)
-    {
-        if (obj.Name == obj.DisplayOrder.ToString())
-        {
-            ModelState.AddModelError("Name","The Display order cannot be the same as the Name");
-        }
-        if (!ModelState.IsValid)
-        {
-            return View(obj);
-        }
-
-        _unitOfWork.Category.Add(obj);
-        _unitOfWork.Save();
-        TempData["success"] = "Category created successfully";
-        return RedirectToAction("Index");
-    }*/
-   
+  
    
    [HttpGet]
+   [Route("Admin/Dashboard/Document/GetAll/")]
    public IActionResult GetAll()
    {
        var document = _unitOfWork.document.GetAll();
-       return Json(new { data = document });
+       return Ok(document);
    }
    
    [HttpDelete]
+   [Route("Admin/Dashboard/Document/Delete/")]
    public IActionResult Delete(int? id)
    {
+       ResponseModel responseModel = new ResponseModel();
        var obj = _unitOfWork.document.GetFirstOrDefault(x=>x.Id==id);
+       List<string> documentUrlList = JsonSerializer.Deserialize<List<string>>(obj.DocumentUrl);
        if (obj == null)
        {
-           return Json(new { success = false, Message = "Error while deleting" });
+           responseModel.Message ="Error while deleting";
+           responseModel.StatusCode = 400;
+           var errors2 = ModelState.Values.SelectMany(v => v.Errors)
+               .Select(e => e.ErrorMessage);
+           return BadRequest(new {responseModel, Errors =errors2 });
        }
-       var oldImagePath = Path.Combine(_hostEnvironment.WebRootPath, obj.DocumentUrl.TrimStart('/'));
-       if (System.IO.File.Exists(oldImagePath))
+
+       foreach (var documentUrl in documentUrlList)
        {
-           System.IO.File.Delete(oldImagePath);
+           var oldImagePath = Path.Combine(_hostEnvironment.WebRootPath, documentUrl.TrimStart('/'));
+           if (System.IO.File.Exists(oldImagePath))
+           {
+               System.IO.File.Delete(oldImagePath);
+           }
        }
+    
        _unitOfWork.document.Remove(obj);
        _unitOfWork.Save();
-       return Json(new { success = true, Message = "Delete successful" });
-        
+       responseModel.Message = "Document was successfully removed";
+       responseModel.StatusCode = 200;
+       return Ok(responseModel);
+
+   }
+   
+   [HttpDelete]
+   [Route("Admin/Dashboard/Document/DeleteFile/")]
+   public IActionResult DeleteFile(int? id,[FromForm] string fileUrl)
+   {
+       ResponseModel responseModel = new ResponseModel();
+       var obj = _unitOfWork.document.GetFirstOrDefault(x=>x.Id==id);
+       List<string> documentUrlList = JsonSerializer.Deserialize<List<string>>(obj.DocumentUrl);
+       int counter = 0;
+       Boolean documentExist = false;
+       if (obj == null)
+       {
+           responseModel.Message ="Error while deleting file";
+           responseModel.StatusCode = 400;
+           var errors2 = ModelState.Values.SelectMany(v => v.Errors)
+               .Select(e => e.ErrorMessage);
+           return BadRequest(new {responseModel, Errors =errors2 });
+       }
+
+       foreach (var documentUrl  in documentUrlList)
+       {
+           if (documentUrl == fileUrl)
+           {
+               documentUrlList.RemoveAt(counter);
+               documentExist = true;
+               break;
+           }
+           counter++;
+       }
+
+       if (documentExist)
+       {
+           var oldImagePath = Path.Combine(_hostEnvironment.WebRootPath, fileUrl.TrimStart('/'));
+           if (System.IO.File.Exists(oldImagePath))
+           {
+               System.IO.File.Delete(oldImagePath);
+           }
+       }
+
+       obj.DocumentUrl = JsonSerializer.Serialize(documentUrlList);
+       _unitOfWork.document.Update(obj);
+       _unitOfWork.Save();
+       
+       responseModel.Message = "File in document was successfully removed";
+       responseModel.StatusCode = 200;
+       return Ok(responseModel);
+
    }
 
    private string getDocumentType(IFormFile file,string types)

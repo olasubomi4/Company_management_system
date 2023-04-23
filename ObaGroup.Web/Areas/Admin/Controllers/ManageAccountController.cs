@@ -13,16 +13,19 @@ public class ManageAccountController : Controller
     private readonly SignInManager<IdentityUser> _signInManager;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<LoginModel> _logger;
+    private readonly IWebHostEnvironment _hostEnvironment;
 
     public ManageAccountController(
         UserManager<IdentityUser> userManager,
         SignInManager<IdentityUser> signInManager,
-        IUnitOfWork unitOfWork,ILogger<LoginModel> logger)
+        IUnitOfWork unitOfWork,ILogger<LoginModel> logger,
+        IWebHostEnvironment hostEnvironment)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _unitOfWork = unitOfWork;
         ILogger<RegisterModel> logger2;
+        _hostEnvironment = hostEnvironment;
     }
     
     private async Task LoadAsync(IdentityUser user)
@@ -48,10 +51,13 @@ public class ManageAccountController : Controller
     }
     
     [Route("Admin/Dashboard/UpdateUserInformation")]
-    public async Task<IActionResult> UpdateUserInformation([FromForm] ApplicationUser Input )
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UpdateUserInformation([FromForm] ApplicationUser Input, [FromForm] ImageFIleForm imageFile )
     {
         ResponseModel responseModel = new ResponseModel();
         var user = await _userManager.GetUserAsync(User);
+        ApplicationUser applicationUser = new ApplicationUser();
+        string imageUrl = null;
         if (user == null)
         {
             responseModel.Message = "Unable to load user";
@@ -70,7 +76,23 @@ public class ManageAccountController : Controller
             return BadRequest(new {responseModel, Errors =errors2 });
         }
 
-        ApplicationUser applicationUser = new ApplicationUser();
+        applicationUser = _unitOfWork.ApplicationUser.GetFirstOrDefault(u => u.Id == user.Id);
+        imageUrl = UploadImage(imageFile,applicationUser.ImageUrl);
+          
+        if (imageUrl == null)
+        {
+            responseModel.Message = "Bad Request";
+            responseModel.StatusCode = 400;
+              
+            ModelState.AddModelError(string.Empty, "Unable to upload profile image, try another image");
+              
+            var errors = ModelState.Values.SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage);
+            return BadRequest(new {responseModel, Errors =errors });
+  
+        }
+        
+       
         var phoneNumber = _unitOfWork.ApplicationUser.GetFirstOrDefault(u=>u.Id==user.Id).PhoneNumber;
         if (Input.PhoneNumber != phoneNumber)
         {
@@ -94,6 +116,7 @@ public class ManageAccountController : Controller
         applicationUser.LastName = Input.LastName;
         applicationUser.Address = Input.Address;
         applicationUser.Position = Input.Position;
+        applicationUser.ImageUrl = imageUrl;
         _unitOfWork.ApplicationUser.Update(applicationUser);
         _unitOfWork.Save();
         
@@ -104,6 +127,7 @@ public class ManageAccountController : Controller
     }
     
     [Route("Admin/Dashboard/ChangePassword")]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> ChangePassword([FromForm] ChangePassword Input)
     {
         ResponseModel responseModel = new ResponseModel();
@@ -148,5 +172,37 @@ public class ManageAccountController : Controller
         responseModel.StatusCode = 200;
         return Ok(responseModel);
     }
+    
+    private string UploadImage(ImageFIleForm imageFile, string ImageUrl)
+    {
+        string wwwRootPath = _hostEnvironment.WebRootPath;
+
+        if (imageFile != null)
+        {
+            string fileName = imageFile.Image.FileName + Guid.NewGuid().ToString();
+            var uploads = Path.Combine(wwwRootPath, @"profiles");
+            var extension = Path.GetExtension(imageFile.Image.FileName);
+
+            if (ImageUrl != null)
+            {
+                var oldImagePath = Path.Combine(wwwRootPath, ImageUrl.TrimStart('/'));
+                if (System.IO.File.Exists(oldImagePath))
+                {
+                    System.IO.File.Delete(oldImagePath);
+                }
+            }
+
+            using (var fileStreams = new FileStream(Path.Combine(uploads, fileName + extension), FileMode.Create))
+            {
+                imageFile.Image.CopyTo(fileStreams);
+            }
+
+            ImageUrl = (@"/profiles/" + fileName + extension);
+            return ImageUrl;
+        }
+
+        return null;
+    }
+
 }
 

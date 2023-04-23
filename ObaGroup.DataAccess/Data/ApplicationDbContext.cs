@@ -16,6 +16,8 @@ public class ApplicationDbContext : IdentityDbContext
     public DbSet<ApplicationUser> ApplicationUsers { get; set; }
     public DbSet<EventViewModel> EventViewModels { get; set; }
     
+    public DbSet<Biography> Biographies { get; set; }
+
     public class YourDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
     {
         public ApplicationDbContext CreateDbContext(string[] args)

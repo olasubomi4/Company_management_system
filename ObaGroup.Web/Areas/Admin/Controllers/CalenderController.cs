@@ -1,16 +1,18 @@
 using System.Security.Claims;
 using System.Text.Json;
 using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NuGet.Protocol;
 using ObaGoupDataAccess.Repository.IRepository;
 using ObaGroupModel;
-
+using ObaGroupUtility;
 
 
 namespace Oba_group2.Areas.Admin.Controllers;
 
 [Area("Admin")]
+[Authorize(Roles = Constants.Role_Admin+","+Constants.Role_Staff)]
 public class CalenderController: Controller
 {
     private readonly IUnitOfWork _unitOfWork;
@@ -45,43 +47,89 @@ public class CalenderController: Controller
             return View(eventViewModel);
         }
     }
+    
+    [HttpGet]
+    [Route("Admin/Dashboard/Calendar/Upsert")]
+    public IActionResult GetById(int? id)
+    {
+         EventViewModel calendarEvents = _unitOfWork.eventViewModel.GetFirstOrDefault(x=> x.id==id);
+        return Ok(calendarEvents);
+    }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Upsert(EventViewModel eventViewModel)
+    [Route("Admin/Dashboard/Calendar/Upsert")]
+    public IActionResult Upsert([FromForm] EventViewModel eventViewModel)
     {
+        ResponseModel responseModel = new ResponseModel();
+        string message;
+        int statusCode;
+        Boolean isCreate = false;
         if (!ModelState.IsValid)
         {
-            return Redirect("index");
+            responseModel.Message = "Bad Request";
+            responseModel.StatusCode = 400;
+            var errors2 = ModelState.Values.SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage);
+            return BadRequest(new {responseModel, Errors =errors2 });
         }
         
+        eventViewModel.UserId=_unitOfWork.ApplicationUser.GetFirstOrDefault(u=>u.Email==User.Identity.Name).Id;
+
         if (eventViewModel.id == 0)
         {
-            eventViewModel.UserId=_unitOfWork.ApplicationUser.GetFirstOrDefault(u=>u.Email==User.Identity.Name).Id;
             _unitOfWork.eventViewModel.Add(eventViewModel);
+            isCreate = true;
         }
         else
         {
             _unitOfWork.eventViewModel.Update(eventViewModel);
         }
-    
-        _unitOfWork.Save();
-        if (eventViewModel.id == 0)
+
+        if (isCreate)
         {
-            TempData["success"] = "Document created successfully";
+            message = "Calendar event created successfully";
         }
         else
         {
-            TempData["success"] = "Document Updated successfully";
+            message = "Calendar event updated successfully";
+        }
+        _unitOfWork.Save();
+ 
+
+        responseModel.Message = message;
+        responseModel.StatusCode = 200;
+        return Ok(new {responseModel});
+    }
+    
+      
+    [HttpDelete]
+    [ValidateAntiForgeryToken]
+    [Route("Admin/Dashboard/Calendar/Delete/")]
+    public IActionResult Delete(int? id)
+    {
+        ResponseModel responseModel = new ResponseModel();
+        var obj = _unitOfWork.eventViewModel.GetFirstOrDefault(x=>x.id==id);
+        
+        if (obj == null)
+        {
+            responseModel.Message = "Calendar Event does not exist";
+            responseModel.StatusCode = 404;
+            ModelState.AddModelError(string.Empty, "Calendar event does not exist");
+            var errors2 = ModelState.Values.SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage);
+            return NotFound(new {responseModel, Errors =errors2 });
         }
 
-     
+        _unitOfWork.eventViewModel.Remove(obj);
         _unitOfWork.Save();
-        
-        return Redirect("index");
+        responseModel.Message = "Calendar Event deleted successfully";
+        responseModel.StatusCode = 200;
+        return Ok(responseModel);
     }
 
     [HttpGet]
+    [Route("Admin/Dashboard/Calendar/GetEvents")]
     public IActionResult GetEvents()
     {
         var viewModel = new EventViewModel();
@@ -104,8 +152,9 @@ public class CalenderController: Controller
             
         }
         
-        return Json(events.ToArray() );
+        return Ok(events);
     }
+
 
     private string getEndDateAndTimeStringValue(EventViewModel calendarEvents)
     {
@@ -128,20 +177,9 @@ public class CalenderController: Controller
 
         return endValue;
     }
-    
-    [HttpGet]
-    public IActionResult GetCsrfToken()
+
+    private Boolean checkIfEventOccursAlldayAndAsEndDate(EventViewModel eventViewModel)
     {
-        var antiForgery = HttpContext.RequestServices.GetService<IAntiforgery>();
-        var tokens = antiForgery.GetAndStoreTokens(HttpContext);
-       
-               // Take request token (which is different from a cookie token)
-               var headerToken = tokens.RequestToken;
-               // Set another cookie for a request token
-               Response.Cookies.Append("XSRF-TOKEN", headerToken, new CookieOptions
-               {
-                   HttpOnly = false
-               });
-               return NoContent();
+        return true;
     }
 }

@@ -6,5 +6,7 @@ public interface IUnitOfWork
     IApplicationUserRepository ApplicationUser{get;}
 
     ICalendarRepository eventViewModel { get; }
+    
+    IBiographyRepository biography { get; }
     void Save();
 }

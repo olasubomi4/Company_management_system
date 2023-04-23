@@ -226,6 +226,37 @@ namespace ObaGoupDataAccess.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("ObaGroupModel.Biography", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"), 1L, 1);
+
+                    b.Property<string>("firstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("lastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("position")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("profileImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("profileVideoUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("id");
+
+                    b.ToTable("Biographies");
+                });
+
             modelBuilder.Entity("ObaGroupModel.Document", b =>
                 {
                     b.Property<int>("Id")
@@ -274,10 +305,10 @@ namespace ObaGoupDataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("allDay")
+                    b.Property<bool?>("allDay")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("end")
+                    b.Property<DateTime?>("end")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("start")
@@ -301,6 +332,9 @@ namespace ObaGoupDataAccess.Migrations
 
                     b.Property<string>("FirstName")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastName")

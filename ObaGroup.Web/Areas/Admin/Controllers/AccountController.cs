@@ -27,13 +27,15 @@ public class AccountController : Controller
         private readonly IEmailSender _emailSender;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IWebHostEnvironment _hostEnvironment;
 
    public AccountController(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger,  UserManager<IdentityUser> userManager,
        IUserStore<IdentityUser> userStore,
        ILogger<RegisterModel> logger2,
        IEmailSender emailSender,
        RoleManager<IdentityRole> roleManager,
-       IUnitOfWork unitOfWork)
+       IUnitOfWork unitOfWork,
+       IWebHostEnvironment hostEnvironment)
    {
        _signInManager = signInManager;
        _logger = logger;
@@ -44,15 +46,19 @@ public class AccountController : Controller
        _emailSender = emailSender;
        _roleManager = roleManager;
        _unitOfWork = unitOfWork;
+       _hostEnvironment = hostEnvironment;
    }
    public IList<AuthenticationScheme> ExternalLogins { get; set; }
    
    
    
    [HttpPost]
+   [ValidateAntiForgeryToken]
    public async Task<IActionResult> Login([FromForm] LoginModel Input )
-    {
-      //  returnUrl ??= Url.Content("~/");
+   {
+       //string returnUrl;
+       //returnUrl ??= Url.Content("~/");
+       
 
     ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
     ResponseModel responseModel = new ResponseModel();
@@ -85,10 +91,26 @@ public class AccountController : Controller
    
         [HttpPost]
         [ValidateAntiForgeryToken]
-      public async Task<IActionResult> CreateUser([FromForm] RegisterModel Input)
+      public async Task<IActionResult> CreateUser([FromForm] RegisterModel Input,[FromForm] string? returnUrl, [FromForm] ImageFIleForm image)
       {
+          string imageUrl=null;
           ResponseModel responseModel = new ResponseModel();
-               string returnUrl = Url.Content("~/");
+          
+          imageUrl = UploadImage(image);
+          
+          if (imageUrl == null)
+          {
+              responseModel.Message = "Bad Request";
+              responseModel.StatusCode = 400;
+              
+              ModelState.AddModelError(string.Empty, "Unable to upload profile image, try another image");
+              
+              var errors = ModelState.Values.SelectMany(v => v.Errors)
+                  .Select(e => e.ErrorMessage);
+              return BadRequest(new {responseModel, Errors =errors });
+  
+          }
+          returnUrl ??= Url.Content("~/");
                 ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
                 if (ModelState.IsValid)
                 {
@@ -100,6 +122,7 @@ public class AccountController : Controller
                     user.LastName = Input.LastName;
                     user.Address = Input.Address;
                     user.Position = Input.Position;
+                    user.ImageUrl = imageUrl;
                     
                     
                  
@@ -121,8 +144,7 @@ public class AccountController : Controller
                         var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                         code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                         var callbackUrl =$"{Request.Scheme}://{Request.Host}/Admin/Account/ConfirmEmail?userId={userId}&code={code}&returnUrl={returnUrl}";
-                        
-
+                        Console.WriteLine(callbackUrl);
                         await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                             $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
@@ -135,7 +157,7 @@ public class AccountController : Controller
                         {*/
                             //await _signInManager.SignInAsync(user, isPersistent: false);
                             
-                            responseModel.Message = "User created a new account with password, please confirm your account by click on the link sent to your email ";
+                            responseModel.Message = "User created a new account with password, please confirm your account by click on the link sent to your email";
                             responseModel.StatusCode=200;
                             return Ok(responseModel);
                         //}
@@ -153,8 +175,9 @@ public class AccountController : Controller
                     .Select(e => e.ErrorMessage);
                 return BadRequest(new {responseModel, Errors =errors2 });
             }
-         
-      [HttpPost]
+      
+
+      [HttpGet]
       public async Task<IActionResult> ConfirmEmail(string userId, string code)
       {
           ConfirmEmail confirmEmail = new ConfirmEmail();
@@ -197,6 +220,7 @@ public class AccountController : Controller
           }
       }
       
+      [ValidateAntiForgeryToken]
       public async Task<IActionResult> ForgotPassword([FromForm] ForgotPassword Input)
       {
           ResponseModel responseModel = new ResponseModel();
@@ -234,6 +258,8 @@ public class AccountController : Controller
               .Select(e => e.ErrorMessage);
           return BadRequest(new {responseModel, Errors =errors2 });
       }
+      
+      [ValidateAntiForgeryToken]
       public async Task<IActionResult> ResetPassword([FromForm] ResetPassword Input)
       {
           ResponseModel responseModel = new ResponseModel();
@@ -275,6 +301,7 @@ public class AccountController : Controller
           return BadRequest(new {responseModel, Errors =errors });
       }
       
+      [ValidateAntiForgeryToken]
       public async Task<IActionResult> ResendEmailVerification([FromForm] EmailVerification Input)
       {
           ResponseModel responseModel = new ResponseModel();
@@ -336,4 +363,25 @@ public class AccountController : Controller
        return (IUserEmailStore<IdentityUser>)_userStore;
    }
    
+   private string UploadImage(ImageFIleForm imageFile)
+   {
+       string wwwRootPath = _hostEnvironment.WebRootPath;
+       string ImageUrl;
+       if (imageFile.Image != null)
+       {
+           string fileName =imageFile.Image.FileName+ Guid.NewGuid().ToString();
+           var uploads = Path.Combine(wwwRootPath, @"profiles");
+           var extension = Path.GetExtension(imageFile.Image.FileName);
+           
+           using (var fileStreams = new FileStream(Path.Combine(uploads, fileName + extension), FileMode.Create))
+           {
+               imageFile.Image.CopyTo(fileStreams);
+           }
+
+           ImageUrl = (@"/profiles/" + fileName + extension);
+           return ImageUrl;
+       }
+       return null;
+   }
+
 }

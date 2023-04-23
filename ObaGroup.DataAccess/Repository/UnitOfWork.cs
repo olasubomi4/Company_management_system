@@ -14,10 +14,15 @@ public class UnitOfWork : IUnitOfWork
         document = new DocumentRepository(_db);
         ApplicationUser = new ApplicationUserRepository(_db);
         eventViewModel = new CalendarRepository(_db);
+        biography = new BiographyRepository(_db);
     }
     public IDocumentRepository document { get; }
     public IApplicationUserRepository ApplicationUser{get;}
     public ICalendarRepository eventViewModel{get;}
+    public IBiographyRepository biography { get; }
+
+
+    
     public void Save()
     {
         _db.SaveChanges();

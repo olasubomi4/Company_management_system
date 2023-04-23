@@ -143,6 +143,7 @@
 
     <ItemGroup>
       <Folder Include="wwwroot\documents" />
+      <Folder Include="wwwroot\profiles" />
     </ItemGroup>
 
 </Project>
