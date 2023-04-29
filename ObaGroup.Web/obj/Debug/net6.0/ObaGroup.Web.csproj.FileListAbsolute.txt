@@ -593,3 +593,15 @@
 /Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Web/bin/Debug/net6.0/Renci.SshNet.dll
 /Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Web/bin/Debug/net6.0/SshNet.Security.Cryptography.dll
 /Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Web/bin/Debug/net6.0/System.Xml.XPath.XmlDocument.dll
+/Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Web/bin/Debug/net6.0/Google.Apis.dll
+/Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Web/bin/Debug/net6.0/Google.Apis.Auth.PlatformServices.dll
+/Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Web/bin/Debug/net6.0/Google.Apis.Auth.dll
+/Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Web/bin/Debug/net6.0/Google.Apis.Calendar.v3.dll
+/Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Web/bin/Debug/net6.0/Google.Apis.Core.dll
+/Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Web/bin/Debug/net6.0/Google.Apis.Discovery.v1.dll
+/Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Web/bin/Debug/net6.0/client_secret_87857337556-iqm8t560cfhc8ddln4mdk88ahl311na9.apps.googleusercontent.com.json
+/Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Web/bin/Debug/net6.0/tokens.json
+/Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Web/bin/Debug/net6.0/RestClient.dll
+/Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Web/bin/Debug/net6.0/RestRequest.dll
+/Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Web/bin/Debug/net6.0/RestSharp.dll
+/Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Web/bin/Debug/net6.0/Apikey.json

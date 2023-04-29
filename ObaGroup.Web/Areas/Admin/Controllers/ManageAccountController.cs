@@ -107,6 +107,7 @@ public class ManageAccountController : Controller
                 }
                 var errors2 = ModelState.Values.SelectMany(v => v.Errors)
                     .Select(e => e.ErrorMessage);
+                return BadRequest(new {responseModel, Errors =errors2});
             }
         }
 

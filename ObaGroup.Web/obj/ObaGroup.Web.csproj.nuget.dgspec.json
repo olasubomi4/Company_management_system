@@ -46,6 +46,18 @@
         "net6.0": {
           "targetAlias": "net6.0",
           "dependencies": {
+            "Google.Apis.Auth": {
+              "target": "Package",
+              "version": "[1.60.0, )"
+            },
+            "Google.Apis.Calendar.v3": {
+              "target": "Package",
+              "version": "[1.60.0.3017, )"
+            },
+            "Google.Apis.Discovery.v1": {
+              "target": "Package",
+              "version": "[1.60.0, )"
+            },
             "MailKit": {
               "target": "Package",
               "version": "[3.6.0, )"
@@ -109,6 +121,18 @@
             "MySql.Data.EntityFrameworkCore": {
               "target": "Package",
               "version": "[8.0.22, )"
+            },
+            "RestClient": {
+              "target": "Package",
+              "version": "[3.1024.23771, )"
+            },
+            "RestRequest": {
+              "target": "Package",
+              "version": "[1.2.0, )"
+            },
+            "System.Net.Http": {
+              "target": "Package",
+              "version": "[4.3.4, )"
             }
           },
           "imports": [
@@ -170,6 +194,18 @@
         "net6.0": {
           "targetAlias": "net6.0",
           "dependencies": {
+            "Google.Apis.Auth": {
+              "target": "Package",
+              "version": "[1.60.0, )"
+            },
+            "Google.Apis.Calendar.v3": {
+              "target": "Package",
+              "version": "[1.60.0.3017, )"
+            },
+            "Google.Apis.Discovery.v1": {
+              "target": "Package",
+              "version": "[1.60.0, )"
+            },
             "MailKit": {
               "target": "Package",
               "version": "[3.6.0, )"
@@ -225,6 +261,18 @@
             "MySql.Data.EntityFrameworkCore": {
               "target": "Package",
               "version": "[8.0.22, )"
+            },
+            "RestClient": {
+              "target": "Package",
+              "version": "[3.1024.23771, )"
+            },
+            "RestRequest": {
+              "target": "Package",
+              "version": "[1.2.0, )"
+            },
+            "System.Net.Http": {
+              "target": "Package",
+              "version": "[4.3.4, )"
             }
           },
           "imports": [
@@ -282,6 +330,18 @@
         "net6.0": {
           "targetAlias": "net6.0",
           "dependencies": {
+            "Google.Apis.Auth": {
+              "target": "Package",
+              "version": "[1.60.0, )"
+            },
+            "Google.Apis.Calendar.v3": {
+              "target": "Package",
+              "version": "[1.60.0.3017, )"
+            },
+            "Google.Apis.Discovery.v1": {
+              "target": "Package",
+              "version": "[1.60.0, )"
+            },
             "MailKit": {
               "target": "Package",
               "version": "[3.6.0, )"
@@ -341,6 +401,22 @@
             "MySql.Data.EntityFrameworkCore": {
               "target": "Package",
               "version": "[8.0.22, )"
+            },
+            "RestClient": {
+              "target": "Package",
+              "version": "[3.1024.23771, )"
+            },
+            "RestRequest": {
+              "target": "Package",
+              "version": "[1.2.0, )"
+            },
+            "RestSharp": {
+              "target": "Package",
+              "version": "[105.2.1, )"
+            },
+            "System.Net.Http": {
+              "target": "Package",
+              "version": "[4.3.4, )"
             }
           },
           "imports": [
@@ -402,6 +478,18 @@
         "net6.0": {
           "targetAlias": "net6.0",
           "dependencies": {
+            "Google.Apis.Auth": {
+              "target": "Package",
+              "version": "[1.60.0, )"
+            },
+            "Google.Apis.Calendar.v3": {
+              "target": "Package",
+              "version": "[1.60.0.3017, )"
+            },
+            "Google.Apis.Discovery.v1": {
+              "target": "Package",
+              "version": "[1.60.0, )"
+            },
             "MailKit": {
               "target": "Package",
               "version": "[3.6.0, )"
@@ -465,6 +553,22 @@
             "MySql.Data.EntityFrameworkCore": {
               "target": "Package",
               "version": "[8.0.22, )"
+            },
+            "RestClient": {
+              "target": "Package",
+              "version": "[3.1024.23771, )"
+            },
+            "RestRequest": {
+              "target": "Package",
+              "version": "[1.2.0, )"
+            },
+            "RestSharp": {
+              "target": "Package",
+              "version": "[105.2.1, )"
+            },
+            "System.Net.Http": {
+              "target": "Package",
+              "version": "[4.3.4, )"
             }
           },
           "imports": [
