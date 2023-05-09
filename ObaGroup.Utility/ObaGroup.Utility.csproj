@@ -12,6 +12,7 @@
       <PackageReference Include="Google.Apis.Calendar.v3" Version="1.60.0.3017" />
       <PackageReference Include="Google.Apis.Discovery.v1" Version="1.60.0" />
       <PackageReference Include="MailKit" Version="3.6.0" />
+      <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="6.0.0" />
       <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
       <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.0" />
       <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.0" />

@@ -1,5 +1,4 @@
 using System.Collections.Immutable;
-using BulkyBook.DataAccess.DbInitializer;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -8,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using ObaGroup.Utility;
 using Microsoft.Extensions.DependencyInjection;
 using ObaGoupDataAccess.Data;
+using ObaGoupDataAccess.DataAccess.DbInitializer;
 using ObaGoupDataAccess.Repository;
 using ObaGoupDataAccess.Repository.IRepository;
 
@@ -22,6 +22,14 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 ));
 
 
+/*builder.Services.AddAuthentication().AddGoogle(googleOptions =>
+{
+    googleOptions.ClientId = builder.Configuration.GetSection("GoogleAuthSettings")
+        .GetValue<string>("ClientId");
+    googleOptions.ClientSecret = builder.Configuration.GetSection("GoogleAuthSettings")
+        .GetValue<string>("ClientSecret");
+});
+*/
 
 builder.Services.AddIdentity<IdentityUser,IdentityRole>().AddDefaultTokenProviders().AddEntityFrameworkStores<ApplicationDbContext>();
 
@@ -29,6 +37,18 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IDbIntializer, DbInitalizer>();
 builder.Services.AddSingleton<IEmailSender, EmailSender>();
 builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
+builder.Services.AddSession(options =>
+{
+    // Set a timeout for the session
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+});
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.AccessDeniedPath = "/MyHttpStatuses/AccessDenied";
+});
 /*builder.Services.AddAntiforgery(options =>
 {
     options.Cookie.Name = "X-CSRF-TOKEN";
@@ -50,14 +70,17 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+
+app.UseStatusCodePagesWithReExecute("/AccessDenied");
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
 
 app.UseRouting();
 SeedDatabase();
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseSession();
 app.MapRazorPages();
 app.MapControllerRoute(
     name: "default",

@@ -60,11 +60,7 @@ public class BiographyController : Controller
                 .Select(e => e.ErrorMessage);
             return BadRequest(new { responseModel, Errors = errors2 });
         }
-
-
-
-
-
+        
         if (obj.id == 0)
         {
             obj.profileImageUrl = UploadImages(biography.profileImage);

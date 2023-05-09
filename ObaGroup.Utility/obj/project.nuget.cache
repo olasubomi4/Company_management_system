@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "boemUwu6uJ8bLhXEfCpWnUKcBz7y6pfQ1MfZjfZCUnMM84+viMviKSZU30ig0HczXsNfNUXlz3AUie4C2EE1yQ==",
+  "dgSpecHash": "rXoKe/SKnqeuxj7hxz7ZwQKQP27nGXJRQiuxU3WT3e6/TdB7CYkrZV8FBahtF6FoPcBM6q1i9A/NH2zHRZykig==",
   "success": true,
   "projectFilePath": "/Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Utility/ObaGroup.Utility.csproj",
   "expectedPackageFiles": [
@@ -21,6 +21,7 @@
     "/Users/olasubomi/.nuget/packages/microsoft.aspnetcore.authentication.abstractions/2.2.0/microsoft.aspnetcore.authentication.abstractions.2.2.0.nupkg.sha512",
     "/Users/olasubomi/.nuget/packages/microsoft.aspnetcore.authentication.cookies/2.2.0/microsoft.aspnetcore.authentication.cookies.2.2.0.nupkg.sha512",
     "/Users/olasubomi/.nuget/packages/microsoft.aspnetcore.authentication.core/2.2.0/microsoft.aspnetcore.authentication.core.2.2.0.nupkg.sha512",
+    "/Users/olasubomi/.nuget/packages/microsoft.aspnetcore.authentication.google/6.0.0/microsoft.aspnetcore.authentication.google.6.0.0.nupkg.sha512",
     "/Users/olasubomi/.nuget/packages/microsoft.aspnetcore.authorization/2.2.0/microsoft.aspnetcore.authorization.2.2.0.nupkg.sha512",
     "/Users/olasubomi/.nuget/packages/microsoft.aspnetcore.authorization.policy/2.2.0/microsoft.aspnetcore.authorization.policy.2.2.0.nupkg.sha512",
     "/Users/olasubomi/.nuget/packages/microsoft.aspnetcore.cors/2.2.0/microsoft.aspnetcore.cors.2.2.0.nupkg.sha512",

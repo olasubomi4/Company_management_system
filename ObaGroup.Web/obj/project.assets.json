@@ -330,6 +330,22 @@
           }
         }
       },
+      "Microsoft.AspNetCore.Authentication.Google/6.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/Microsoft.AspNetCore.Authentication.Google.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Microsoft.AspNetCore.Authentication.Google.dll": {
+            "related": ".xml"
+          }
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
+      },
       "Microsoft.AspNetCore.Authorization/2.2.0": {
         "type": "package",
         "dependencies": {
@@ -5361,6 +5377,7 @@
           "Google.Apis.Calendar.v3": "1.60.0.3017",
           "Google.Apis.Discovery.v1": "1.60.0",
           "MailKit": "3.6.0",
+          "Microsoft.AspNetCore.Authentication.Google": "6.0.0",
           "Microsoft.AspNetCore.Identity": "2.2.0",
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "6.0.0",
           "Microsoft.AspNetCore.Identity.UI": "6.0.0",
@@ -5394,6 +5411,7 @@
           "Google.Apis.Calendar.v3": "1.60.0.3017",
           "Google.Apis.Discovery.v1": "1.60.0",
           "MailKit": "3.6.0",
+          "Microsoft.AspNetCore.Authentication.Google": "6.0.0",
           "Microsoft.AspNetCore.Identity": "2.2.0",
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "6.0.0",
           "Microsoft.AspNetCore.Mvc": "2.2.0",
@@ -5404,7 +5422,6 @@
           "Microsoft.EntityFrameworkCore.Sqlite": "6.0.0",
           "Microsoft.Extensions.DependencyInjection": "6.0.0",
           "MySql.Data.EntityFrameworkCore": "8.0.22",
-          "ObaGroup.Utility": "1.0.0",
           "RestClient": "3.1024.23771",
           "RestRequest": "1.2.0",
           "System.Net.Http": "4.3.4"
@@ -5424,6 +5441,7 @@
           "Google.Apis.Calendar.v3": "1.60.0.3017",
           "Google.Apis.Discovery.v1": "1.60.0",
           "MailKit": "3.6.0",
+          "Microsoft.AspNetCore.Authentication.Google": "6.0.0",
           "Microsoft.AspNetCore.Identity": "2.2.0",
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "6.0.0",
           "Microsoft.AspNetCore.Identity.UI": "6.0.0",
@@ -5827,6 +5845,21 @@
         "lib/netstandard2.0/Microsoft.AspNetCore.Authentication.Core.xml",
         "microsoft.aspnetcore.authentication.core.2.2.0.nupkg.sha512",
         "microsoft.aspnetcore.authentication.core.nuspec"
+      ]
+    },
+    "Microsoft.AspNetCore.Authentication.Google/6.0.0": {
+      "sha512": "TToorF3zDoDSDj639jqD0JkrjQaAfK1vI61Xwrtnf2gToIQQSRAY7A6S4qPYROE6n31sEyWKPlAVoSW1u7Jysw==",
+      "type": "package",
+      "path": "microsoft.aspnetcore.authentication.google/6.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "THIRD-PARTY-NOTICES.TXT",
+        "lib/net6.0/Microsoft.AspNetCore.Authentication.Google.dll",
+        "lib/net6.0/Microsoft.AspNetCore.Authentication.Google.xml",
+        "microsoft.aspnetcore.authentication.google.6.0.0.nupkg.sha512",
+        "microsoft.aspnetcore.authentication.google.nuspec"
       ]
     },
     "Microsoft.AspNetCore.Authorization/2.2.0": {
@@ -13941,6 +13974,7 @@
       "Google.Apis.Calendar.v3 >= 1.60.0.3017",
       "Google.Apis.Discovery.v1 >= 1.60.0",
       "MailKit >= 3.6.0",
+      "Microsoft.AspNetCore.Authentication.Google >= 6.0.0",
       "Microsoft.AspNetCore.Identity >= 2.2.0",
       "Microsoft.AspNetCore.Identity.EntityFrameworkCore >= 6.0.0",
       "Microsoft.AspNetCore.Identity.UI >= 6.0.0",
@@ -13956,6 +13990,8 @@
       "Microsoft.VisualStudio.Web.CodeGeneration.Design >= 6.0.0",
       "MySql.Data.EntityFrameworkCore >= 8.0.22",
       "ObaGroup.DataAccess >= 1.0.0",
+      "ObaGroup.Model >= 1.0.0",
+      "ObaGroup.Utility >= 1.0.0",
       "RestClient >= 3.1024.23771",
       "RestRequest >= 1.2.0",
       "RestSharp >= 105.2.1",
@@ -13990,6 +14026,12 @@
           "projectReferences": {
             "/Users/olasubomi/RiderProjects/Oba group2/ObaGroup.DataAccess/ObaGroup.DataAccess.csproj": {
               "projectPath": "/Users/olasubomi/RiderProjects/Oba group2/ObaGroup.DataAccess/ObaGroup.DataAccess.csproj"
+            },
+            "/Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Model/ObaGroup.Model.csproj": {
+              "projectPath": "/Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Model/ObaGroup.Model.csproj"
+            },
+            "/Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Utility/ObaGroup.Utility.csproj": {
+              "projectPath": "/Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Utility/ObaGroup.Utility.csproj"
             }
           }
         }
@@ -14019,6 +14061,10 @@
           "MailKit": {
             "target": "Package",
             "version": "[3.6.0, )"
+          },
+          "Microsoft.AspNetCore.Authentication.Google": {
+            "target": "Package",
+            "version": "[6.0.0, )"
           },
           "Microsoft.AspNetCore.Identity": {
             "target": "Package",

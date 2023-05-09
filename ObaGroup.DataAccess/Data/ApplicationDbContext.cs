@@ -17,13 +17,14 @@ public class ApplicationDbContext : IdentityDbContext
     public DbSet<EventViewModel> EventViewModels { get; set; }
     
     public DbSet<Biography> Biographies { get; set; }
+    public DbSet<UserOauthRefreshToken> UserOauthRefreshToken { get; set; }
 
     public class YourDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
     {
         public ApplicationDbContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            optionsBuilder.UseSqlServer("Data Source=127.0.0.1;Initial Catalog=OBAGROUP1;Persist Security Info=False;User ID=sa;Password=MyPass@word;MultipleActiveResultSets=False");
+            optionsBuilder.UseSqlServer("Data Source=127.0.0.1;Initial Catalog=OBAGROUP2;Persist Security Info=False;User ID=sa;Password=MyPass@word;MultipleActiveResultSets=False");
 
             return new ApplicationDbContext(optionsBuilder.Options);
         }

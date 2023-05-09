@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Encodings.Web;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -17,9 +18,8 @@ namespace Oba_group2.Areas.Admin.Controllers;
 [Area("Admin")]
 public class AccountController : Controller
 {
- 
-       private readonly SignInManager<IdentityUser> _signInManager;
-       private readonly ILogger<LoginModel> _logger;
+      private readonly SignInManager<IdentityUser> _signInManager;
+      private readonly ILogger<LoginModel> _logger;
        private readonly UserManager<IdentityUser> _userManager;
         private readonly IUserStore<IdentityUser> _userStore;
         private readonly IUserEmailStore<IdentityUser> _emailStore;
@@ -53,7 +53,6 @@ public class AccountController : Controller
    
    
    [HttpPost]
-   [ValidateAntiForgeryToken]
    public async Task<IActionResult> Login([FromForm] LoginModel Input )
    {
        //string returnUrl;
@@ -71,6 +70,7 @@ public class AccountController : Controller
                 _logger.LogInformation("User logged in.");
                 responseModel.Message = "User logged in.";
                 responseModel.StatusCode=200;
+                SetCsrfToken();
                 return Ok(responseModel);
             }
             
@@ -90,11 +90,18 @@ public class AccountController : Controller
     }
    
         [HttpPost]
-        [ValidateAntiForgeryToken]
-      public async Task<IActionResult> CreateUser([FromForm] RegisterModel Input,[FromForm] string? returnUrl, [FromForm] ImageFIleForm image)
+        public async Task<IActionResult> CreateUser([FromForm] RegisterModel Input,[FromForm] string? returnUrl, [FromForm] ImageFIleForm image)
       {
           string imageUrl=null;
           ResponseModel responseModel = new ResponseModel();
+          if (!ModelState.IsValid)
+          {
+              responseModel.Message = "Bad Request";
+              responseModel.StatusCode = 400;
+              var errors = ModelState.Values.SelectMany(v => v.Errors)
+                  .Select(e => e.ErrorMessage);
+              return BadRequest(new {responseModel, Errors =errors });
+          }
           
           imageUrl = UploadImage(image);
           
@@ -123,9 +130,7 @@ public class AccountController : Controller
                     user.Address = Input.Address;
                     user.Position = Input.Position;
                     user.ImageUrl = imageUrl;
-                    
-                    
-                 
+
                     var result = await _userManager.CreateAsync(user, Input.Password);
 
                     if (result.Succeeded)
@@ -157,7 +162,7 @@ public class AccountController : Controller
                         {*/
                             //await _signInManager.SignInAsync(user, isPersistent: false);
                             
-                            responseModel.Message = "User created a new account with password, please confirm your account by click on the link sent to your email";
+                            responseModel.Message = "User created a new account with password";
                             responseModel.StatusCode=200;
                             return Ok(responseModel);
                         //}
@@ -175,7 +180,31 @@ public class AccountController : Controller
                     .Select(e => e.ErrorMessage);
                 return BadRequest(new {responseModel, Errors =errors2 });
             }
-      
+        [HttpGet]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            IEnumerable<ApplicationUser> applicationUsers = _unitOfWork.ApplicationUser.GetAll();
+            return Ok(applicationUsers);
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteAUser(string id)
+        {
+            ResponseModel responseModel = new ResponseModel();
+            ApplicationUser applicationUser = _unitOfWork.ApplicationUser.GetFirstOrDefault(u => u.Id == id);
+            if (applicationUser != null)
+            {
+                responseModel.StatusCode = 200;
+                responseModel.Message = "User deleted successfully";
+                _unitOfWork.ApplicationUser.Remove(applicationUser);
+                _unitOfWork.Save();
+                return Ok(responseModel);
+            }
+            responseModel.StatusCode = 400;
+            responseModel.Message = "The user you are trying to delete does not exist";
+            return BadRequest(responseModel);
+        }
+
 
       [HttpGet]
       public async Task<IActionResult> ConfirmEmail(string userId, string code)
@@ -221,6 +250,7 @@ public class AccountController : Controller
       }
       
       [ValidateAntiForgeryToken]
+      [HttpPost]
       public async Task<IActionResult> ForgotPassword([FromForm] ForgotPassword Input)
       {
           ResponseModel responseModel = new ResponseModel();
@@ -260,6 +290,7 @@ public class AccountController : Controller
       }
       
       [ValidateAntiForgeryToken]
+      [HttpPost]
       public async Task<IActionResult> ResetPassword([FromForm] ResetPassword Input)
       {
           ResponseModel responseModel = new ResponseModel();
@@ -302,6 +333,7 @@ public class AccountController : Controller
       }
       
       [ValidateAntiForgeryToken]
+      [HttpPost]
       public async Task<IActionResult> ResendEmailVerification([FromForm] EmailVerification Input)
       {
           ResponseModel responseModel = new ResponseModel();
@@ -337,6 +369,28 @@ public class AccountController : Controller
           responseModel.StatusCode = 200;
           responseModel.Message = "Verification email sent. Please check your email.";
           return Ok(responseModel);
+      }
+      
+      [HttpPost]
+      public async Task<IActionResult> Logout(string returnUrl = null)
+      {
+          await _signInManager.SignOutAsync();
+                 
+          _logger.LogInformation("User logged out.");
+          ResponseModel responseModel = new ResponseModel();
+          responseModel.StatusCode = 200;
+          responseModel.Message = "User logged out";
+
+          if (returnUrl != null)
+          {
+              return Ok(new {responseModel}); //LocalRedirect(returnUrl);
+          }
+          else
+          {
+              // This needs to be a redirect so that the browser performs a new
+              // request and the identity for the user gets updated.
+              return Ok(new {responseModel});//return Redirect("");
+          }
       }
       
       private ApplicationUser CreateUser()
@@ -382,6 +436,20 @@ public class AccountController : Controller
            return ImageUrl;
        }
        return null;
+   }
+   
+   public void SetCsrfToken()
+   {
+       var antiForgery = HttpContext.RequestServices.GetService<IAntiforgery>();
+       var tokens = antiForgery.GetAndStoreTokens(HttpContext);
+       
+       // Take request token (which is different from a cookie token)
+       var headerToken = tokens.RequestToken;
+       // Set another cookie for a request token
+       Response.Cookies.Append("RequestVerificationToken", headerToken, new CookieOptions
+       {
+           HttpOnly = false
+       });
    }
 
 }

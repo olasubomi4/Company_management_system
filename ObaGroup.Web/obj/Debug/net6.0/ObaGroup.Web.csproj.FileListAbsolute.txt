@@ -605,3 +605,4 @@
 /Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Web/bin/Debug/net6.0/RestRequest.dll
 /Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Web/bin/Debug/net6.0/RestSharp.dll
 /Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Web/bin/Debug/net6.0/Apikey.json
+/Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Web/bin/Debug/net6.0/Microsoft.AspNetCore.Authentication.Google.dll

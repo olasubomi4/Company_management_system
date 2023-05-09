@@ -8,5 +8,7 @@ public interface IUnitOfWork
     ICalendarRepository eventViewModel { get; }
     
     IBiographyRepository biography { get; }
+    
+    IUserOauthRefreshTokenRepository UserOauthRefreshTokenRepository { get; }
     void Save();
 }

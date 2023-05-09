@@ -15,10 +15,10 @@ public class Biography
     [Required]
     public string position { get; set; }
     
-    [AllowedFileExtensions(new []{".jpg", ".png", ".gif"})]
+    [AllowedFileExtensions(new []{".jpg", ".png", ".gif",".jpeg"})]
     public string? profileImageUrl { get; set; }
  
-    [AllowedFileExtensions(new []{".mp4", ".mkv"})]
+    [AllowedFileExtensions(new []{".mp4", ".mkv",".mov",".avi"})]
     public string? profileVideoUrl { get; set; }
 
 }

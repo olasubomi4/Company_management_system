@@ -38,6 +38,7 @@
           "Google.Apis.Calendar.v3": "1.60.0.3017",
           "Google.Apis.Discovery.v1": "1.60.0",
           "MailKit": "3.6.0",
+          "Microsoft.AspNetCore.Authentication.Google": "6.0.0",
           "Microsoft.AspNetCore.Identity": "2.2.0",
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "6.0.0",
           "Microsoft.AspNetCore.Identity.UI": "6.0.0",
@@ -585,6 +586,17 @@
           "Microsoft.AspNetCore.Authentication.Abstractions": "2.2.0",
           "Microsoft.AspNetCore.Http": "2.2.0",
           "Microsoft.AspNetCore.Http.Extensions": "2.2.0"
+        }
+      },
+      "Microsoft.AspNetCore.Authentication.Google/6.0.0": {
+        "runtime": {
+          "lib/net6.0/Microsoft.AspNetCore.Authentication.Google.dll": {
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.21.52608"
+          }
+        },
+        "compile": {
+          "lib/net6.0/Microsoft.AspNetCore.Authentication.Google.dll": {}
         }
       },
       "Microsoft.AspNetCore.Authorization/2.2.0": {
@@ -3840,6 +3852,7 @@
           "Google.Apis.Calendar.v3": "1.60.0.3017",
           "Google.Apis.Discovery.v1": "1.60.0",
           "MailKit": "3.6.0",
+          "Microsoft.AspNetCore.Authentication.Google": "6.0.0",
           "Microsoft.AspNetCore.Identity": "2.2.0",
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "6.0.0",
           "Microsoft.AspNetCore.Mvc": "2.2.0",
@@ -3850,7 +3863,6 @@
           "Microsoft.EntityFrameworkCore.Sqlite": "6.0.0",
           "Microsoft.Extensions.DependencyInjection": "6.0.0",
           "MySql.Data.EntityFrameworkCore": "8.0.22",
-          "ObaGroup.Utility": "1.0.0",
           "RestClient": "3.1024.23771",
           "RestRequest": "1.2.0",
           "System.Net.Http": "4.3.4"
@@ -3868,6 +3880,7 @@
           "Google.Apis.Calendar.v3": "1.60.0.3017",
           "Google.Apis.Discovery.v1": "1.60.0",
           "MailKit": "3.6.0",
+          "Microsoft.AspNetCore.Authentication.Google": "6.0.0",
           "Microsoft.AspNetCore.Identity": "2.2.0",
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "6.0.0",
           "Microsoft.AspNetCore.Identity.UI": "6.0.0",
@@ -5766,6 +5779,13 @@
       "sha512": "sha512-XlVJzJ5wPOYW+Y0J6Q/LVTEyfS4ssLXmt60T0SPP+D8abVhBTl+cgw2gDHlyKYIkcJg7btMVh383NDkMVqD/fg==",
       "path": "microsoft.aspnetcore.authentication.core/2.2.0",
       "hashPath": "microsoft.aspnetcore.authentication.core.2.2.0.nupkg.sha512"
+    },
+    "Microsoft.AspNetCore.Authentication.Google/6.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-TToorF3zDoDSDj639jqD0JkrjQaAfK1vI61Xwrtnf2gToIQQSRAY7A6S4qPYROE6n31sEyWKPlAVoSW1u7Jysw==",
+      "path": "microsoft.aspnetcore.authentication.google/6.0.0",
+      "hashPath": "microsoft.aspnetcore.authentication.google.6.0.0.nupkg.sha512"
     },
     "Microsoft.AspNetCore.Authorization/2.2.0": {
       "type": "package",

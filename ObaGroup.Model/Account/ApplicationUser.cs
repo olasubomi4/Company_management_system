@@ -13,6 +13,7 @@ public class ApplicationUser : IdentityUser
     
     [Required]
     [Display(Name = "Last name")]
+    
     public string? LastName { get; set; }
     
     [Required]
@@ -24,4 +25,5 @@ public class ApplicationUser : IdentityUser
     public string? Address { get; set; }
     
     public string? ImageUrl { get; set; }
+    
 }

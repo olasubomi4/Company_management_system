@@ -5,7 +5,8 @@ using ObaGoupDataAccess.Data;
 using ObaGroupModel;
 using ObaGroupUtility;
 
-namespace BulkyBook.DataAccess.DbInitializer;
+
+namespace ObaGoupDataAccess.DataAccess.DbInitializer;
 
 public class DbInitalizer : IDbIntializer
 {

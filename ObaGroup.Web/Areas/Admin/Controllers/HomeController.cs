@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Text.Json;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Mvc;
 using Oba_group2.Models;
@@ -10,9 +11,12 @@ public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
 
-    public HomeController(ILogger<HomeController> logger)
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    
+    public HomeController(ILogger<HomeController> logger,IHttpContextAccessor httpContextAccessor)
     {
         _logger = logger;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public IActionResult Index()
@@ -33,18 +37,36 @@ public class HomeController : Controller
     
     [HttpGet]
     [Route("Admin/Dashboard/Calendar/GetCsrfToken")]
-    public IActionResult GetCsrfToken()
-    {
-        var antiForgery = HttpContext.RequestServices.GetService<IAntiforgery>();
+   // public IActionResult GetCsrfToken()
+   //{
+        public IActionResult SetAllCookies()
+   {
+       var context = _httpContextAccessor.HttpContext;
+            // Get the cookie collection from the request
+            var cookies = context.Request.Cookies;
+
+            // Serialize the cookies to a JSON string
+            string json = JsonSerializer.Serialize(cookies);
+            Console.WriteLine(json.ToString());
+            // Add the JSON string to a new cookie
+            context.Response.Cookies.Append("AllCookies", json, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict
+            });
+            return NoContent();
+        }
+        /*  var antiForgery = HttpContext.RequestServices.GetService<IAntiforgery>();
         var tokens = antiForgery.GetAndStoreTokens(HttpContext);
        
         // Take request token (which is different from a cookie token)
         var headerToken = tokens.RequestToken;
         // Set another cookie for a request token
-        Response.Cookies.Append("XSRF-TOKEN", headerToken, new CookieOptions
+        Response.Cookies.Append("RequestVerificationToken", headerToken, new CookieOptions
         {
             HttpOnly = false
         });
         return NoContent();
-    }
+        */
 }

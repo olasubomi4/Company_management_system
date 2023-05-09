@@ -23,6 +23,7 @@ using ObaGroupModel;
 using ObaGroupModel.Calendar;
 using System.Net.Http.Json;
 using Google.Apis.Requests;
+using ObaGoupDataAccess;
 using ObaGroupUtility;
 using RestSharp;
 using JsonSerializer = System.Text.Json.JsonSerializer;
@@ -31,7 +32,8 @@ using JsonSerializer = System.Text.Json.JsonSerializer;
 namespace Oba_group2.Areas.Admin.Controllers;
 
 [Area("Admin")]
-//[Authorize(Roles = Constants.Role_Admin+","+Constants.Role_Staff)]
+[Authorize(Roles = Constants.Role_Admin+","+Constants.Role_Staff)]
+//[Authorize(Roles = Constants.Role_Staff)]
 public class CalenderController: Controller
 {
     class CalendarListEntryResponse {
@@ -40,172 +42,20 @@ public class CalenderController: Controller
     private readonly string currentDirectory = Directory.GetCurrentDirectory();
     private readonly IUnitOfWork _unitOfWork;
     private  ApplicationUser applicationUser;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly ILogger<CalenderController> _logger;
 
-    public CalenderController(IUnitOfWork unitOfWork)
+    public CalenderController(IUnitOfWork unitOfWork,IHttpContextAccessor httpContextAccessor,ILogger<CalenderController> logger)
     {
         _unitOfWork = unitOfWork;
+        _httpContextAccessor = httpContextAccessor;
+        _logger = logger;
     }
     
-    [Microsoft.AspNetCore.Mvc.HttpGet]
-    public ActionResult Index()
-    {
-        EventViewModel eventViewModel = new EventViewModel();
-        var name = User.Identity.Name;
-     
-        return View(eventViewModel);
-    }
     
-   
-    public IActionResult Upsert(int? id)
-    {
-        EventViewModel eventViewModel = new EventViewModel();
-       
-        if (id == null || id == 0)
-        {
-            return View(eventViewModel);
-        }
-        else
-        {
-            eventViewModel = _unitOfWork.eventViewModel.GetFirstOrDefault(u => u.id == id);
-            return View(eventViewModel);
-        }
-    }
-    
-    [HttpGet]
-    [Route("Admin/Dashboard/Calendar/Upsert")]
-    public IActionResult GetById(int? id)
-    {
-         EventViewModel calendarEvents = _unitOfWork.eventViewModel.GetFirstOrDefault(x=> x.id==id);
-        return Ok(calendarEvents);
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    [Route("Admin/Dashboard/Calendar/Upsert")]
-    public IActionResult Upsert([FromForm] EventViewModel eventViewModel)
-    {
-        ResponseModel responseModel = new ResponseModel();
-        string message;
-        int statusCode;
-        Boolean isCreate = false;
-        if (!ModelState.IsValid)
-        {
-            responseModel.Message = "Bad Request";
-            responseModel.StatusCode = 400;
-            var errors2 = ModelState.Values.SelectMany(v => v.Errors)
-                .Select(e => e.ErrorMessage);
-            return BadRequest(new {responseModel, Errors =errors2 });
-        }
-        
-        eventViewModel.UserId=_unitOfWork.ApplicationUser.GetFirstOrDefault(u=>u.Email==User.Identity.Name).Id;
-
-        if (eventViewModel.id == 0)
-        {
-            _unitOfWork.eventViewModel.Add(eventViewModel);
-            isCreate = true;
-        }
-        else
-        {
-            _unitOfWork.eventViewModel.Update(eventViewModel);
-        }
-
-        if (isCreate)
-        {
-            message = "Calendar event created successfully";
-        }
-        else
-        {
-            message = "Calendar event updated successfully";
-        }
-        _unitOfWork.Save();
- 
-
-        responseModel.Message = message;
-        responseModel.StatusCode = 200;
-        return Ok(new {responseModel});
-    }
-    
-      
-    [HttpDelete]
-    [ValidateAntiForgeryToken]
-    [Route("Admin/Dashboard/Calendar/Delete/")]
-    public IActionResult Delete(int? id)
-    {
-        ResponseModel responseModel = new ResponseModel();
-        var obj = _unitOfWork.eventViewModel.GetFirstOrDefault(x=>x.id==id);
-        
-        if (obj == null)
-        {
-            responseModel.Message = "Calendar Event does not exist";
-            responseModel.StatusCode = 404;
-            ModelState.AddModelError(string.Empty, "Calendar event does not exist");
-            var errors2 = ModelState.Values.SelectMany(v => v.Errors)
-                .Select(e => e.ErrorMessage);
-            return NotFound(new {responseModel, Errors =errors2 });
-        }
-
-        _unitOfWork.eventViewModel.Remove(obj);
-        _unitOfWork.Save();
-        responseModel.Message = "Calendar Event deleted successfully";
-        responseModel.StatusCode = 200;
-        return Ok(responseModel);
-    }
-
-    [HttpGet]
-    [Route("Admin/Dashboard/Calendar/GetEvents")]
-    public IActionResult GetEvents()
-    {
-        var viewModel = new EventViewModel();
-        var events = new List<CalendarEvents>();
-        var start =  DateTime.Today;
-        var  end = DateTime.Today;
-        string currentUser=_unitOfWork.ApplicationUser.GetFirstOrDefault(u=>u.Email==User.Identity.Name).Id;
-        IEnumerable<EventViewModel> eventViewModelEnumerable = _unitOfWork.eventViewModel.GetAll(u=>u.UserId==currentUser);
-			
-        foreach (EventViewModel calendarEvents in eventViewModelEnumerable)
-        {
-            events.Add(new CalendarEvents() 
-            { 
-                                id =calendarEvents.id,
-                                title = calendarEvents.title,
-                               start = calendarEvents.start.ToString("yyyy-MM-ddTHH:mm"),
-                               end =  getEndDateAndTimeStringValue(calendarEvents),
-                               allDay = calendarEvents.allDay
-            });
-            
-        }
-        
-        return Ok(events);
-    }
-
-
-    private string getEndDateAndTimeStringValue(EventViewModel calendarEvents)
-    {
-        string endValue = null;
-        if(calendarEvents.end==null)
-        {
-            endValue = null;
-        }
-        else
-        {
-            if (calendarEvents.end <= calendarEvents.start)
-            {
-                endValue = null;
-            }
-            else
-            {
-                endValue = calendarEvents.end.ToString();
-            }
-        }
-
-        return endValue;
-    }
-
-
-    [HttpGet("/Admin/Dashboard/Calendar/google")]
+    [HttpGet("/Admin/Dashboard/Calendar/Create")]
     public IActionResult uploadToGoogle(string? error)
     {
-        Console.WriteLine("redirected");
         if (error != null)
         {
             ResponseModel responseModel = new ResponseModel();
@@ -222,9 +72,11 @@ public class CalenderController: Controller
     }
     
     [HttpPost]
-    [Route("Admin/Dashboard/Calendar/google")]
+    [Route("Admin/Dashboard/Calendar/Create")]
     public async Task<IActionResult> uploadToGoogle([FromForm] CalendarEvent calendarEvents)
     {
+        OAuthTokenProperties oAuthTokenProperties = new OAuthTokenProperties(_httpContextAccessor,_unitOfWork);
+        OAuth oAuth = new OAuth(_unitOfWork,_httpContextAccessor);
         ResponseModel responseModel = new ResponseModel();
         if (!ModelState.IsValid)
         {
@@ -286,22 +138,22 @@ public class CalenderController: Controller
 
         var tokenFile =  currentDirectory+ "/tokens.json";
         var apiKeyFIle =  currentDirectory+"/Apikey.json";
-
-        var tokens = JObject.Parse((System.IO.File.ReadAllText(tokenFile)));
+        
         var apiKeyJson = JObject.Parse((System.IO.File.ReadAllText(apiKeyFIle)));
 
         var apiKey = apiKeyJson["ApiKey"].ToString();
         var sendUpdates = "all";
-     
-        if (tokens == null || !tokens.ContainsKey("refresh_token"))
+        
+        if (!oAuth.RefreshTokens())
         {
-            Redirect("https://localhost:7151/calendar");
+            return Redirect("https://localhost:7151/calendar");
+        }
+        var accessToken = oAuthTokenProperties.GetAccessToken(); 
+        if (accessToken == null)
+        {
+            return Redirect("https://localhost:7151/calendar");
         }
         
-        OAuth.RefreshTokens();
-
-        var accessToken = tokens["access_token"].ToString();
-
         string model = newEvent.ToJson().ToString();
         
         HttpClient client = new HttpClient();
@@ -345,6 +197,8 @@ public class CalenderController: Controller
     [Route("Admin/Dashboard/Calendar/ListEvents")]
     public async Task<IActionResult> ListEvents(ListCalendarEventParams calendarEventParams)
     {
+        OAuthTokenProperties oAuthTokenProperties = new OAuthTokenProperties(_httpContextAccessor,_unitOfWork);
+        OAuth oAuth = new OAuth(_unitOfWork,_httpContextAccessor);
         var calendarId = "primary";
         var tokenFile =  currentDirectory+ "/tokens.json";
         var apiKeyFIle =  currentDirectory+"/Apikey.json";
@@ -366,21 +220,24 @@ public class CalenderController: Controller
         }
         calendarEventParams.EventMinTimeRange = DateTime.Parse(calendarEventParams.EventMinTimeRange).ToString("yyyy-MM-ddTHH:mm:sszzz");
         calendarEventParams.EventMaxTimeRange = DateTime.Parse(calendarEventParams.EventMaxTimeRange).ToString("yyyy-MM-ddTHH:mm:sszzz");
-       
 
-        var tokens = JObject.Parse((System.IO.File.ReadAllText(tokenFile)));
+        if (!oAuth.RefreshTokens())
+        {
+            return Redirect("https://localhost:7151/calendar");
+        }
+        var token = oAuthTokenProperties.GetAccessToken();//JObject.Parse((System.IO.File.ReadAllText(tokenFile)));
         var apiKeyJson = JObject.Parse((System.IO.File.ReadAllText(apiKeyFIle)));
 
         var apiKey = apiKeyJson["ApiKey"].ToString();
         
-        if (tokens == null || !tokens.ContainsKey("refresh_token"))
+        if (string.IsNullOrWhiteSpace(token))
         {
           return  Redirect("https://localhost:7151/calendar");
         }
         
-        OAuth.RefreshTokens();
-        
-        var accessToken = tokens["access_token"].ToString();
+   
+
+        var accessToken = token; //tokens["access_token"].ToString();
         
         HttpClient client = new HttpClient();
         var builder = new UriBuilder("https://www.googleapis.com/calendar/v3/calendars/"+calendarId+"/events?");
@@ -417,10 +274,12 @@ public class CalenderController: Controller
         return BadRequest(new {responseModel, Errors =googleCalendarApiError});
     }
     
-      [HttpGet]
+    [HttpGet]
     [Route("Admin/Dashboard/Calendar/GetAnEvent")]
     public async Task<IActionResult> GetAnEvent(GetAnEventParam getAnEventParam)
     {
+        OAuthTokenProperties oAuthTokenProperties = new OAuthTokenProperties(_httpContextAccessor,_unitOfWork);
+        OAuth oAuth =  new OAuth(_unitOfWork,_httpContextAccessor);
         ResponseModel responseModel = new ResponseModel();
         if (!ModelState.IsValid)
         {
@@ -436,20 +295,23 @@ public class CalenderController: Controller
         var apiKeyFIle =  currentDirectory+"/Apikey.json";
 
 
-        
-        var tokens = JObject.Parse((System.IO.File.ReadAllText(tokenFile)));
+        if (!oAuth.RefreshTokens())
+        {
+            return Redirect("https://localhost:7151/calendar");
+        }
+        var token = oAuthTokenProperties.GetAccessToken(); //JObject.Parse((System.IO.File.ReadAllText(tokenFile)));
         var apiKeyJson = JObject.Parse((System.IO.File.ReadAllText(apiKeyFIle)));
 
         var apiKey = apiKeyJson["ApiKey"].ToString();
         
-        if (tokens == null || !tokens.ContainsKey("refresh_token"))
+        if (string.IsNullOrWhiteSpace(token))
         {
             Redirect("https://localhost:7151/calendar");
         }
         
-        OAuth.RefreshTokens();
-        
-        var accessToken = tokens["access_token"].ToString();
+ 
+
+        var accessToken = token;//tokens["access_token"].ToString();
         
         HttpClient client = new HttpClient();
         var builder = new UriBuilder("https://www.googleapis.com/calendar/v3/calendars/"+calendarId+"/events/"+getAnEventParam.eventId);
@@ -486,6 +348,8 @@ public class CalenderController: Controller
     [Route("Admin/Dashboard/Calendar/DeleteAnEvent")]
     public async Task<IActionResult> DeleteAnEvent( DeleteAnEventParam deleteAnEventParam)
     {
+        OAuthTokenProperties oAuthTokenProperties = new OAuthTokenProperties(_httpContextAccessor,_unitOfWork);
+        OAuth oAuth =  new OAuth(_unitOfWork,_httpContextAccessor);
         ResponseModel responseModel = new ResponseModel();
         if (!ModelState.IsValid)
         {
@@ -501,17 +365,21 @@ public class CalenderController: Controller
         var tokenFile =  currentDirectory+ "/tokens.json";
         var apiKeyFIle =  currentDirectory+"/Apikey.json";
 
-        var tokens = JObject.Parse((System.IO.File.ReadAllText(tokenFile)));
+        if (!oAuth.RefreshTokens())
+        {
+            return Redirect("https://localhost:7151/calendar");
+        }
+        
+        var token = oAuthTokenProperties.GetAccessToken();//JObject.Parse((System.IO.File.ReadAllText(tokenFile)));
         var apiKeyJson = JObject.Parse((System.IO.File.ReadAllText(apiKeyFIle)));
 
         var apiKey = apiKeyJson["ApiKey"].ToString();
-        if (tokens == null || !tokens.ContainsKey("refresh_token"))
+        if (string.IsNullOrWhiteSpace(token))
         {
             Redirect("https://localhost:7151/calendar");
         }
-        OAuth.RefreshTokens();
-        
-        var accessToken = tokens["access_token"].ToString();
+
+        var accessToken = token;//tokens["access_token"].ToString();
         
         HttpClient client = new HttpClient();
         var builder = new UriBuilder("https://www.googleapis.com/calendar/v3/calendars/"+calendarId+"/events/"+deleteAnEventParam.eventId);
@@ -547,6 +415,8 @@ public class CalenderController: Controller
     [Route("Admin/Dashboard/Calendar/PatchAnEvent")]
     public async Task<IActionResult> UpdateAnEvent([FromForm] PatchEvent patchEvent)
     {
+        OAuthTokenProperties oAuthTokenProperties = new OAuthTokenProperties(_httpContextAccessor,_unitOfWork);
+        OAuth oAuth = new OAuth(_unitOfWork,_httpContextAccessor);
         IEnumerable<string> errors;
         ResponseModel responseModel = new ResponseModel();
         if (!ModelState.IsValid)
@@ -557,9 +427,7 @@ public class CalenderController: Controller
                 .Select(e => e.ErrorMessage);
             return BadRequest(new {responseModel, Errors =errors });
         }
-        
-        OAuth.RefreshTokens();
-   
+
         var sendUpdates = "all";
         Event patchEventbody = new Event();
         if (!string.IsNullOrWhiteSpace(patchEvent.Summary))
@@ -652,18 +520,21 @@ public class CalenderController: Controller
         var tokenFile =  currentDirectory+ "/tokens.json";
         var apiKeyFIle =  currentDirectory+"/Apikey.json";
         
-        var tokens = JObject.Parse((System.IO.File.ReadAllText(tokenFile)));
+        if (!oAuth.RefreshTokens())
+        {
+            return Redirect("https://localhost:7151/calendar");
+        }
+        var token = oAuthTokenProperties.GetAccessToken();//JObject.Parse((System.IO.File.ReadAllText(tokenFile)));
         var apiKeyJson = JObject.Parse((System.IO.File.ReadAllText(apiKeyFIle)));
 
         var apiKey = apiKeyJson["ApiKey"].ToString();
 
-        if (tokens == null || !tokens.ContainsKey("refresh_token"))
+        if (string.IsNullOrWhiteSpace(token))
         {
             Redirect("https://localhost:7151/calendar");
         }
-        OAuth.RefreshTokens();
-        
-        var accessToken = tokens["access_token"].ToString();
+
+        var accessToken = token;//tokens["access_token"].ToString();
         
         HttpClient client = new HttpClient();
         var builder = new UriBuilder("https://www.googleapis.com/calendar/v3/calendars/"+calendarId+"/events/"+patchEvent.EventId);
@@ -735,7 +606,9 @@ public class CalenderController: Controller
         var client_id= credentials["web"]["client_id"].ToString();
         Console.WriteLine(client_id);
 
-        string loginHint = "olasubomiodekunle@gmail.com";
+        var referringUrl = HttpContext.Request.Headers["Referer"];
+        Console.WriteLine(referringUrl);
+        string loginHint = User.Identity.Name;
 
         var redirectUrl = "https://accounts.google.com/o/oauth2/v2/auth?" +
                           "scope=https://www.googleapis.com/auth/calendar+https://www.googleapis.com/auth/calendar.events&" +
@@ -743,16 +616,10 @@ public class CalenderController: Controller
                           "include_granted_scopes=true&" +
                           "login_hint="+loginHint+"&"+
                           "response_type=code&" +
-                          "state=hellothere&" +
+                          "state=referringUrl&" +
                           "redirect_uri=https://localhost:7151/oauth/callback&" +
                           "client_id=" +client_id;
         
         return Redirect(redirectUrl);
-    }
-
-    [Route("calendard")]
-    public void OauthRedirectd()
-    {
-        OAuth.RefreshTokens();
     }
 }

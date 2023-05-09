@@ -13,6 +13,7 @@
         <PackageReference Include="Google.Apis.Calendar.v3" Version="1.60.0.3017" />
         <PackageReference Include="Google.Apis.Discovery.v1" Version="1.60.0" />
         <PackageReference Include="MailKit" Version="3.6.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="6.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.0" />
@@ -41,6 +42,12 @@
 
     <ItemGroup>
       <ProjectReference Include="..\ObaGroup.DataAccess\ObaGroup.DataAccess.csproj" />
+      <ProjectReference Include="..\ObaGroup.Model\ObaGroup.Model.csproj">
+        <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+      </ProjectReference>
+      <ProjectReference Include="..\ObaGroup.Utility\ObaGroup.Utility.csproj">
+        <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+      </ProjectReference>
     </ItemGroup>
 
     <ItemGroup>
@@ -142,6 +149,8 @@
       <_ContentIncludedByDefault Remove="wwwroot\lib\jquery\dist\jquery.min.js" />
       <_ContentIncludedByDefault Remove="wwwroot\lib\jquery\dist\jquery.min.map" />
       <_ContentIncludedByDefault Remove="wwwroot\lib\jquery\LICENSE.txt" />
+      <_ContentIncludedByDefault Remove="Areas\Admin\Views\Calender\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Admin\Views\Calender\Upsert.cshtml" />
     </ItemGroup>
 
     <ItemGroup>

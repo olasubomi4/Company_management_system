@@ -15,11 +15,15 @@ public class UnitOfWork : IUnitOfWork
         ApplicationUser = new ApplicationUserRepository(_db);
         eventViewModel = new CalendarRepository(_db);
         biography = new BiographyRepository(_db);
+        UserOauthRefreshTokenRepository = new UserOauthRefreshTokenRepository(_db);
+
     }
     public IDocumentRepository document { get; }
     public IApplicationUserRepository ApplicationUser{get;}
     public ICalendarRepository eventViewModel{get;}
     public IBiographyRepository biography { get; }
+    
+    public  IUserOauthRefreshTokenRepository UserOauthRefreshTokenRepository { get; }
 
 
     

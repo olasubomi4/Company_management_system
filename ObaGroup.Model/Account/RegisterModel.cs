@@ -21,6 +21,8 @@ public class RegisterModel
 
             [Required]
             [EmailAddress]
+            [RegularExpression(@"^[a-zA-Z0-9._%+-]+@gmail.com$", 
+                ErrorMessage = "The Email must be a gmail account")]
             [Display(Name = "Email")]
             public string Email { get; set; }
 

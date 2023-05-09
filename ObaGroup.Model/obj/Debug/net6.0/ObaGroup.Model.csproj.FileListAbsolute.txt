@@ -290,14 +290,11 @@
 /Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Model/bin/Debug/net6.0/refs/System.Xml.XPath.dll
 /Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Model/bin/Debug/net6.0/refs/System.Xml.XPath.XDocument.dll
 /Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Model/bin/Debug/net6.0/refs/WindowsBase.dll
-/Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Model/bin/Debug/net6.0/ObaGroup.Utility.dll
-/Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Model/bin/Debug/net6.0/ObaGroup.Utility.pdb
 /Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Model/obj/Debug/net6.0/ObaGroup.Model.csproj.AssemblyReference.cache
 /Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Model/obj/Debug/net6.0/ObaGroup.Model.GeneratedMSBuildEditorConfig.editorconfig
 /Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Model/obj/Debug/net6.0/ObaGroup.Model.AssemblyInfoInputs.cache
 /Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Model/obj/Debug/net6.0/ObaGroup.Model.AssemblyInfo.cs
 /Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Model/obj/Debug/net6.0/ObaGroup.Model.csproj.CoreCompileInputs.cache
-/Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Model/obj/Debug/net6.0/ObaGroup.Model.csproj.CopyComplete
 /Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Model/obj/Debug/net6.0/ObaGroup.Model.dll
 /Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Model/obj/Debug/net6.0/refint/ObaGroup.Model.dll
 /Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Model/obj/Debug/net6.0/ObaGroup.Model.pdb

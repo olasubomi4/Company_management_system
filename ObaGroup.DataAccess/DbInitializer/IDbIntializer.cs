@@ -1,4 +1,4 @@
-namespace BulkyBook.DataAccess.DbInitializer;
+namespace ObaGoupDataAccess.DataAccess.DbInitializer;
 
 public interface IDbIntializer
 {
