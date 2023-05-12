@@ -10,6 +10,7 @@ using ObaGoupDataAccess.Data;
 using ObaGoupDataAccess.DataAccess.DbInitializer;
 using ObaGoupDataAccess.Repository;
 using ObaGoupDataAccess.Repository.IRepository;
+using ObaGroupUtility;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -71,7 +72,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 
-app.UseStatusCodePagesWithReExecute("/AccessDenied");
+app.UseStatusCodePagesWithReExecute(Constants.Access_Denied_Endpoint);
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 

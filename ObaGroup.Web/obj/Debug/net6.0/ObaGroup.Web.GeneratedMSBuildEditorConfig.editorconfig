@@ -15,14 +15,6 @@ build_property.GenerateRazorMetadataSourceChecksumAttributes = true
 build_property.MSBuildProjectDirectory = /Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Web
 build_property._RazorSourceGeneratorDebug = 
 
-[/Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Web/Areas/Admin/Views/Calender/Index.cshtml]
-build_metadata.AdditionalFiles.TargetPath = QXJlYXMvQWRtaW4vVmlld3MvQ2FsZW5kZXIvSW5kZXguY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[/Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Web/Areas/Admin/Views/Calender/Upsert.cshtml]
-build_metadata.AdditionalFiles.TargetPath = QXJlYXMvQWRtaW4vVmlld3MvQ2FsZW5kZXIvVXBzZXJ0LmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
 [/Users/olasubomi/RiderProjects/Oba group2/ObaGroup.Web/Areas/Admin/Views/Document/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXMvQWRtaW4vVmlld3MvRG9jdW1lbnQvSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 

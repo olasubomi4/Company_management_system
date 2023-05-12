@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
 using ObaGoupDataAccess.Repository.IRepository;
+using ObaGroupUtility;
 using RestSharp;
 
 namespace ObaGoupDataAccess;
@@ -35,7 +36,6 @@ public  class OAuth
         var credentialsFile =
             currentDirectory+"/client_secret_87857337556-iqm8t560cfhc8ddln4mdk88ahl311na9.apps.googleusercontent.com.json";
         var credentials = JObject.Parse((System.IO.File.ReadAllText(credentialsFile)));
-       // var tokens = JObject.Parse((System.IO.File.ReadAllText(tokenFile)));
 
         RestClient restClient = new RestClient();
         RestSharp.RestRequest request = new RestSharp.RestRequest();
@@ -43,13 +43,6 @@ public  class OAuth
         var client_id=credentials["web"]["client_id"].ToString();
         var clientSecret = credentials["web"]["client_secret"].ToString();
 
-        //var idToken = oAuthTokenProperties.GetIdToken();
-       // var handler = new JwtSecurityTokenHandler();
-        //var token = handler.ReadJwtToken(idToken);
-        
-        //Console.WriteLine(token.ToString());
-        //Console.WriteLine(email);
-        
         _logger.LogInformation("checking if refresh token exist");
 
         var refresh_tokens = oAuthTokenProperties.GetRefreshToken();
@@ -58,7 +51,7 @@ public  class OAuth
         request.AddQueryParameter("grant_type", "refresh_token");
         request.AddQueryParameter("refresh_token", refresh_tokens);
 
-        restClient.BaseUrl = new System.Uri("https://oauth2.googleapis.com/token");
+        restClient.BaseUrl = new System.Uri(Constants.Google_Get_Token_Endpoint);
         var response = restClient.Post(request);
         _logger.LogCritical(response.Content.ToString());
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
@@ -81,8 +74,6 @@ public  class OAuth
                     _logger.LogInformation("Access token was saved");
                 }
             }
-            // newTokens["refresh_token"] = refresh_tokens;
-          //  System.IO.File.WriteAllText(tokenFile,newTokens.ToString());
             return true;
         }
         return false;

@@ -30,7 +30,7 @@ public class OAuthTokenProperties
         _logger.LogInformation("GETTING ACCESS TOKEN");
         var context = _httpContextAccessor.HttpContext;
         var token = context.Request.Cookies["OauthTokenAccessToken"] ?? "";
-       _logger.LogInformation("TOken ="+token);
+       _logger.LogInformation("Token ="+token);
        return token;
     }
     public int GetExpires_in()
@@ -55,16 +55,6 @@ public class OAuthTokenProperties
         _logger.LogInformation("refresh token ="+ refreshToken);
         return refreshToken;
     }
-  
-  /*  public string GetIdToken()
-    {
-        _logger.LogInformation("GETTING ID TOKEN");
-        var context = _httpContextAccessor.HttpContext;
-       // var idToken =context.Response.Cookies["OauthTokenIdToken"];
-        _logger.LogInformation("ID token =" + idToken);
-        return idToken;
-    }
-    */
     
     public void RevokeToken(string accessToken)
     {
@@ -72,7 +62,6 @@ public class OAuthTokenProperties
         var context = _httpContextAccessor.HttpContext;
         context.Response.Cookies.Append("OauthTokenAccessToken", accessToken);
         
-      //  context.Response.Cookies.Delete("OauthExpiresIN");
         context.Response.Cookies.Delete("OauthTokenIdToken");
         
         var user = _httpContextAccessor.HttpContext.User;

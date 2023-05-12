@@ -9,7 +9,6 @@ using System.Text.Json;
 namespace Oba_group2.Areas.Admin.Controllers;
 
 [Area("Admin")]
-[Authorize(Roles = Constants.Role_Admin)]
 public class BiographyController : Controller
 {
 
@@ -24,15 +23,30 @@ public class BiographyController : Controller
 
     
     [HttpGet]
-    [Route("Admin/Dashboard/Biography/Upsert")]
+    [Route(Constants.Get_A_Biography_Endpoint)]
+    [Authorize(Roles = Constants.Role_Admin+","+Constants.Role_Staff)]
     public IActionResult GetById(int? id)
     {
-        Biography biography = _unitOfWork.biography.GetFirstOrDefault(x=> x.id==id);
+        ResponseModel responseModel = new ResponseModel();
+        if (id == null)
+        {
+            responseModel.Message = "Missing id field";
+            responseModel.StatusCode = 400;
+           
+            ModelState.AddModelError(string.Empty, "The biography id should be provided");
+            var errors2 = ModelState.Values.SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage);
+
+            return BadRequest(new {responseModel, Errors =errors2 });
+        }
+        Biography biography = _unitOfWork.biography.GetFirstOrDefault(x=> x.Id==id);
         return Ok(biography);
     }
 
+   
     [HttpGet]
-    [Route("Admin/Dashboard/Biography/Upsert/GetAll")]
+    [Route(Constants.List_All_Biographies_Endpoint)]
+    [Authorize(Roles = Constants.Role_Admin+","+Constants.Role_Staff)]
     public IActionResult GetAll()
     {
         IEnumerable<Biography> biographies = _unitOfWork.biography.GetAll();
@@ -42,13 +56,13 @@ public class BiographyController : Controller
     [HttpPost]
     [RequestFormLimits(MultipartBodyLengthLimit = 6104857600)]
     [RequestSizeLimit(6104857600)]
-    [Route("Admin/Dashboard/Biography/Upsert")]
-    public IActionResult Upsert([FromForm] BiographyWithFile biography)
+   // [Authorize(Roles = Constants.Role_Admin)]
+    [Route(Constants.Upsert_Biography_Endpoint)]
+    public IActionResult Upsert([FromForm] Biographies biographies)
     {
         Boolean isCreate = false;
         string message;
-        Biography obj = biography.biography;
-        List<string> documentsUrl = new List<string>();
+        Biography obj = new Biography();
         ResponseModel responseModel = new ResponseModel();
 
 
@@ -60,18 +74,34 @@ public class BiographyController : Controller
                 .Select(e => e.ErrorMessage);
             return BadRequest(new { responseModel, Errors = errors2 });
         }
-        
-        if (obj.id == 0)
+        obj = biographies.Biography;
+        if (obj.Id == 0)
         {
-            obj.profileImageUrl = UploadImages(biography.profileImage);
-            obj.profileVideoUrl = UploadVideos(biography.profileVideo);
+            if(biographies.ProfileImage!=null)
+            {
+                obj.profileImageUrl = UploadImages(biographies.ProfileImage);
+            }
+
+            if (biographies.ProfileVideo != null)
+            {
+                obj.profileVideoUrl = UploadVideos(biographies.ProfileVideo);
+            }
+
             _unitOfWork.biography.Add(obj);
             isCreate = true;
         }
         else
         {
-            obj.profileImageUrl = obj.profileImageUrl + UploadImages(biography.profileImage);
-            obj.profileVideoUrl = obj.profileVideoUrl + UploadVideos(biography.profileVideo);
+            if (biographies.ProfileImage != null)
+            {
+                obj.profileImageUrl = obj.profileImageUrl + UploadImages(biographies.ProfileImage);
+            }
+
+            if (biographies.ProfileVideo != null)
+            {
+                obj.profileVideoUrl = obj.profileVideoUrl + UploadVideos(biographies.ProfileVideo);
+            }
+
             _unitOfWork.biography.Update(obj);
         }
 
@@ -100,7 +130,7 @@ public class BiographyController : Controller
             if (file != null)
             {
                 string fileName = file.FileName + Guid.NewGuid().ToString();
-                var uploads = Path.Combine(wwwRootPath, @"BiographyVideos");
+                var uploads = Path.Combine(wwwRootPath, @"biographyImages");
                 var extension = Path.GetExtension(file.FileName);
 
                 using (var fileStreams = new FileStream(Path.Combine(uploads, fileName + extension), FileMode.Create))
@@ -108,7 +138,7 @@ public class BiographyController : Controller
                     file.CopyTo(fileStreams);
                 }
 
-                biographyImageList.Add(@"/BiographyVideos/" + fileName + extension);
+                biographyImageList.Add(@"/biographyImages/" + fileName + extension);
             }
         }
 
@@ -117,13 +147,25 @@ public class BiographyController : Controller
     }
 
     [HttpDelete]
-    [Route("Admin/Dashboard/Biography/Delete/")]
+    [Route(Constants.Delete_A_Biography_Endpoint)]
+    [Authorize(Roles = Constants.Role_Admin)]
     public IActionResult Delete(int? id)
     {
         ResponseModel responseModel = new ResponseModel();
-        var obj = _unitOfWork.biography.GetFirstOrDefault(x => x.id == id);
+        if (id == null)
+        {
+            responseModel.Message = "Missing id field";
+            responseModel.StatusCode = 400;
+           
+            ModelState.AddModelError(string.Empty, "The biography id should be provided");
+            var errors2 = ModelState.Values.SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage);
+
+            return BadRequest(new {responseModel, Errors =errors2 });
+        }
+        var obj = _unitOfWork.biography.GetFirstOrDefault(x => x.Id == id);
         List<string> profileVideoUrlList = JsonSerializer.Deserialize<List<string>>(obj.profileVideoUrl);
-        List<string> profileImageUrlList = JsonSerializer.Deserialize<List<string>>(obj.profileVideoUrl);
+        List<string> profileImageUrlList = JsonSerializer.Deserialize<List<string>>(obj.profileImageUrl);
 
         if (obj == null)
         {
@@ -147,11 +189,24 @@ public class BiographyController : Controller
     }
 
     [HttpDelete]
-    [Route("Admin/Dashboard/Biography/Delete/Image")]
+    [Route(Constants.Delete_A_Biography_Image_Endpoint)]
+    [Authorize(Roles = Constants.Role_Admin)]
     public IActionResult DeleteAnImage(int? id, [FromForm] string imageToDeleteUrl )
     {
         ResponseModel responseModel = new ResponseModel();
-        var obj = _unitOfWork.biography.GetFirstOrDefault(x => x.id == id);
+        imageToDeleteUrl = imageToDeleteUrl.Replace("\\", "");
+        if (id == null)
+        {
+            responseModel.Message = "Missing id field";
+            responseModel.StatusCode = 400;
+           
+            ModelState.AddModelError(string.Empty, "The biography id should be provided");
+            var errors2 = ModelState.Values.SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage);
+
+            return BadRequest(new {responseModel, Errors =errors2 });
+        }
+        var obj = _unitOfWork.biography.GetFirstOrDefault(x => x.Id == id);
         List<string> imageUrlList = JsonSerializer.Deserialize<List<string>>(obj.profileImageUrl);
         int counter = 0;
         Boolean ImageExist = false;
@@ -176,6 +231,17 @@ public class BiographyController : Controller
             counter++;
         }
 
+        if (counter >= imageUrlList.Count || counter==0)
+        {
+            responseModel.Message = "Image does not exist";
+            responseModel.StatusCode = 400;
+           
+            ModelState.AddModelError(string.Empty, "The image you are trying to delete does not exist");
+            var errors2 = ModelState.Values.SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage);
+            return BadRequest(new {responseModel, Errors =errors2 });
+        }
+
         if (ImageExist)
         {
             var oldImagePath = Path.Combine(_hostEnvironment.WebRootPath, imageToDeleteUrl.TrimStart('/'));
@@ -195,11 +261,24 @@ public class BiographyController : Controller
     }
 
     [HttpDelete]
-    [Route("Admin/Dashboard/Biography/Delete/Video")]
+    [Route(Constants.Delete_A_BioGraphy_Video_Endpoint)]
+    [Authorize(Roles = Constants.Role_Admin)]
     public IActionResult DeleteAVideo(int? id, [FromForm] string videoToDeleteUrl )
     {
         ResponseModel responseModel = new ResponseModel();
-        var obj = _unitOfWork.biography.GetFirstOrDefault(x => x.id == id);
+        videoToDeleteUrl = videoToDeleteUrl.Replace("\\", "");
+        if (id == null)
+        {
+            responseModel.Message = "Missing id field";
+            responseModel.StatusCode = 400;
+           
+            ModelState.AddModelError(string.Empty, "The biography id should be provided");
+            var errors2 = ModelState.Values.SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage);
+
+            return BadRequest(new {responseModel, Errors =errors2 });
+        }
+        var obj = _unitOfWork.biography.GetFirstOrDefault(x => x.Id == id);
         List<string> VideoUrlList = JsonSerializer.Deserialize<List<string>>(obj.profileVideoUrl);
         int counter = 0;
         Boolean videoExist = false;
@@ -223,7 +302,16 @@ public class BiographyController : Controller
 
             counter++;
         }
-
+        if (counter >= VideoUrlList.Count || counter==0)
+        {
+            responseModel.Message = "Video does not exist";
+            responseModel.StatusCode = 400;
+           
+            ModelState.AddModelError(string.Empty, "The video you are trying to delete does not exist");
+            var errors2 = ModelState.Values.SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage);
+            return BadRequest(new {responseModel, Errors =errors2 });
+        }
         if (videoExist)
         {
             var oldImagePath = Path.Combine(_hostEnvironment.WebRootPath, videoToDeleteUrl.TrimStart('/'));
@@ -251,7 +339,7 @@ public class BiographyController : Controller
             if (file != null)
             {
                 string fileName = file.FileName + Guid.NewGuid().ToString();
-                var uploads = Path.Combine(wwwRootPath, @"BiographyVideos");
+                var uploads = Path.Combine(wwwRootPath, @"biographyVideos");
                 var extension = Path.GetExtension(file.FileName);
 
                 using (var fileStreams = new FileStream(Path.Combine(uploads, fileName + extension), FileMode.Create))
@@ -259,7 +347,7 @@ public class BiographyController : Controller
                     file.CopyTo(fileStreams);
                 }
 
-                biographyVideoList.Add(@"/BiographyVideos/" + fileName + extension);
+                biographyVideoList.Add(@"/biographyVideos/" + fileName + extension);
             }
         }
 

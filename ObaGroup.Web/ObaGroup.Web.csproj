@@ -158,6 +158,8 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="wwwroot\biographyImages" />
+      <Folder Include="wwwroot\biographyVideos" />
       <Folder Include="wwwroot\documents" />
       <Folder Include="wwwroot\profiles" />
     </ItemGroup>

@@ -7,19 +7,21 @@ namespace ObaGroupModel;
 public class Biography
 {
     [Key] 
-    public int id { get; set; }
-    [Required]
-    public string firstName { get; set; }
-    [Required]
-    public string lastName { get; set; }
-    [Required]
-    public string position { get; set; }
+    public int Id { get; set; }
     
-    [AllowedFileExtensions(new []{".jpg", ".png", ".gif",".jpeg"})]
-    public string? profileImageUrl { get; set; }
+    public string FirstName { get; set; }
+
+    public string LastName { get; set; }
+    
+    public string Position { get; set; }
+    
+ //   [AllowedFileExtensions(new []{".jpg", ".png", ".gif",".jpeg"})]
+    [ValidateNever]
+    public string profileImageUrl { get; set; }
  
-    [AllowedFileExtensions(new []{".mp4", ".mkv",".mov",".avi"})]
-    public string? profileVideoUrl { get; set; }
+    //[AllowedFileExtensions(new []{".mp4", ".mkv",".mov",".avi"})]
+    [ValidateNever]
+    public string profileVideoUrl { get; set; }
 
 }
 

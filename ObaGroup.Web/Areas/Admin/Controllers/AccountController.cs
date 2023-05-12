@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -49,10 +50,9 @@ public class AccountController : Controller
        _hostEnvironment = hostEnvironment;
    }
    public IList<AuthenticationScheme> ExternalLogins { get; set; }
-   
-   
-   
+
    [HttpPost]
+   [Route(Constants.Login_Endpoint)]
    public async Task<IActionResult> Login([FromForm] LoginModel Input )
    {
        //string returnUrl;
@@ -90,6 +90,8 @@ public class AccountController : Controller
     }
    
         [HttpPost]
+        [Route(Constants.Create_User_EndPoint)]
+        [Authorize(Roles = Constants.Role_Admin)]
         public async Task<IActionResult> CreateUser([FromForm] RegisterModel Input,[FromForm] string? returnUrl, [FromForm] ImageFIleForm image)
       {
           string imageUrl=null;
@@ -117,7 +119,7 @@ public class AccountController : Controller
               return BadRequest(new {responseModel, Errors =errors });
   
           }
-          returnUrl ??= Url.Content("~/");
+                returnUrl ??= Url.Content("~/");
                 ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
                 if (ModelState.IsValid)
                 {
@@ -148,7 +150,7 @@ public class AccountController : Controller
                         var userId = await _userManager.GetUserIdAsync(user);
                         var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                         code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                        var callbackUrl =$"{Request.Scheme}://{Request.Host}/Admin/Account/ConfirmEmail?userId={userId}&code={code}&returnUrl={returnUrl}";
+                        var callbackUrl =$"{Request.Scheme}://{Request.Host}{Constants.Confirm_Email_Endpoint}?userId={userId}&code={code}&returnUrl={returnUrl}";
                         Console.WriteLine(callbackUrl);
                         await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                             $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
@@ -181,16 +183,47 @@ public class AccountController : Controller
                 return BadRequest(new {responseModel, Errors =errors2 });
             }
         [HttpGet]
+        [Route(Constants.Get_All_User_Endpoint)]
+        [Authorize(Roles = Constants.Role_Admin)]
         public async Task<IActionResult> GetAllUsers()
         {
+         
+            List<FormattedUserModel> formattedUserModelList = new List<FormattedUserModel>();
             IEnumerable<ApplicationUser> applicationUsers = _unitOfWork.ApplicationUser.GetAll();
-            return Ok(applicationUsers);
+            foreach (var applicationUser in applicationUsers )
+            {
+                FormattedUserModel formattedUser = new FormattedUserModel();
+                formattedUser.id = applicationUser.Id;
+                formattedUser.imageUrl = applicationUser.ImageUrl;
+                formattedUser.email = applicationUser.Email;
+                formattedUser.firstName = applicationUser.FirstName;
+                formattedUser.lastName = applicationUser.LastName;
+                formattedUser.phoneNumber = applicationUser.PhoneNumber;
+                formattedUser.address = applicationUser.Address;
+                
+                formattedUserModelList.Add(formattedUser);
+            }
+            
+            return Ok(formattedUserModelList);
         }
 
         [HttpDelete]
+        [Route(Constants.Delete_A_User_Endpoint)]
+        [Authorize(Roles = Constants.Role_Admin)]
         public async Task<IActionResult> DeleteAUser(string id)
         {
             ResponseModel responseModel = new ResponseModel();
+            if (id == null)
+            {
+                responseModel.Message = "Missing id field";
+                responseModel.StatusCode = 400;
+           
+                ModelState.AddModelError(string.Empty, "The user id should be provided");
+                var errors2 = ModelState.Values.SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage);
+
+                return BadRequest(new {responseModel, Errors =errors2 });
+            }
             ApplicationUser applicationUser = _unitOfWork.ApplicationUser.GetFirstOrDefault(u => u.Id == id);
             if (applicationUser != null)
             {
@@ -207,6 +240,7 @@ public class AccountController : Controller
 
 
       [HttpGet]
+      [Route(Constants.Confirm_Email_Endpoint)]
       public async Task<IActionResult> ConfirmEmail(string userId, string code)
       {
           ConfirmEmail confirmEmail = new ConfirmEmail();
@@ -249,8 +283,9 @@ public class AccountController : Controller
           }
       }
       
-      [ValidateAntiForgeryToken]
+      //[ValidateAntiForgeryToken]
       [HttpPost]
+      [Route(Constants.Forgot_Password_Endpoint)]
       public async Task<IActionResult> ForgotPassword([FromForm] ForgotPassword Input)
       {
           ResponseModel responseModel = new ResponseModel();
@@ -271,7 +306,7 @@ public class AccountController : Controller
               var code = await _userManager.GeneratePasswordResetTokenAsync(user);
               code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
              
-              var callbackUrl =  $"{Request.Scheme}://{Request.Host}/Admin/Account/ResetPassword?code={code}";
+              var callbackUrl =  $"{Request.Scheme}://{Request.Host}{Constants.Reset_Password_Endpoint}?code={code}";
 
               await _emailSender.SendEmailAsync(
                   Input.Email,
@@ -289,8 +324,8 @@ public class AccountController : Controller
           return BadRequest(new {responseModel, Errors =errors2 });
       }
       
-      [ValidateAntiForgeryToken]
       [HttpPost]
+      [Route(Constants.Reset_Password_Endpoint)]
       public async Task<IActionResult> ResetPassword([FromForm] ResetPassword Input)
       {
           ResponseModel responseModel = new ResponseModel();
@@ -334,6 +369,8 @@ public class AccountController : Controller
       
       [ValidateAntiForgeryToken]
       [HttpPost]
+      [Route(Constants.Resend_Email_Verification_Endpoint)]
+      [Authorize(Roles = Constants.Role_Admin+","+Constants.Role_Staff)]
       public async Task<IActionResult> ResendEmailVerification([FromForm] EmailVerification Input)
       {
           ResponseModel responseModel = new ResponseModel();
@@ -358,7 +395,7 @@ public class AccountController : Controller
           var userId = await _userManager.GetUserIdAsync(user);
           var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
           code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-          var callbackUrl =$"{Request.Scheme}://{Request.Host}/Admin/Account/ConfirmEmail?userId={userId}&code={code}";
+          var callbackUrl =$"{Request.Scheme}://{Request.Host}{Constants.Confirm_Email_Endpoint}?userId={userId}&code={code}";
           
           await _emailSender.SendEmailAsync(
               Input.Email,
@@ -372,6 +409,7 @@ public class AccountController : Controller
       }
       
       [HttpPost]
+      [Route(Constants.Logout_Endpoint)]
       public async Task<IActionResult> Logout(string returnUrl = null)
       {
           await _signInManager.SignOutAsync();
@@ -450,6 +488,7 @@ public class AccountController : Controller
        {
            HttpOnly = false
        });
+       HttpContext.Session.SetString("OauthTokenAccessToken", headerToken);
    }
 
 }

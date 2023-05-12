@@ -1,9 +1,6 @@
 using System.Security.Claims;
-using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using NuGet.Protocol;
 using ObaGoupDataAccess;
 using ObaGoupDataAccess.Repository.IRepository;
 using ObaGroupModel;
@@ -18,7 +15,6 @@ public  class OauthController : Controller
     private readonly string currentDirectory = Directory.GetCurrentDirectory();
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IUnitOfWork _unitOfWork;
-    private string state;
 
     public OauthController(IHttpContextAccessor httpContextAccessor, IUnitOfWork unitOfWork)
     {
@@ -26,15 +22,12 @@ public  class OauthController : Controller
         _unitOfWork = unitOfWork;
     }
     
-    [Route("oauth/callback")]
+    [Route(Constants.Google_Calendar_Callback_Endpoint)]
     public IActionResult callback(string code, string? error, string? state)
     {
         ResponseModel responseModel = new ResponseModel();
         if (string.IsNullOrWhiteSpace(error))
         {
-            this.state = state;
-            Console.WriteLine("stete"+this.state);
-            Console.WriteLine("again");
             string uri= this.GetTokens(code);
            return Redirect(uri);
         }
@@ -43,7 +36,7 @@ public  class OauthController : Controller
 
     public string failedAttempt(string error)
     {
-        return "https://localhost:7151/Admin/Dashboard/Calendar/Create?error="+error;
+        return $"{Request.Scheme}://{Request.Host}{Constants.Create_Event_Endpoint}?error="+error;
     }
     
     [HttpPost]
@@ -65,9 +58,9 @@ public  class OauthController : Controller
         request.AddQueryParameter("client_secret", clientSecret);
         request.AddQueryParameter("code", code);
         request.AddQueryParameter("grant_type", "authorization_code");
-        request.AddQueryParameter("redirect_uri", "https://localhost:7151/oauth/callback");
+        request.AddQueryParameter("redirect_uri",  $"{Request.Scheme}://{Request.Host}{Constants.Google_Calendar_Callback_Endpoint}");
 
-        restClient.BaseUrl = new System.Uri("https://oauth2.googleapis.com/token");
+        restClient.BaseUrl = new System.Uri(Constants.Google_Get_Token_Endpoint);
         var response =  restClient.Post(request);
         string responseContent = response.Content.ToString();
     
@@ -113,14 +106,13 @@ public  class OauthController : Controller
             System.IO.File.WriteAllText(tokenFile,response.Content);
             Console.WriteLine("hello");
             Console.WriteLine(response.Content);
-            return "https://localhost:7151/Admin/Dashboard/Calendar/Create";
+            return $"{Request.Scheme}://{Request.Host}{Constants.Create_Event_Endpoint}";
         }
         return failedAttempt(response.Content);
     }
     
     
     [HttpPost]
-    [Route("oauth/revoke")]
     public IActionResult RevokeTokens()
     {
         OAuthTokenProperties oAuthTokenProperties = new OAuthTokenProperties(_httpContextAccessor,_unitOfWork);
@@ -136,7 +128,7 @@ public  class OauthController : Controller
         
         request.AddQueryParameter("token", access_token);
 
-        restClient.BaseUrl = new System.Uri("https://oauth2.googleapis.com/revoke");
+        restClient.BaseUrl = new System.Uri(Constants.Google_Revoke_Token_Endpoint);
         var response = restClient.Post(request);
         
         Console.WriteLine(response.Content);

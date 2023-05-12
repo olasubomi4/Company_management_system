@@ -1,11 +1,14 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ObaGoupDataAccess.Repository.IRepository;
 using ObaGroupModel;
+using ObaGroupUtility;
 
 namespace Oba_group2.Areas.Admin.Controllers;
 
 [Area("Admin")]
+[Authorize(Roles = Constants.Role_Admin+","+Constants.Role_Staff)]
 public class ManageAccountController : Controller
 {
     // GET
@@ -50,7 +53,7 @@ public class ManageAccountController : Controller
     
     }
     
-    [Route("Admin/Dashboard/UpdateUserInformation")]
+    [Route(Constants.Update_User_Profile_Endpoint)]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> UpdateUserInformation([FromForm] ApplicationUser Input, [FromForm] ImageFIleForm imageFile )
     {
@@ -127,7 +130,7 @@ public class ManageAccountController : Controller
 
     }
     
-    [Route("Admin/Dashboard/ChangePassword")]
+    [Route(Constants.Change_User_profile_Password_Endpoint)]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ChangePassword([FromForm] ChangePassword Input)
     {

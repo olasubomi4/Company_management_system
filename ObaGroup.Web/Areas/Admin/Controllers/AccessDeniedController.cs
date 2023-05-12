@@ -1,12 +1,18 @@
 using Microsoft.AspNetCore.Mvc;
 using ObaGroupModel;
+using ObaGroupUtility;
 
 namespace Oba_group2.Areas.Admin.Controllers;
 
 //[ApiController]
 public class AccessDeniedController : Controller
 {
-    [HttpGet("/AccessDenied")]
+    [HttpGet("post/{pid}")]
+    public IActionResult AccessDeniedView(string pid)
+    {
+        return File($"~/post/[pid]/index.html", "text/html");
+    }
+    [HttpGet(Constants.Access_Denied_Endpoint)]
     public IActionResult AccessDenied()
     {
         ResponseModel responseModel = new ResponseModel();

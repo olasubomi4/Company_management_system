@@ -51,10 +51,24 @@ public class DocumentController : Controller
     }
     
     
+    [ValidateAntiForgeryToken]
     [HttpGet]
-    [Route("Admin/Dashboard/Document/")]
+    [Route(Constants.Get_A_Document_Endpoint)]
     public IActionResult GetById(int? id)
     {
+        ResponseModel responseModel = new ResponseModel();
+        if (id == null)
+        {
+            responseModel.Message = "Missing id field";
+            responseModel.StatusCode = 400;
+           
+            ModelState.AddModelError(string.Empty, "The document id should be provided");
+            var errors2 = ModelState.Values.SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage);
+
+            return BadRequest(new {responseModel, Errors =errors2 });
+        }
+        
         Document document = _unitOfWork.document.GetFirstOrDefault(x=> x.Id == id);
         return Ok(document);
     }
@@ -62,12 +76,12 @@ public class DocumentController : Controller
     [HttpPost]
     [RequestFormLimits(MultipartBodyLengthLimit = 6104857600)]
     [RequestSizeLimit(6104857600)]
-    [Route("Admin/Dashboard/Document/Upsert")]
+    [Route(Constants.Upsert_A_Document_Endpoint)]
     public IActionResult Upsert([FromForm] Documents documents )
     {
         Boolean isCreate = false;
         string message;
-        Document obj = documents.Document;
+        Document obj = new Document();
         List<string> documentsUrl = new List<string>();
         ResponseModel responseModel = new ResponseModel();
 
@@ -80,6 +94,7 @@ public class DocumentController : Controller
             return BadRequest(new {responseModel, Errors =errors2 });
         }
 
+        obj = documents.Document;
         string type = obj.Type;
        
         var files = documents.Files;
@@ -142,7 +157,7 @@ public class DocumentController : Controller
   
    
    [HttpGet]
-   [Route("Admin/Dashboard/Document/GetAll/")]
+   [Route(Constants.List_Documents_Endpoint)]
    public IActionResult GetAll()
    {
        var document = _unitOfWork.document.GetAll();
@@ -150,10 +165,21 @@ public class DocumentController : Controller
    }
    
    [HttpDelete]
-   [Route("Admin/Dashboard/Document/Delete/")]
+   [Route(Constants.Delete_A_Document_Endpoint)]
    public IActionResult Delete(int? id)
    {
        ResponseModel responseModel = new ResponseModel();
+       if (id == null)
+       {
+           responseModel.Message = "Missing id field";
+           responseModel.StatusCode = 400;
+           
+           ModelState.AddModelError(string.Empty, "The document id should be provided");
+           var errors2 = ModelState.Values.SelectMany(v => v.Errors)
+               .Select(e => e.ErrorMessage);
+
+           return BadRequest(new {responseModel, Errors =errors2 });
+       }
        var obj = _unitOfWork.document.GetFirstOrDefault(x=>x.Id==id);
        List<string> documentUrlList = JsonSerializer.Deserialize<List<string>>(obj.DocumentUrl);
        if (obj == null)
@@ -183,10 +209,22 @@ public class DocumentController : Controller
    }
    
    [HttpDelete]
-   [Route("Admin/Dashboard/Document/DeleteFile/")]
+   [Route(Constants.Delete_A_Document_File_Endpoint)]
    public IActionResult DeleteFile(int? id,[FromForm] string fileUrl)
    {
        ResponseModel responseModel = new ResponseModel();
+       fileUrl = fileUrl.Replace("\\", "");
+       if (id == null)
+       {
+           responseModel.Message = "Missing id field";
+           responseModel.StatusCode = 400;
+           
+           ModelState.AddModelError(string.Empty, "The document id should be provided");
+           var errors2 = ModelState.Values.SelectMany(v => v.Errors)
+               .Select(e => e.ErrorMessage);
+
+               return BadRequest(new {responseModel, Errors =errors2 });
+       }
        var obj = _unitOfWork.document.GetFirstOrDefault(x=>x.Id==id);
        List<string> documentUrlList = JsonSerializer.Deserialize<List<string>>(obj.DocumentUrl);
        int counter = 0;
@@ -211,6 +249,16 @@ public class DocumentController : Controller
            counter++;
        }
 
+       if (counter >= documentUrlList.Count || counter==0)
+       {
+           responseModel.Message = "File does not exist";
+           responseModel.StatusCode = 400;
+           
+           ModelState.AddModelError(string.Empty, "The file you are trying to delete does not exist");
+           var errors2 = ModelState.Values.SelectMany(v => v.Errors)
+               .Select(e => e.ErrorMessage);
+           return BadRequest(new {responseModel, Errors =errors2 });
+       }
        if (documentExist)
        {
            var oldImagePath = Path.Combine(_hostEnvironment.WebRootPath, fileUrl.TrimStart('/'));
