@@ -51,7 +51,19 @@ public class AccountController : Controller
    }
    public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
-   [HttpPost]
+    [HttpGet]
+    [Route(Constants.Login_Endpoint)]
+    public IActionResult Login()
+    {
+        return File("~/login/index.html", "text/html");
+    }
+    [HttpGet]
+    [Route("/dashboard/profile")]
+    public IActionResult Profile()
+    {
+        return File("~/dashboard/profile/index.html", "text/html");
+    }
+    [HttpPost]
    [Route(Constants.Login_Endpoint)]
    public async Task<IActionResult> Login([FromForm] LoginModel Input )
    {
@@ -67,10 +79,14 @@ public class AccountController : Controller
             var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
             if (result.Succeeded)
             {
+                ApplicationUser applicationUser = _unitOfWork.ApplicationUser.GetFirstOrDefault(u => u.Email == Input.Email);
+                var roles = await _userManager.GetRolesAsync(applicationUser);
+                var role = roles[0];
+              
                 _logger.LogInformation("User logged in.");
                 responseModel.Message = "User logged in.";
                 responseModel.StatusCode=200;
-                SetCsrfToken();
+                SetCsrfToken(role);
                 return Ok(responseModel);
             }
             
@@ -476,7 +492,7 @@ public class AccountController : Controller
        return null;
    }
    
-   public void SetCsrfToken()
+   public void SetCsrfToken(string role)
    {
        var antiForgery = HttpContext.RequestServices.GetService<IAntiforgery>();
        var tokens = antiForgery.GetAndStoreTokens(HttpContext);
@@ -489,6 +505,11 @@ public class AccountController : Controller
            HttpOnly = false
        });
        HttpContext.Session.SetString("OauthTokenAccessToken", headerToken);
-   }
+       Response.Cookies.Append("Role", role, new CookieOptions
+        {
+            HttpOnly = false
+        });
+        HttpContext.Session.SetString("Role", role);
+    }
 
 }

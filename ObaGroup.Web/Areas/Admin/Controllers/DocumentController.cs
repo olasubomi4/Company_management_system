@@ -14,7 +14,7 @@ namespace Oba_group2.Areas.Admin.Controllers;
 
 
 [Area("Admin")]
-[Authorize(Roles = Constants.Role_Admin)]
+//[Authorize(Roles = Constants.Role_Admin)]
 public class DocumentController : Controller
 {
     private readonly IUnitOfWork _unitOfWork;
@@ -26,10 +26,14 @@ public class DocumentController : Controller
         _hostEnvironment = hostEnvironment;
     }
     // GET
-    public IActionResult Index()
+
+    [HttpGet]
+    [Route("dashboard/documents")]
+    public IActionResult Doc()
     {
        IEnumerable<Document> documents= _unitOfWork.document.GetAll();
-       return View(documents);
+        
+        return File("~/dashboard/documents/index.html", "text/html");
     }
     
     
@@ -51,7 +55,7 @@ public class DocumentController : Controller
     }
     
     
-    [ValidateAntiForgeryToken]
+    //[ValidateAntiForgeryToken]
     [HttpGet]
     [Route(Constants.Get_A_Document_Endpoint)]
     public IActionResult GetById(int? id)

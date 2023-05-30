@@ -21,7 +21,14 @@ public class BiographyController : Controller
         _hostEnvironment = hostEnvironment;
     }
 
-    
+ 
+    [HttpGet]
+    [Route("/dashboard/biographys")]
+    public IActionResult Index()
+    {
+        return File("~/dashboard/biography/index.html", "text/html");
+    }
+
     [HttpGet]
     [Route(Constants.Get_A_Biography_Endpoint)]
     [Authorize(Roles = Constants.Role_Admin+","+Constants.Role_Staff)]

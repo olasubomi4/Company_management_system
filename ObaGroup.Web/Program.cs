@@ -33,7 +33,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 */
 
 builder.Services.AddIdentity<IdentityUser,IdentityRole>().AddDefaultTokenProviders().AddEntityFrameworkStores<ApplicationDbContext>();
-
+builder.Services.AddCors();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IDbIntializer, DbInitalizer>();
 builder.Services.AddSingleton<IEmailSender, EmailSender>();
@@ -46,10 +46,10 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    options.AccessDeniedPath = "/MyHttpStatuses/AccessDenied";
-});
+//builder.Services.ConfigureApplicationCookie(options =>
+//{
+//    options.AccessDeniedPath = "/MyHttpStatuses/AccessDenied";
+//});
 /*builder.Services.AddAntiforgery(options =>
 {
     options.Cookie.Name = "X-CSRF-TOKEN";
@@ -70,9 +70,14 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+app.UseCors(builder =>
+{
+    builder.WithOrigins("http://localhost:3000")
+           .AllowAnyHeader()
+           .AllowAnyMethod();
+});
 
-
-app.UseStatusCodePagesWithReExecute(Constants.Access_Denied_Endpoint);
+//app.UseStatusCodePagesWithReExecute(Constants.Access_Denied_Endpoint);
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 

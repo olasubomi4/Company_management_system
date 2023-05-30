@@ -142,13 +142,6 @@
       <_ContentIncludedByDefault Remove="Views\Home\Index.cshtml" />
       <_ContentIncludedByDefault Remove="Views\Home\Privacy.cshtml" />
       <_ContentIncludedByDefault Remove="Views\Document\Index.cshtml" />
-      <_ContentIncludedByDefault Remove="wwwroot\lib\jquery-validation-unobtrusive\jquery.validate.unobtrusive.js" />
-      <_ContentIncludedByDefault Remove="wwwroot\lib\jquery-validation-unobtrusive\jquery.validate.unobtrusive.min.js" />
-      <_ContentIncludedByDefault Remove="wwwroot\lib\jquery-validation-unobtrusive\LICENSE.txt" />
-      <_ContentIncludedByDefault Remove="wwwroot\lib\jquery\dist\jquery.js" />
-      <_ContentIncludedByDefault Remove="wwwroot\lib\jquery\dist\jquery.min.js" />
-      <_ContentIncludedByDefault Remove="wwwroot\lib\jquery\dist\jquery.min.map" />
-      <_ContentIncludedByDefault Remove="wwwroot\lib\jquery\LICENSE.txt" />
       <_ContentIncludedByDefault Remove="Areas\Admin\Views\Calender\Index.cshtml" />
       <_ContentIncludedByDefault Remove="Areas\Admin\Views\Calender\Upsert.cshtml" />
     </ItemGroup>
@@ -158,10 +151,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="wwwroot\biographyImages" />
-      <Folder Include="wwwroot\biographyVideos" />
-      <Folder Include="wwwroot\documents" />
-      <Folder Include="wwwroot\profiles" />
+      <Folder Include="wwwroot\" />
     </ItemGroup>
 
 </Project>

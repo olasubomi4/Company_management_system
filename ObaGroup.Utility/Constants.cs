@@ -27,6 +27,8 @@ public static class Constants
     public const string Delete_A_Document_File_Endpoint = "/Dashboard/Document/DeleteFile/";
     public const string Delete_A_Document_Endpoint = "/Dashboard/Document/Delete/";
 
+    public const string UploadPage = "/Dashboard/Upload/";
+
     public const string Update_User_Profile_Endpoint = "/Dashboard/Profile/Update";
     public const string Change_User_profile_Password_Endpoint = "/Dashboard/Profile/ChangePassword";
     public const string Reset_Password_Endpoint = "/Dashboard/Profile/ResetPassword";
