@@ -32,7 +32,7 @@ using JsonSerializer = System.Text.Json.JsonSerializer;
 namespace Oba_group2.Areas.Admin.Controllers;
 
 [Area("Admin")]
-[Authorize(Roles = Constants.Role_Admin+","+Constants.Role_Staff)]
+//[Authorize(Roles = Constants.Role_Admin+","+Constants.Role_Staff)]
 public class CalenderController: Controller
 {
     class CalendarListEntryResponse {
@@ -50,8 +50,12 @@ public class CalenderController: Controller
         _httpContextAccessor = httpContextAccessor;
         _logger = logger;
     }
-    
-    
+    [HttpGet(Constants.Get_All_Events)]
+    public IActionResult Get()
+    {
+       
+        return File("~/dashboard/calendar/index.html", "text/html");
+    }
     [HttpGet(Constants.Create_Event_Endpoint)]
     public IActionResult uploadToGoogle(string? error)
     {
@@ -66,7 +70,7 @@ public class CalenderController: Controller
             
             return BadRequest(new {responseModel, Errors =errors2});
         }
-        return Ok();
+        return File("~/dashboard/calendar/create/index.html", "text/html");
     }
     
     [HttpPost]
@@ -145,13 +149,17 @@ public class CalenderController: Controller
         if (!oAuth.RefreshTokens())
         {
             return Redirect($"{Request.Scheme}://{Request.Host}{Constants.Google_Calendar_Authorization_Endpoint}");
+
+        
         }
         var accessToken = oAuthTokenProperties.GetAccessToken(); 
         if (accessToken == null)
         {
             return Redirect($"{Request.Scheme}://{Request.Host}{Constants.Google_Calendar_Authorization_Endpoint}");
+
+
         }
-        
+
         string model = newEvent.ToJson().ToString();
         
         HttpClient client = new HttpClient();
@@ -221,7 +229,8 @@ public class CalenderController: Controller
 
         if (!oAuth.RefreshTokens())
         {
-            return Redirect($"{Request.Scheme}://{Request.Host}{Constants.Google_Calendar_Authorization_Endpoint}");
+            //return Redirect($"{Request.Scheme}://{Request.Host}{Constants.Google_Calendar_Authorization_Endpoint}");
+            return Ok($"{Request.Scheme}://{Request.Host}{Constants.Google_Calendar_Authorization_Endpoint}");
         }
         var token = oAuthTokenProperties.GetAccessToken();//JObject.Parse((System.IO.File.ReadAllText(tokenFile)));
         var apiKeyJson = JObject.Parse((System.IO.File.ReadAllText(apiKeyFIle)));
@@ -230,7 +239,8 @@ public class CalenderController: Controller
         
         if (string.IsNullOrWhiteSpace(token))
         {
-          return  Redirect($"{Request.Scheme}://{Request.Host}{Constants.Google_Calendar_Authorization_Endpoint}");
+            return Ok($"{Request.Scheme}://{Request.Host}{Constants.Google_Calendar_Authorization_Endpoint}");
+            //return  Redirect($"{Request.Scheme}://{Request.Host}{Constants.Google_Calendar_Authorization_Endpoint}");
         }
         
         var accessToken = token;

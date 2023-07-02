@@ -8,6 +8,7 @@ public static class Constants
 
     public const string Access_Denied_Endpoint = "/AccessDenied";
 
+    public const string Get_All_Events = "/Dashboard/Calendar";
     public const string Create_Event_Endpoint = "/Dashboard/Calendar/Create";
     public const string List_Events_Endpoint = "/Dashboard/Calendar/ListEvents";
     public const string Get_An_Event_Endpoint = "/Dashboard/Calendar/GetAnEvent";

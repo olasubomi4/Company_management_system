@@ -107,7 +107,7 @@ public class AccountController : Controller
    
         [HttpPost]
         [Route(Constants.Create_User_EndPoint)]
-        [Authorize(Roles = Constants.Role_Admin)]
+        //[Authorize(Roles = Constants.Role_Admin)]
         public async Task<IActionResult> CreateUser([FromForm] RegisterModel Input,[FromForm] string? returnUrl, [FromForm] ImageFIleForm image)
       {
           string imageUrl=null;
@@ -200,7 +200,7 @@ public class AccountController : Controller
             }
         [HttpGet]
         [Route(Constants.Get_All_User_Endpoint)]
-        [Authorize(Roles = Constants.Role_Admin)]
+        //[Authorize(Roles = Constants.Role_Admin)]
         public async Task<IActionResult> GetAllUsers()
         {
          
@@ -225,7 +225,7 @@ public class AccountController : Controller
 
         [HttpDelete]
         [Route(Constants.Delete_A_User_Endpoint)]
-        [Authorize(Roles = Constants.Role_Admin)]
+        //[Authorize(Roles = Constants.Role_Admin)]
         public async Task<IActionResult> DeleteAUser(string id)
         {
             ResponseModel responseModel = new ResponseModel();

@@ -9,6 +9,6 @@
     "\\ObaGroup.Web\\Areas\\Admin",
     "\\ObaGroup.Web\\Areas\\Admin\\Controllers"
   ],
-  "SelectedNode": "\\ObaGroup.Web\\Program.cs",
+  "SelectedNode": "\\ObaGroup.Web\\Areas\\Admin\\Controllers\\DocumentController.cs",
   "PreviewInSolutionExplorer": false
 }

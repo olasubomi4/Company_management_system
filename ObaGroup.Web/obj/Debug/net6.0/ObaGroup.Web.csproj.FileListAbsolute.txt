@@ -1212,3 +1212,5 @@ C:\Users\Mayor\Documents\C#\Oba2\Company_management_system\ObaGroup.Web\obj\Debu
 C:\Users\Mayor\Documents\C#\Oba2\Company_management_system\ObaGroup.Web\obj\Debug\net6.0\ObaGroup.Web.pdb
 C:\Users\Mayor\Documents\C#\Oba2\Company_management_system\ObaGroup.Web\obj\Debug\net6.0\ObaGroup.Web.genruntimeconfig.cache
 C:\Users\Mayor\Documents\C#\Oba2\Company_management_system\ObaGroup.Web\obj\Debug\net6.0\ref\ObaGroup.Web.dll
+C:\Users\Mayor\Documents\C#\Oba2\Company_management_system\ObaGroup.Web\bin\Debug\net6.0\Apikey.json
+C:\Users\Mayor\Documents\C#\Oba2\Company_management_system\ObaGroup.Web\bin\Debug\net6.0\client_secret_87857337556-iqm8t560cfhc8ddln4mdk88ahl311na9.apps.googleusercontent.com.json
