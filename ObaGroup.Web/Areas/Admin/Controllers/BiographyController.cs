@@ -53,7 +53,7 @@ public class BiographyController : Controller
    
     [HttpGet]
     [Route(Constants.List_All_Biographies_Endpoint)]
-    [Authorize(Roles = Constants.Role_Admin+","+Constants.Role_Staff)]
+    //[Authorize(Roles = Constants.Role_Admin+","+Constants.Role_Staff)]
     public IActionResult GetAll()
     {
         IEnumerable<Biography> biographies = _unitOfWork.biography.GetAll();
