@@ -7,8 +7,10 @@ using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Identity;
@@ -17,6 +19,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using ObaGoupDataAccess.Repository.IRepository;
+using ObaGroupModel;
+using RestRequest.Body;
 
 namespace Oba_group2.Areas.Identity.Pages.Account
 {
@@ -28,6 +33,8 @@ namespace Oba_group2.Areas.Identity.Pages.Account
         private readonly IUserStore<IdentityUser> _userStore;
         private readonly IUserEmailStore<IdentityUser> _emailStore;
         private readonly IEmailSender _emailSender;
+        private readonly IUnitOfWork _unitOfWork;
+
         private readonly ILogger<ExternalLoginModel> _logger;
 
         public ExternalLoginModel(
@@ -35,6 +42,7 @@ namespace Oba_group2.Areas.Identity.Pages.Account
             UserManager<IdentityUser> userManager,
             IUserStore<IdentityUser> userStore,
             ILogger<ExternalLoginModel> logger,
+            IUnitOfWork unitOfWork,
             IEmailSender emailSender)
         {
             _signInManager = signInManager;
@@ -42,6 +50,7 @@ namespace Oba_group2.Areas.Identity.Pages.Account
             _userStore = userStore;
             _emailStore = GetEmailStore();
             _logger = logger;
+            _unitOfWork = unitOfWork;
             _emailSender = emailSender;
         }
 
@@ -86,6 +95,7 @@ namespace Oba_group2.Areas.Identity.Pages.Account
             public string Email { get; set; }
         }
         
+        
         public IActionResult OnGet() => RedirectToPage("./Login");
 
         public IActionResult OnPost(string provider, string returnUrl = null)
@@ -115,7 +125,20 @@ namespace Oba_group2.Areas.Identity.Pages.Account
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
             if (result.Succeeded)
             {
+                InputModel input = new InputModel();
+                input.Email = info.Principal.FindFirstValue(ClaimTypes.Email);
+                ApplicationUser applicationUser = _unitOfWork.ApplicationUser.GetFirstOrDefault(u => u.Email == input.Email);
+
                 _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity.Name, info.LoginProvider);
+                var roles = await _userManager.GetRolesAsync(applicationUser);
+                var role = roles[0];
+                ResponseModel responseModel = new ResponseModel();
+                _logger.LogInformation("User logged in.");
+                responseModel.Message = "User logged in.";
+                responseModel.StatusCode=200;
+                SetCsrfToken(role);
+
+                // return JsonBody(responseModel);
                 return LocalRedirect(returnUrl);
             }
             if (result.IsLockedOut)
@@ -133,7 +156,31 @@ namespace Oba_group2.Areas.Identity.Pages.Account
                     {
                         Email = info.Principal.FindFirstValue(ClaimTypes.Email)
                     };
+
+                    var user = await _userManager.FindByEmailAsync(Input.Email);
+                    if (user != null)
+                    {
+                        var resultTemp = await _userManager.AddLoginAsync(user, info);
+                        if (resultTemp.Succeeded)
+                        {
+                            await _signInManager.SignInAsync(user, isPersistent: true);
+
+                            ApplicationUser applicationUser =
+                                _unitOfWork.ApplicationUser.GetFirstOrDefault(u => u.Email == Input.Email);
+
+                            _logger.LogInformation("{Name} logged in with {LoginProvider} provider.",
+                                info.Principal.Identity.Name, info.LoginProvider);
+                            var roles = await _userManager.GetRolesAsync(applicationUser);
+                            var role = roles[0];
+                            ResponseModel responseModel = new ResponseModel();
+                            _logger.LogInformation("User logged in.");
+                            responseModel.Message = "User logged in.";
+                            responseModel.StatusCode = 200;
+                            SetCsrfToken(role);
+                        }
+                    }
                 }
+
                 return Page();
             }
         }
@@ -218,6 +265,27 @@ namespace Oba_group2.Areas.Identity.Pages.Account
                 throw new NotSupportedException("The default UI requires a user store with email support.");
             }
             return (IUserEmailStore<IdentityUser>)_userStore;
+        }
+        
+        public void SetCsrfToken(string role)
+        {
+            var antiForgery = HttpContext.RequestServices.GetService<IAntiforgery>();
+            
+            var tokens = antiForgery.GetAndStoreTokens(HttpContext);
+       
+            // Take request token (which is different from a cookie token)
+            var headerToken = tokens.RequestToken;
+            // Set another cookie for a request token
+            Response.Cookies.Append("RequestVerificationToken", headerToken, new CookieOptions
+            {
+                HttpOnly = false
+            });
+            HttpContext.Session.SetString("OauthTokenAccessToken", headerToken);
+            Response.Cookies.Append("Role", role, new CookieOptions
+            {
+                HttpOnly = false
+            });
+            HttpContext.Session.SetString("Role", role);
         }
     }
 }

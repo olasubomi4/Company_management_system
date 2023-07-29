@@ -37,6 +37,14 @@ builder.Services.AddCors();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IDbIntializer, DbInitalizer>();
 builder.Services.AddSingleton<IEmailSender, EmailSender>();
+
+
+builder.Services.AddAuthentication().AddGoogle(googleOptions =>
+{
+    googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+    googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+});
+
 builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 builder.Services.AddSession(options =>
 {
@@ -61,6 +69,8 @@ builder.Services.AddSession(options =>
     options.MultipartBodyLengthLimit =  500 * 1024 * 1024; // 50 MB
 });
 */
+
+
 
 var app = builder.Build();
 

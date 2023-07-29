@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Antiforgery;
@@ -49,6 +51,42 @@ public class AccountController : Controller
        _unitOfWork = unitOfWork;
        _hostEnvironment = hostEnvironment;
    }
+   [BindProperty]
+   public InputModel Input { get; set; }
+
+   /// <summary>
+   ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
+   ///     directly from your code. This API may change or be removed in future releases.
+   /// </summary>
+   public string ProviderDisplayName { get; set; }
+
+   /// <summary>
+   ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
+   ///     directly from your code. This API may change or be removed in future releases.
+   /// </summary>
+   public string ReturnUrl { get; set; }
+
+   /// <summary>
+   ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
+   ///     directly from your code. This API may change or be removed in future releases.
+   /// </summary>
+   [TempData]
+   public string ErrorMessage { get; set; }
+
+   /// <summary>
+   ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
+   ///     directly from your code. This API may change or be removed in future releases.
+   /// </summary>
+   public class InputModel
+   {
+       /// <summary>
+       ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
+       ///     directly from your code. This API may change or be removed in future releases.
+       /// </summary>
+       [Required]
+       [EmailAddress]
+       public string Email { get; set; }
+   }
    public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
     [HttpGet]
@@ -63,47 +101,154 @@ public class AccountController : Controller
     {
         return File("~/dashboard/profile/index.html", "text/html");
     }
+
     [HttpPost]
-   [Route(Constants.Login_Endpoint)]
-   public async Task<IActionResult> Login([FromForm] LoginModel Input )
-   {
-       //string returnUrl;
-       //returnUrl ??= Url.Content("~/");
-       
+    [Route(Constants.Login_Endpoint)]
+    public async Task<IActionResult> Login(string provider="Google")
+    {
+        // string provider = "Google";
+        var redirectUrl = $"{Request.Scheme}://{Request.Host}{Constants.Login_Google_Callback_Endpoint}";
+        var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+        return new ChallengeResult(provider, properties);
+    }
+    [HttpGet]
+    [Route(Constants.Login_Google_Callback_Endpoint)]
+    public async Task<IActionResult> OnGetCallbackAsync(string returnUrl = null, string remoteError = null)
+    {
+            ResponseModel responseModel = new ResponseModel(); 
+            returnUrl = returnUrl ?? Url.Content("~/");
+            if (remoteError != null)
+            {
+                ErrorMessage = $"Error from external provider: {remoteError}";
+                _logger.LogInformation(ErrorMessage);
+                responseModel.Message = ErrorMessage;
+                responseModel.StatusCode=401;
+                return Unauthorized(responseModel);
+            }
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                ErrorMessage = "Error loading external login information.";
+                _logger.LogInformation(ErrorMessage);
+                responseModel.Message = ErrorMessage;
+                responseModel.StatusCode=401;
+                return Unauthorized(responseModel);
+            }
 
-    ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-    ResponseModel responseModel = new ResponseModel();
-
-        if (ModelState.IsValid)
-        {
-            var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+            // Sign in the user with this external login provider if the user already has a login.
+            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
             if (result.Succeeded)
             {
-                ApplicationUser applicationUser = _unitOfWork.ApplicationUser.GetFirstOrDefault(u => u.Email == Input.Email);
+                InputModel input = new InputModel();
+                input.Email = info.Principal.FindFirstValue(ClaimTypes.Email);
+                ApplicationUser applicationUser = _unitOfWork.ApplicationUser.GetFirstOrDefault(u => u.Email == input.Email);
+
+                _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity.Name, info.LoginProvider);
                 var roles = await _userManager.GetRolesAsync(applicationUser);
                 var role = roles[0];
-              
                 _logger.LogInformation("User logged in.");
                 responseModel.Message = "User logged in.";
                 responseModel.StatusCode=200;
                 SetCsrfToken(role);
+
+                // return JsonBody(responseModel);
                 return Ok(responseModel);
             }
-            
-            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-            responseModel.StatusCode = 400;
-            responseModel.Message = "Invalid login attempt.";
-            
-            var errors = ModelState.Values.SelectMany(v => v.Errors)
-                .Select(e => e.ErrorMessage);
-            return BadRequest(new {responseModel, Errors =errors});
-        }
-        responseModel.Message = "Bad Request";
-        responseModel.StatusCode = 400;
-        var errors2 = ModelState.Values.SelectMany(v => v.Errors)
-            .Select(e => e.ErrorMessage);
-        return BadRequest(new {responseModel, Errors =errors2 });
+            if (result.IsLockedOut)
+            {
+                _logger.LogInformation("Account Locked");
+                responseModel.Message = "Account Locked";
+                responseModel.StatusCode=401;
+                return Unauthorized(responseModel);
+            }
+            else
+            {
+                // If the user does not have an account, then ask the user to create an account.
+                ReturnUrl = returnUrl;
+                ProviderDisplayName = info.ProviderDisplayName;
+                if (info.Principal.HasClaim(c => c.Type == ClaimTypes.Email))
+                {
+                    Input = new InputModel
+                    {
+                        Email = info.Principal.FindFirstValue(ClaimTypes.Email)
+                    };
+
+                    var user = await _userManager.FindByEmailAsync(Input.Email);
+                    if (user != null)
+                    {
+                        var resultTemp = await _userManager.AddLoginAsync(user, info);
+                        if (resultTemp.Succeeded)
+                        {
+                            await _signInManager.SignInAsync(user, isPersistent: true);
+
+                            ApplicationUser applicationUser =
+                                _unitOfWork.ApplicationUser.GetFirstOrDefault(u => u.Email == Input.Email);
+
+                            _logger.LogInformation("{Name} logged in with {LoginProvider} provider.",
+                                info.Principal.Identity.Name, info.LoginProvider);
+                            var roles = await _userManager.GetRolesAsync(applicationUser);
+                            var role = roles[0];
+                            _logger.LogInformation("User logged in.");
+                            responseModel.Message = "User logged in.";
+                            responseModel.StatusCode = 200;
+                            SetCsrfToken(role);
+                            return Ok(responseModel);
+                        }
+                    }
+                    _logger.LogInformation("User does not have permission to this website");
+                    responseModel.Message = "User does not have permission to this website";
+                    responseModel.StatusCode=401;
+                    return Unauthorized(responseModel);
+                }
+
+
+                _logger.LogInformation("User does not have permission to this website");
+                responseModel.Message = "User does not have permission to this website";
+                responseModel.StatusCode=401;
+                return Unauthorized(responseModel);
+            }
+            _logger.LogInformation("User does not have permission to this website");
+            responseModel.Message = "User does not have permission to this website";
+            responseModel.StatusCode=401;
+            return Unauthorized(responseModel);
     }
+    //string returnUrl;
+       //returnUrl ??= Url.Content("~/");
+       
+   
+    // ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+    // ResponseModel responseModel = new ResponseModel();
+    //
+    //     if (ModelState.IsValid)
+    //     {
+    //         var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+    //         if (result.Succeeded)
+    //         {
+    //             ApplicationUser applicationUser = _unitOfWork.ApplicationUser.GetFirstOrDefault(u => u.Email == Input.Email);
+    //             var roles = await _userManager.GetRolesAsync(applicationUser);
+    //             var role = roles[0];
+    //           
+    //             _logger.LogInformation("User logged in.");
+    //             responseModel.Message = "User logged in.";
+    //             responseModel.StatusCode=200;
+    //             SetCsrfToken(role);
+    //             return Ok(responseModel);
+    //         }
+    //         
+    //         ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+    //         responseModel.StatusCode = 400;
+    //         responseModel.Message = "Invalid login attempt.";
+    //         
+    //         var errors = ModelState.Values.SelectMany(v => v.Errors)
+    //             .Select(e => e.ErrorMessage);
+    //         return BadRequest(new {responseModel, Errors =errors});
+    //     }
+    //     responseModel.Message = "Bad Request";
+    //     responseModel.StatusCode = 400;
+    //     var errors2 = ModelState.Values.SelectMany(v => v.Errors)
+    //         .Select(e => e.ErrorMessage);
+    //     return BadRequest(new {responseModel, Errors =errors2 });
+    // }
    
         [HttpPost]
         [Route(Constants.Create_User_EndPoint)]
@@ -198,6 +343,51 @@ public class AccountController : Controller
                     .Select(e => e.ErrorMessage);
                 return BadRequest(new {responseModel, Errors =errors2 });
             }
+        
+        [HttpGet]
+        [Route(Constants.Get_User_By_Id)]
+        //[Authorize(Roles = Constants.Role_Admin)]
+        public async Task<IActionResult> GetUserById(string id)
+        {
+            ApplicationUser applicationUser = _unitOfWork.ApplicationUser.GetFirstOrDefault(u => u.Id == id);
+           
+                FormattedUserModel formattedUser = new FormattedUserModel();
+                formattedUser.id = applicationUser.Id;
+                formattedUser.imageUrl = applicationUser.ImageUrl;
+                formattedUser.email = applicationUser.Email;
+                formattedUser.firstName = applicationUser.FirstName;
+                formattedUser.lastName = applicationUser.LastName;
+                formattedUser.phoneNumber = applicationUser.PhoneNumber;
+                formattedUser.address = applicationUser.Address;
+            
+            return Ok(formattedUser);
+        }
+        [HttpGet]
+        [Route(Constants.Get_Logged_in_user_Endpoint)]
+        //[Authorize(Roles = Constants.Role_Admin)]
+        public async Task<IActionResult> GetLoggedInUser()
+        {
+            ResponseModel responseModel = new ResponseModel();
+            string userId=  _userManager.GetUserId(User);
+            if (User.Identity.IsAuthenticated)
+            {
+                ApplicationUser applicationUser = _unitOfWork.ApplicationUser.GetFirstOrDefault(u => u.Id == userId);
+
+                FormattedUserModel formattedUser = new FormattedUserModel();
+                formattedUser.id = applicationUser.Id;
+                formattedUser.imageUrl = applicationUser.ImageUrl;
+                formattedUser.email = applicationUser.Email;
+                formattedUser.firstName = applicationUser.FirstName;
+                formattedUser.lastName = applicationUser.LastName;
+                formattedUser.phoneNumber = applicationUser.PhoneNumber;
+                formattedUser.address = applicationUser.Address;
+
+                return Ok(formattedUser);
+            }
+            responseModel.Message = "No user logged in";
+            responseModel.StatusCode=400;
+            return BadRequest(responseModel);
+        }
         [HttpGet]
         [Route(Constants.Get_All_User_Endpoint)]
         //[Authorize(Roles = Constants.Role_Admin)]

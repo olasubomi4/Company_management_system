@@ -37,9 +37,12 @@ public static class Constants
     
     public const string Create_User_EndPoint = "/Dashboard/Admin/CreateUser";
     public const string Get_All_User_Endpoint = "/Dashboard/Admin/GetAllUsers";
+    public const string Get_Logged_in_user_Endpoint = "/Dashboard/Admin/GetLoggedInUser";
+    public const string Get_User_By_Id = "/Dashboard/Admin/GetUserById";
     public const string Delete_A_User_Endpoint = "/Dashboard/Admin/DeleteAUser";
     
     public const string Login_Endpoint = "/Login";
+    public const string Login_Google_Callback_Endpoint = "/Google/Callback/Login";
     public const string Logout_Endpoint = "/Logout";
     public const string Confirm_Email_Endpoint = "/ConfirmEmail";
     public const string Forgot_Password_Endpoint = "/ForgotPassword";

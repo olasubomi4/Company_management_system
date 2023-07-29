@@ -11038,26 +11038,24 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Mayor\\.nuget\\packages\\": {}
+    "/Users/subomiodekunle/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Mayor\\Documents\\C#\\Oba2\\Company_management_system\\ObaGroup.Utility\\ObaGroup.Utility.csproj",
+      "projectUniqueName": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Utility/ObaGroup.Utility.csproj",
       "projectName": "ObaGroup.Utility",
-      "projectPath": "C:\\Users\\Mayor\\Documents\\C#\\Oba2\\Company_management_system\\ObaGroup.Utility\\ObaGroup.Utility.csproj",
-      "packagesPath": "C:\\Users\\Mayor\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Mayor\\Documents\\C#\\Oba2\\Company_management_system\\ObaGroup.Utility\\obj\\",
+      "projectPath": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Utility/ObaGroup.Utility.csproj",
+      "packagesPath": "/Users/subomiodekunle/.nuget/packages/",
+      "outputPath": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Utility/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Mayor\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "/Users/subomiodekunle/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net6.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -11185,7 +11183,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.408\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/6.0.412/RuntimeIdentifierGraph.json"
       }
     }
   },

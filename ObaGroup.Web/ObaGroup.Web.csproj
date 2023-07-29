@@ -155,4 +155,8 @@
       <Folder Include="wwwroot\profiles\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Include="Apikey.json" />
+    </ItemGroup>
+
 </Project>
