@@ -11,7 +11,6 @@
 using System;
 using System.Reflection;
 
-[assembly: Microsoft.AspNetCore.Identity.UI.UIFrameworkAttribute("Bootstrap5")]
 [assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("aspnet-Oba_group2-29793A38-3AFB-4627-9647-DF76435D5981")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("ObaGroup.Web")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]

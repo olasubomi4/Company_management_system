@@ -1,36 +1,38 @@
 {
   "format": 1,
   "restore": {
-    "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/ObaGroup.Web.csproj": {}
+    "C:\\Users\\Mayor\\Documents\\C#\\Oba\\Company_management_system\\ObaGroup.Web\\ObaGroup.Web.csproj": {}
   },
   "projects": {
-    "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.DataAccess/ObaGroup.DataAccess.csproj": {
+    "C:\\Users\\Mayor\\Documents\\C#\\Oba\\Company_management_system\\ObaGroup.DataAccess\\ObaGroup.DataAccess.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.DataAccess/ObaGroup.DataAccess.csproj",
+        "projectUniqueName": "C:\\Users\\Mayor\\Documents\\C#\\Oba\\Company_management_system\\ObaGroup.DataAccess\\ObaGroup.DataAccess.csproj",
         "projectName": "ObaGroup.DataAccess",
-        "projectPath": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.DataAccess/ObaGroup.DataAccess.csproj",
-        "packagesPath": "/Users/subomiodekunle/.nuget/packages/",
-        "outputPath": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.DataAccess/obj/",
+        "projectPath": "C:\\Users\\Mayor\\Documents\\C#\\Oba\\Company_management_system\\ObaGroup.DataAccess\\ObaGroup.DataAccess.csproj",
+        "packagesPath": "C:\\Users\\Mayor\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Mayor\\Documents\\C#\\Oba\\Company_management_system\\ObaGroup.DataAccess\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/subomiodekunle/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\Mayor\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net6.0": {
             "targetAlias": "net6.0",
             "projectReferences": {
-              "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Model/ObaGroup.Model.csproj": {
-                "projectPath": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Model/ObaGroup.Model.csproj"
+              "C:\\Users\\Mayor\\Documents\\C#\\Oba\\Company_management_system\\ObaGroup.Model\\ObaGroup.Model.csproj": {
+                "projectPath": "C:\\Users\\Mayor\\Documents\\C#\\Oba\\Company_management_system\\ObaGroup.Model\\ObaGroup.Model.csproj"
               },
-              "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Utility/ObaGroup.Utility.csproj": {
-                "projectPath": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Utility/ObaGroup.Utility.csproj"
+              "C:\\Users\\Mayor\\Documents\\C#\\Oba\\Company_management_system\\ObaGroup.Utility\\ObaGroup.Utility.csproj": {
+                "projectPath": "C:\\Users\\Mayor\\Documents\\C#\\Oba\\Company_management_system\\ObaGroup.Utility\\ObaGroup.Utility.csproj"
               }
             }
           }
@@ -154,26 +156,28 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/6.0.412/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.408\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Model/ObaGroup.Model.csproj": {
+    "C:\\Users\\Mayor\\Documents\\C#\\Oba\\Company_management_system\\ObaGroup.Model\\ObaGroup.Model.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Model/ObaGroup.Model.csproj",
+        "projectUniqueName": "C:\\Users\\Mayor\\Documents\\C#\\Oba\\Company_management_system\\ObaGroup.Model\\ObaGroup.Model.csproj",
         "projectName": "ObaGroup.Model",
-        "projectPath": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Model/ObaGroup.Model.csproj",
-        "packagesPath": "/Users/subomiodekunle/.nuget/packages/",
-        "outputPath": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Model/obj/",
+        "projectPath": "C:\\Users\\Mayor\\Documents\\C#\\Oba\\Company_management_system\\ObaGroup.Model\\ObaGroup.Model.csproj",
+        "packagesPath": "C:\\Users\\Mayor\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Mayor\\Documents\\C#\\oba\\Company_management_system\\ObaGroup.Model\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/subomiodekunle/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\Mayor\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -293,26 +297,28 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/6.0.412/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.408\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Utility/ObaGroup.Utility.csproj": {
+    "C:\\Users\\Mayor\\Documents\\C#\\Oba\\Company_management_system\\ObaGroup.Utility\\ObaGroup.Utility.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Utility/ObaGroup.Utility.csproj",
+        "projectUniqueName": "C:\\Users\\Mayor\\Documents\\C#\\Oba\\Company_management_system\\ObaGroup.Utility\\ObaGroup.Utility.csproj",
         "projectName": "ObaGroup.Utility",
-        "projectPath": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Utility/ObaGroup.Utility.csproj",
-        "packagesPath": "/Users/subomiodekunle/.nuget/packages/",
-        "outputPath": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Utility/obj/",
+        "projectPath": "C:\\Users\\Mayor\\Documents\\C#\\Oba\\Company_management_system\\ObaGroup.Utility\\ObaGroup.Utility.csproj",
+        "packagesPath": "C:\\Users\\Mayor\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Mayor\\Documents\\C#\\Oba\\Company_management_system\\ObaGroup.Utility\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/subomiodekunle/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\Mayor\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -440,40 +446,42 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/6.0.412/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.408\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/ObaGroup.Web.csproj": {
+    "C:\\Users\\Mayor\\Documents\\C#\\Oba\\Company_management_system\\ObaGroup.Web\\ObaGroup.Web.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/ObaGroup.Web.csproj",
+        "projectUniqueName": "C:\\Users\\Mayor\\Documents\\C#\\Oba\\Company_management_system\\ObaGroup.Web\\ObaGroup.Web.csproj",
         "projectName": "ObaGroup.Web",
-        "projectPath": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/ObaGroup.Web.csproj",
-        "packagesPath": "/Users/subomiodekunle/.nuget/packages/",
-        "outputPath": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/obj/",
+        "projectPath": "C:\\Users\\Mayor\\Documents\\C#\\Oba\\Company_management_system\\ObaGroup.Web\\ObaGroup.Web.csproj",
+        "packagesPath": "C:\\Users\\Mayor\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Mayor\\Documents\\C#\\Oba\\Company_management_system\\ObaGroup.Web\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/subomiodekunle/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\Mayor\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net6.0": {
             "targetAlias": "net6.0",
             "projectReferences": {
-              "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.DataAccess/ObaGroup.DataAccess.csproj": {
-                "projectPath": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.DataAccess/ObaGroup.DataAccess.csproj"
+              "C:\\Users\\Mayor\\Documents\\C#\\Oba\\Company_management_system\\ObaGroup.DataAccess\\ObaGroup.DataAccess.csproj": {
+                "projectPath": "C:\\Users\\Mayor\\Documents\\C#\\Oba\\Company_management_system\\ObaGroup.DataAccess\\ObaGroup.DataAccess.csproj"
               },
-              "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Model/ObaGroup.Model.csproj": {
-                "projectPath": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Model/ObaGroup.Model.csproj"
+              "C:\\Users\\Mayor\\Documents\\C#\\Oba\\Company_management_system\\ObaGroup.Model\\ObaGroup.Model.csproj": {
+                "projectPath": "C:\\Users\\Mayor\\Documents\\C#\\Oba\\Company_management_system\\ObaGroup.Model\\ObaGroup.Model.csproj"
               },
-              "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Utility/ObaGroup.Utility.csproj": {
-                "projectPath": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Utility/ObaGroup.Utility.csproj"
+              "C:\\Users\\Mayor\\Documents\\C#\\Oba\\Company_management_system\\ObaGroup.Utility\\ObaGroup.Utility.csproj": {
+                "projectPath": "C:\\Users\\Mayor\\Documents\\C#\\Oba\\Company_management_system\\ObaGroup.Utility\\ObaGroup.Utility.csproj"
               }
             }
           }
@@ -604,7 +612,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/6.0.412/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.408\\RuntimeIdentifierGraph.json"
         }
       }
     }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ObaGroupUtility;
 
 namespace Oba_group2.Areas.Admin.Controllers
 {
@@ -7,7 +8,9 @@ namespace Oba_group2.Areas.Admin.Controllers
         [HttpGet("")]
         public IActionResult Index()
         {
-            return File("~/login/index.html", "text/html");
+
+            var redirectUrl = $"{Request.Scheme}://{Request.Host}{Constants.Login_Endpoint}";
+            return Redirect(redirectUrl);
 
         }
     }

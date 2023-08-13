@@ -151,7 +151,12 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Areas\Admin\Views\Account\" />
       <Folder Include="wwwroot\documents\" />
+      <Folder Include="wwwroot\documents\" />
+      <Folder Include="wwwroot\biographyImages\" />
+      <Folder Include="wwwroot\biographyVideos\" />
+      <Folder Include="wwwroot\profiles\" />
       <Folder Include="wwwroot\profiles\" />
     </ItemGroup>
 

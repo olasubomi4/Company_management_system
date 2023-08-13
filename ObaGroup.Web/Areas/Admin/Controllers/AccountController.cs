@@ -91,15 +91,27 @@ public class AccountController : Controller
 
     [HttpGet]
     [Route(Constants.Login_Endpoint)]
-    public IActionResult Login()
+    public ActionResult Login()
     {
-        return File("~/login/index.html", "text/html");
+        var redirectUrl = $"{Request.Scheme}://{Request.Host}{Constants.UploadPage}";
+        if (User.Identity.IsAuthenticated)
+        {
+            return Redirect(redirectUrl);
+
+        }
+        return View();
     }
     [HttpGet]
     [Route("/dashboard/profile")]
     public IActionResult Profile()
     {
         return File("~/dashboard/profile/index.html", "text/html");
+    }
+    [HttpGet]
+    [Route("/dashboard/users")]
+    public IActionResult Users()
+    {
+        return File("~/dashboard/users/index.html", "text/html");
     }
 
     [HttpPost]
@@ -151,8 +163,10 @@ public class AccountController : Controller
                 responseModel.StatusCode=200;
                 SetCsrfToken(role);
 
-                // return JsonBody(responseModel);
-                return Ok(responseModel);
+            // return JsonBody(responseModel);
+            //return Ok(responseModel);
+            var redirectUrl = $"{Request.Scheme}://{Request.Host}{Constants.UploadPage}";
+            return Redirect(redirectUrl);
             }
             if (result.IsLockedOut)
             {
@@ -314,7 +328,7 @@ public class AccountController : Controller
                         var callbackUrl =$"{Request.Scheme}://{Request.Host}{Constants.Confirm_Email_Endpoint}?userId={userId}&code={code}&returnUrl={returnUrl}";
                         Console.WriteLine(callbackUrl);
                         await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                            $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                            $" <tr>\r\n                      <td align=\"left\" width=\"30%\" style=\"vertical-align: top\">\r\n                        <p\r\n                          align=\"\"\r\n                          width=\"50%\"\r\n                          style=\"\r\n                            font-size: 20px;\r\n                            color: #2579a9;\r\n                            font-weight: 700;\r\n                          \"\r\n                        >\r\n                          Hi {user.FirstName}\r\n                        </p>\r\n                        <p\r\n                          style=\"\r\n                            color: #333;\r\n                            font-weight: 900;\r\n                            font-size: 16px;\r\n                            line-height: 24px;\r\n                          \"\r\n                        >\r\n                          Welcome to OBA GROUP, Lorem ipsum dolor sit amet\r\n                          consectetur.\r\n                        </p>\r\n                      </td>\r\n                    </tr>\r\n                    <tr style=\"padding: 10px 0\">\r\n                      <td\r\n                        align=\"left\"\r\n                        style=\"padding: 10px 0; font-weight: 700\"\r\n                      >\r\n                        <p\r\n                          style=\"\r\n                            color: #2579a9;\r\n                            font-weight: 800;\r\n                            font-weight: 14px;\r\n                          \"\r\n                        >\r\n                          Your account details\r\n                        </p>\r\n                        <p style=\"color: #555; font-size: 16px\">\r\n                          Use your email or username to login to your account\r\n                          and keep track of your of activities\r\n\r\n                          <br />\r\n                          Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.\r\n                        </p>\r\n                      </td>\r\n                    </tr>");
 
                         /*if (_userManager.Options.SignIn.RequireConfirmedAccount)
                         {
@@ -359,8 +373,9 @@ public class AccountController : Controller
                 formattedUser.lastName = applicationUser.LastName;
                 formattedUser.phoneNumber = applicationUser.PhoneNumber;
                 formattedUser.address = applicationUser.Address;
-            
-            return Ok(formattedUser);
+        formattedUser.position = applicationUser.Position;
+
+        return Ok(formattedUser);
         }
         [HttpGet]
         [Route(Constants.Get_Logged_in_user_Endpoint)]
@@ -381,6 +396,8 @@ public class AccountController : Controller
                 formattedUser.lastName = applicationUser.LastName;
                 formattedUser.phoneNumber = applicationUser.PhoneNumber;
                 formattedUser.address = applicationUser.Address;
+            formattedUser.position = applicationUser.Position;
+
 
                 return Ok(formattedUser);
             }
@@ -406,8 +423,9 @@ public class AccountController : Controller
                 formattedUser.lastName = applicationUser.LastName;
                 formattedUser.phoneNumber = applicationUser.PhoneNumber;
                 formattedUser.address = applicationUser.Address;
-                
-                formattedUserModelList.Add(formattedUser);
+            formattedUser.position = applicationUser.Position;
+
+            formattedUserModelList.Add(formattedUser);
             }
             
             return Ok(formattedUserModelList);

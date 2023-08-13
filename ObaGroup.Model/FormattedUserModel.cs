@@ -10,4 +10,5 @@ public class FormattedUserModel
     public string phoneNumber { get; set; }
     
     public string address { get; set; }
+    public string position { get; set; }
 }
