@@ -7,7 +7,6 @@ namespace ObaGroupUtility;
 public class KeyVaultManager:IKeyVaultManager
 
 {
-
     private readonly SecretClient _secretClient;
     private string _googleCalendarApiKey;
     private string _googleCalendarToken;
@@ -167,7 +166,7 @@ public class KeyVaultManager:IKeyVaultManager
         try
 
         {
-            Console.WriteLine("gettinf keys for "+secretName);
+            _logger.LogInformation("getting keys for "+secretName);
             KeyVaultSecret keyValueSecret = await _secretClient.GetSecretAsync(secretName);
             return keyValueSecret.Value;
         }
@@ -184,6 +183,7 @@ public class KeyVaultManager:IKeyVaultManager
     {
         try
         {
+            _logger.LogInformation("Updating " + secretName);
             KeyVaultSecret keyValueSecret = await _secretClient.SetSecretAsync(secretName,secretValue);
             return keyValueSecret.Value;
         }
