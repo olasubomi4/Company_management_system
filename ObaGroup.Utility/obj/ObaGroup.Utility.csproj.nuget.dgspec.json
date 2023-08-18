@@ -1,27 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Mayor\\Documents\\C#\\Oba\\Company_management_system\\ObaGroup.Utility\\ObaGroup.Utility.csproj": {}
+    "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Utility/ObaGroup.Utility.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Mayor\\Documents\\C#\\Oba\\Company_management_system\\ObaGroup.Utility\\ObaGroup.Utility.csproj": {
+    "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Utility/ObaGroup.Utility.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Mayor\\Documents\\C#\\Oba\\Company_management_system\\ObaGroup.Utility\\ObaGroup.Utility.csproj",
+        "projectUniqueName": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Utility/ObaGroup.Utility.csproj",
         "projectName": "ObaGroup.Utility",
-        "projectPath": "C:\\Users\\Mayor\\Documents\\C#\\Oba\\Company_management_system\\ObaGroup.Utility\\ObaGroup.Utility.csproj",
-        "packagesPath": "C:\\Users\\Mayor\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Mayor\\Documents\\C#\\Oba\\Company_management_system\\ObaGroup.Utility\\obj\\",
+        "projectPath": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Utility/ObaGroup.Utility.csproj",
+        "packagesPath": "/Users/subomiodekunle/.nuget/packages/",
+        "outputPath": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Utility/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Mayor\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/Users/subomiodekunle/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -40,6 +38,22 @@
         "net6.0": {
           "targetAlias": "net6.0",
           "dependencies": {
+            "Azure.Extensions.AspNetCore.Configuration.Secrets": {
+              "target": "Package",
+              "version": "[1.2.2, )"
+            },
+            "Azure.Identity": {
+              "target": "Package",
+              "version": "[1.9.0, )"
+            },
+            "Azure.Security.KeyVault.Secrets": {
+              "target": "Package",
+              "version": "[4.5.0, )"
+            },
+            "Azure.Storage.Blobs": {
+              "target": "Package",
+              "version": "[12.17.0, )"
+            },
             "Google.Apis.Auth": {
               "target": "Package",
               "version": "[1.60.0, )"
@@ -149,7 +163,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.408\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/6.0.412/RuntimeIdentifierGraph.json"
         }
       }
     }

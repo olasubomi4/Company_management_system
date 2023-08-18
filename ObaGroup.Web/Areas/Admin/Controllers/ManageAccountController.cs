@@ -17,18 +17,19 @@ public class ManageAccountController : Controller
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<LoginModel> _logger;
     private readonly IWebHostEnvironment _hostEnvironment;
-
+    private readonly IBlobUploader _blobUploader;
     public ManageAccountController(
         UserManager<IdentityUser> userManager,
         SignInManager<IdentityUser> signInManager,
         IUnitOfWork unitOfWork,ILogger<LoginModel> logger,
-        IWebHostEnvironment hostEnvironment)
+        IWebHostEnvironment hostEnvironment, IBlobUploader blobUploader)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _unitOfWork = unitOfWork;
         ILogger<RegisterModel> logger2;
         _hostEnvironment = hostEnvironment;
+        _blobUploader = blobUploader;
     }
     
     private async Task LoadAsync(IdentityUser user)
@@ -183,25 +184,28 @@ public class ManageAccountController : Controller
 
         if (imageFile != null)
         {
-            string fileName = imageFile.Image.FileName + Guid.NewGuid().ToString();
-            var uploads = Path.Combine(wwwRootPath, @"profiles");
-            var extension = Path.GetExtension(imageFile.Image.FileName);
+            // string fileName = imageFile.Image.FileName + Guid.NewGuid().ToString();
+            // var uploads = Path.Combine(wwwRootPath, @"profiles");
+            // var extension = Path.GetExtension(imageFile.Image.FileName);
 
-            if (ImageUrl != null)
-            {
-                var oldImagePath = Path.Combine(wwwRootPath, ImageUrl.TrimStart('/'));
-                if (System.IO.File.Exists(oldImagePath))
-                {
-                    System.IO.File.Delete(oldImagePath);
-                }
-            }
+            // if (ImageUrl != null)
+            // {
+            //     var oldImagePath = Path.Combine(wwwRootPath, ImageUrl.TrimStart('/'));
+            //     if (System.IO.File.Exists(oldImagePath))
+            //     {
+            //         System.IO.File.Delete(oldImagePath);
+            //     }
+            // }
 
-            using (var fileStreams = new FileStream(Path.Combine(uploads, fileName + extension), FileMode.Create))
-            {
-                imageFile.Image.CopyTo(fileStreams);
-            }
+            // using (var fileStreams = new FileStream(Path.Combine(uploads, fileName + extension), FileMode.Create))
+            // {
+            //     imageFile.Image.CopyTo(fileStreams);
+            // }
+            
+            string fileName = imageFile.Image.FileName+ Guid.NewGuid().ToString();
+            string fileUri=   _blobUploader.UploadProfileImage(imageFile.Image, fileName);
 
-            ImageUrl = (@"/profiles/" + fileName + extension);
+            ImageUrl = (fileUri);
             return ImageUrl;
         }
 

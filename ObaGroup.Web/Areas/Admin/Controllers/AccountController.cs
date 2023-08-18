@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
-using Oba_group2.Areas.Identity.Pages.Account;
 using ObaGoupDataAccess.Repository.IRepository;
 using ObaGroupModel;
 using ObaGroupUtility;
@@ -21,16 +20,18 @@ namespace Oba_group2.Areas.Admin.Controllers;
 [Area("Admin")]
 public class AccountController : Controller
 {
-      private readonly SignInManager<IdentityUser> _signInManager;
-      private readonly ILogger<LoginModel> _logger;
-       private readonly UserManager<IdentityUser> _userManager;
-        private readonly IUserStore<IdentityUser> _userStore;
-        private readonly IUserEmailStore<IdentityUser> _emailStore;
-        private readonly ILogger<RegisterModel> _logger2;
-        private readonly IEmailSender _emailSender;
-        private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IWebHostEnvironment _hostEnvironment;
+    private readonly SignInManager<IdentityUser> _signInManager;
+    private readonly ILogger<LoginModel> _logger;
+    private readonly UserManager<IdentityUser> _userManager;
+    private readonly IUserStore<IdentityUser> _userStore;
+    private readonly IUserEmailStore<IdentityUser> _emailStore;
+    private readonly ILogger<RegisterModel> _logger2;
+    private readonly IEmailSender _emailSender;
+    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IWebHostEnvironment _hostEnvironment;
+    private readonly IKeyVaultManager _keyVaultManager;
+    private readonly IBlobUploader _blobUploader;
 
    public AccountController(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger,  UserManager<IdentityUser> userManager,
        IUserStore<IdentityUser> userStore,
@@ -38,7 +39,8 @@ public class AccountController : Controller
        IEmailSender emailSender,
        RoleManager<IdentityRole> roleManager,
        IUnitOfWork unitOfWork,
-       IWebHostEnvironment hostEnvironment)
+       IWebHostEnvironment hostEnvironment,
+       IKeyVaultManager keyVaultManager,IBlobUploader blobUploader)
    {
        _signInManager = signInManager;
        _logger = logger;
@@ -50,6 +52,8 @@ public class AccountController : Controller
        _roleManager = roleManager;
        _unitOfWork = unitOfWork;
        _hostEnvironment = hostEnvironment;
+       _keyVaultManager = keyVaultManager;
+       _blobUploader = blobUploader;
    }
    [BindProperty]
    public InputModel Input { get; set; }
@@ -97,7 +101,6 @@ public class AccountController : Controller
         if (User.Identity.IsAuthenticated)
         {
             return Redirect(redirectUrl);
-
         }
         return View();
     }
@@ -109,6 +112,7 @@ public class AccountController : Controller
     }
     [HttpGet]
     [Route("/dashboard/users")]
+    [Authorize(Roles = Constants.Role_Admin)]
     public IActionResult Users()
     {
         return File("~/dashboard/users/index.html", "text/html");
@@ -206,7 +210,8 @@ public class AccountController : Controller
                             responseModel.Message = "User logged in.";
                             responseModel.StatusCode = 200;
                             SetCsrfToken(role);
-                            return Ok(responseModel);
+                            var redirectUrl = $"{Request.Scheme}://{Request.Host}{Constants.UploadPage}";
+                            return Redirect(redirectUrl);
                         }
                     }
                     _logger.LogInformation("User does not have permission to this website");
@@ -266,7 +271,7 @@ public class AccountController : Controller
    
         [HttpPost]
         [Route(Constants.Create_User_EndPoint)]
-        //[Authorize(Roles = Constants.Role_Admin)]
+        [Authorize(Roles = Constants.Role_Admin)]
         public async Task<IActionResult> CreateUser([FromForm] RegisterModel Input,[FromForm] string? returnUrl, [FromForm] ImageFIleForm image)
       {
           string imageUrl=null;
@@ -312,7 +317,7 @@ public class AccountController : Controller
 
                     if (result.Succeeded)
                     {
-                        _logger.LogInformation("User created a new account with password.");
+                        // _logger.LogInformation("User created a new account with password.");
 
                         if (Input.Role == null)
                         {
@@ -322,11 +327,10 @@ public class AccountController : Controller
                         {
                             await _userManager.AddToRoleAsync(user, Input.Role);
                         }
-                        var userId = await _userManager.GetUserIdAsync(user);
+                        // var userId = await _userManager.GetUserIdAsync(user);
                         var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                        var callbackUrl =$"{Request.Scheme}://{Request.Host}{Constants.Confirm_Email_Endpoint}?userId={userId}&code={code}&returnUrl={returnUrl}";
-                        Console.WriteLine(callbackUrl);
+                        // code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                        var callbackUrl =$"{Request.Scheme}://{Request.Host}{Constants.Login_Endpoint}";
                         await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                             $" <tr>\r\n                      <td align=\"left\" width=\"30%\" style=\"vertical-align: top\">\r\n                        <p\r\n                          align=\"\"\r\n                          width=\"50%\"\r\n                          style=\"\r\n                            font-size: 20px;\r\n                            color: #2579a9;\r\n                            font-weight: 700;\r\n                          \"\r\n                        >\r\n                          Hi {user.FirstName}\r\n                        </p>\r\n                        <p\r\n                          style=\"\r\n                            color: #333;\r\n                            font-weight: 900;\r\n                            font-size: 16px;\r\n                            line-height: 24px;\r\n                          \"\r\n                        >\r\n                          Welcome to OBA GROUP, Lorem ipsum dolor sit amet\r\n                          consectetur.\r\n                        </p>\r\n                      </td>\r\n                    </tr>\r\n                    <tr style=\"padding: 10px 0\">\r\n                      <td\r\n                        align=\"left\"\r\n                        style=\"padding: 10px 0; font-weight: 700\"\r\n                      >\r\n                        <p\r\n                          style=\"\r\n                            color: #2579a9;\r\n                            font-weight: 800;\r\n                            font-weight: 14px;\r\n                          \"\r\n                        >\r\n                          Your account details\r\n                        </p>\r\n                        <p style=\"color: #555; font-size: 16px\">\r\n                          Use your email or username to login to your account\r\n                          and keep track of your of activities\r\n\r\n                          <br />\r\n                          Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.\r\n                        </p>\r\n                      </td>\r\n                    </tr>");
 
@@ -396,7 +400,7 @@ public class AccountController : Controller
                 formattedUser.lastName = applicationUser.LastName;
                 formattedUser.phoneNumber = applicationUser.PhoneNumber;
                 formattedUser.address = applicationUser.Address;
-            formattedUser.position = applicationUser.Position;
+                formattedUser.position = applicationUser.Position;
 
 
                 return Ok(formattedUser);
@@ -407,7 +411,7 @@ public class AccountController : Controller
         }
         [HttpGet]
         [Route(Constants.Get_All_User_Endpoint)]
-        //[Authorize(Roles = Constants.Role_Admin)]
+        [Authorize(Roles = Constants.Role_Admin)]
         public async Task<IActionResult> GetAllUsers()
         {
          
@@ -433,9 +437,10 @@ public class AccountController : Controller
 
         [HttpDelete]
         [Route(Constants.Delete_A_User_Endpoint)]
-        //[Authorize(Roles = Constants.Role_Admin)]
+        [Authorize(Roles = Constants.Role_Admin)]
         public async Task<IActionResult> DeleteAUser(string id)
         {
+            
             ResponseModel responseModel = new ResponseModel();
             if (id == null)
             {
@@ -451,6 +456,12 @@ public class AccountController : Controller
             ApplicationUser applicationUser = _unitOfWork.ApplicationUser.GetFirstOrDefault(u => u.Id == id);
             if (applicationUser != null)
             {
+                if (applicationUser.Id == _userManager.GetUserId(User))
+                {
+                    responseModel.StatusCode = 400;
+                    responseModel.Message = "User cannot delete him/her self";
+                    return BadRequest(responseModel);
+                }
                 responseModel.StatusCode = 200;
                 responseModel.Message = "User deleted successfully";
                 _unitOfWork.ApplicationUser.Remove(applicationUser);
@@ -507,131 +518,131 @@ public class AccountController : Controller
           }
       }
       
-      //[ValidateAntiForgeryToken]
-      [HttpPost]
-      [Route(Constants.Forgot_Password_Endpoint)]
-      public async Task<IActionResult> ForgotPassword([FromForm] ForgotPassword Input)
-      {
-          ResponseModel responseModel = new ResponseModel();
-          if (ModelState.IsValid)
-          {
-              var user = await _userManager.FindByEmailAsync(Input.Email);
-              if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
-              {
-                  responseModel.StatusCode = 200;
-                  responseModel.Message="If an account with the confirmed email address you provided exists in our system," +
-                                        " we have sent you an email with instructions on how to reset your password." +
-                                        " Please check your email and follow the instructions provided. " +
-                                        "If you don't receive the email within a few minutes, " +
-                                        "please check your spam folder or try again with a different email address.";
-                  return Ok(responseModel);
-              }
-              
-              var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-              code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-             
-              var callbackUrl =  $"{Request.Scheme}://{Request.Host}{Constants.Reset_Password_Endpoint}?code={code}";
-
-              await _emailSender.SendEmailAsync(
-                  Input.Email,
-                  "Reset Password",
-                  $"Please reset your password by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-
-              responseModel.StatusCode = 200;
-              responseModel.Message = "Please reset your password by clicking on the link sent to your email";
-              return Ok(responseModel);
-          }
-          responseModel.Message = "Bad Request";
-          responseModel.StatusCode = 400;
-          var errors2 = ModelState.Values.SelectMany(v => v.Errors)
-              .Select(e => e.ErrorMessage);
-          return BadRequest(new {responseModel, Errors =errors2 });
-      }
-      
-      [HttpPost]
-      [Route(Constants.Reset_Password_Endpoint)]
-      public async Task<IActionResult> ResetPassword([FromForm] ResetPassword Input)
-      {
-          ResponseModel responseModel = new ResponseModel();
-          if (!ModelState.IsValid)
-          {
-              responseModel.Message = "Bad Request";
-              responseModel.StatusCode = 400;
-              var errors2 = ModelState.Values.SelectMany(v => v.Errors)
-                  .Select(e => e.ErrorMessage);
-              return BadRequest(new {responseModel, Errors =errors2 });
-          }
-
-          Input.Code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(Input.Code));
-          var user = await _userManager.FindByEmailAsync(Input.Email);
-          if (user == null)
-          {
-              // Don't reveal that the user does not exist
-              responseModel.StatusCode = 404;
-              responseModel.Message = "User does not exist.";
-              return NotFound(responseModel);
-          }
-
-          var result = await _userManager.ResetPasswordAsync(user, Input.Code, Input.Password);
-          if (result.Succeeded)
-          {
-              responseModel.StatusCode = 200;
-              responseModel.Message = "Your password has been reset.";
-              return Ok(responseModel);
-          }
-          responseModel.Message = "Bad Request";
-          responseModel.StatusCode = 400;
-          
-          foreach (var error in result.Errors)
-          {
-              ModelState.AddModelError(string.Empty, error.Description);
-          }
-          var errors = ModelState.Values.SelectMany(v => v.Errors)
-              .Select(e => e.ErrorMessage);
-          return BadRequest(new {responseModel, Errors =errors });
-      }
-      
-      [ValidateAntiForgeryToken]
-      [HttpPost]
-      [Route(Constants.Resend_Email_Verification_Endpoint)]
-      [Authorize(Roles = Constants.Role_Admin+","+Constants.Role_Staff)]
-      public async Task<IActionResult> ResendEmailVerification([FromForm] EmailVerification Input)
-      {
-          ResponseModel responseModel = new ResponseModel();
-          if (!ModelState.IsValid)
-          {
-              responseModel.StatusCode = 400;
-              responseModel.Message = "Bad request";
-              var errors = ModelState.Values.SelectMany(v => v.Errors)
-                  .Select(e => e.ErrorMessage);
-              return BadRequest(new {responseModel, Errors =errors });
-          }
-
-          var user = await _userManager.FindByEmailAsync(Input.Email);
-          if (user == null)
-          {
-              ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");
-              responseModel.StatusCode = 200;
-              responseModel.Message = "Verification email sent. Please check your email.";
-              return Ok(responseModel);
-          }
-
-          var userId = await _userManager.GetUserIdAsync(user);
-          var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-          code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-          var callbackUrl =$"{Request.Scheme}://{Request.Host}{Constants.Confirm_Email_Endpoint}?userId={userId}&code={code}";
-          
-          await _emailSender.SendEmailAsync(
-              Input.Email,
-              "Confirm your email",
-              $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-
-          ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");
-          responseModel.StatusCode = 200;
-          responseModel.Message = "Verification email sent. Please check your email.";
-          return Ok(responseModel);
-      }
-      
+      // //[ValidateAntiForgeryToken]
+      // [HttpPost]
+      // [Route(Constants.Forgot_Password_Endpoint)]
+      // public async Task<IActionResult> ForgotPassword([FromForm] ForgotPassword Input)
+      // {
+      //     ResponseModel responseModel = new ResponseModel();
+      //     if (ModelState.IsValid)
+      //     {
+      //         var user = await _userManager.FindByEmailAsync(Input.Email);
+      //         if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+      //         {
+      //             responseModel.StatusCode = 200;
+      //             responseModel.Message="If an account with the confirmed email address you provided exists in our system," +
+      //                                   " we have sent you an email with instructions on how to reset your password." +
+      //                                   " Please check your email and follow the instructions provided. " +
+      //                                   "If you don't receive the email within a few minutes, " +
+      //                                   "please check your spam folder or try again with a different email address.";
+      //             return Ok(responseModel);
+      //         }
+      //         
+      //         var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+      //         code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+      //        
+      //         var callbackUrl =  $"{Request.Scheme}://{Request.Host}{Constants.Reset_Password_Endpoint}?code={code}";
+      //
+      //         await _emailSender.SendEmailAsync(
+      //             Input.Email,
+      //             "Reset Password",
+      //             $"Please reset your password by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+      //
+      //         responseModel.StatusCode = 200;
+      //         responseModel.Message = "Please reset your password by clicking on the link sent to your email";
+      //         return Ok(responseModel);
+      //     }
+      //     responseModel.Message = "Bad Request";
+      //     responseModel.StatusCode = 400;
+      //     var errors2 = ModelState.Values.SelectMany(v => v.Errors)
+      //         .Select(e => e.ErrorMessage);
+      //     return BadRequest(new {responseModel, Errors =errors2 });
+      // }
+      //
+      // [HttpPost]
+      // [Route(Constants.Reset_Password_Endpoint)]
+      // public async Task<IActionResult> ResetPassword([FromForm] ResetPassword Input)
+      // {
+      //     ResponseModel responseModel = new ResponseModel();
+      //     if (!ModelState.IsValid)
+      //     {
+      //         responseModel.Message = "Bad Request";
+      //         responseModel.StatusCode = 400;
+      //         var errors2 = ModelState.Values.SelectMany(v => v.Errors)
+      //             .Select(e => e.ErrorMessage);
+      //         return BadRequest(new {responseModel, Errors =errors2 });
+      //     }
+      //
+      //     Input.Code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(Input.Code));
+      //     var user = await _userManager.FindByEmailAsync(Input.Email);
+      //     if (user == null)
+      //     {
+      //         // Don't reveal that the user does not exist
+      //         responseModel.StatusCode = 404;
+      //         responseModel.Message = "User does not exist.";
+      //         return NotFound(responseModel);
+      //     }
+      //
+      //     var result = await _userManager.ResetPasswordAsync(user, Input.Code, Input.Password);
+      //     if (result.Succeeded)
+      //     {
+      //         responseModel.StatusCode = 200;
+      //         responseModel.Message = "Your password has been reset.";
+      //         return Ok(responseModel);
+      //     }
+      //     responseModel.Message = "Bad Request";
+      //     responseModel.StatusCode = 400;
+      //     
+      //     foreach (var error in result.Errors)
+      //     {
+      //         ModelState.AddModelError(string.Empty, error.Description);
+      //     }
+      //     var errors = ModelState.Values.SelectMany(v => v.Errors)
+      //         .Select(e => e.ErrorMessage);
+      //     return BadRequest(new {responseModel, Errors =errors });
+      // }
+      //
+      // [ValidateAntiForgeryToken]
+      // [HttpPost]
+      // [Route(Constants.Resend_Email_Verification_Endpoint)]
+      // [Authorize(Roles = Constants.Role_Admin+","+Constants.Role_Staff)]
+      // public async Task<IActionResult> ResendEmailVerification([FromForm] EmailVerification Input)
+      // {
+      //     ResponseModel responseModel = new ResponseModel();
+      //     if (!ModelState.IsValid)
+      //     {
+      //         responseModel.StatusCode = 400;
+      //         responseModel.Message = "Bad request";
+      //         var errors = ModelState.Values.SelectMany(v => v.Errors)
+      //             .Select(e => e.ErrorMessage);
+      //         return BadRequest(new {responseModel, Errors =errors });
+      //     }
+      //
+      //     var user = await _userManager.FindByEmailAsync(Input.Email);
+      //     if (user == null)
+      //     {
+      //         ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");
+      //         responseModel.StatusCode = 200;
+      //         responseModel.Message = "Verification email sent. Please check your email.";
+      //         return Ok(responseModel);
+      //     }
+      //
+      //     var userId = await _userManager.GetUserIdAsync(user);
+      //     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+      //     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+      //     var callbackUrl =$"{Request.Scheme}://{Request.Host}{Constants.Confirm_Email_Endpoint}?userId={userId}&code={code}";
+      //     
+      //     await _emailSender.SendEmailAsync(
+      //         Input.Email,
+      //         "Confirm your email",
+      //         $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+      //
+      //     ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");
+      //     responseModel.StatusCode = 200;
+      //     responseModel.Message = "Verification email sent. Please check your email.";
+      //     return Ok(responseModel);
+      // }
+      //
       [HttpPost]
       [Route(Constants.Logout_Endpoint)]
       public async Task<IActionResult> Logout(string returnUrl = null)
@@ -681,20 +692,23 @@ public class AccountController : Controller
    
    private string UploadImage(ImageFIleForm imageFile)
    {
-       string wwwRootPath = _hostEnvironment.WebRootPath;
+       // string wwwRootPath = _hostEnvironment.WebRootPath;
        string ImageUrl;
        if (imageFile.Image != null)
        {
-           string fileName =imageFile.Image.FileName+ Guid.NewGuid().ToString();
-           var uploads = Path.Combine(wwwRootPath, @"profiles");
-           var extension = Path.GetExtension(imageFile.Image.FileName);
+           // string fileName =imageFile.Image.FileName+ Guid.NewGuid().ToString();
+           // var uploads = Path.Combine(wwwRootPath, @"profiles");
+           // var extension = Path.GetExtension(imageFile.Image.FileName);
+           //
+           // using (var fileStreams = new FileStream(Path.Combine(uploads, fileName + extension), FileMode.Create))
+           // {
+           //     imageFile.Image.CopyTo(fileStreams);
+           // }
+            
+           string fileName = imageFile.Image.FileName+ Guid.NewGuid().ToString();
+           string fileUri=   _blobUploader.UploadProfileImage(imageFile.Image, fileName);
            
-           using (var fileStreams = new FileStream(Path.Combine(uploads, fileName + extension), FileMode.Create))
-           {
-               imageFile.Image.CopyTo(fileStreams);
-           }
-
-           ImageUrl = (@"/profiles/" + fileName + extension);
+           ImageUrl = (fileUri);
            return ImageUrl;
        }
        return null;
@@ -702,17 +716,17 @@ public class AccountController : Controller
    
    public void SetCsrfToken(string role)
    {
-       var antiForgery = HttpContext.RequestServices.GetService<IAntiforgery>();
-       var tokens = antiForgery.GetAndStoreTokens(HttpContext);
+       // var antiForgery = HttpContext.RequestServices.GetService<IAntiforgery>();
+       // var tokens = antiForgery.GetAndStoreTokens(HttpContext);
        
        // Take request token (which is different from a cookie token)
-       var headerToken = tokens.RequestToken;
+       // var headerToken = tokens.RequestToken;
        // Set another cookie for a request token
-       Response.Cookies.Append("RequestVerificationToken", headerToken, new CookieOptions
-       {
-           HttpOnly = false
-       });
-       HttpContext.Session.SetString("OauthTokenAccessToken", headerToken);
+       // Response.Cookies.Append("RequestVerificationToken", headerToken, new CookieOptions
+       // {
+       //     HttpOnly = false
+       // });
+       // HttpContext.Session.SetString("OauthTokenAccessToken", headerToken);
        Response.Cookies.Append("Role", role, new CookieOptions
         {
             HttpOnly = false

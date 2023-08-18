@@ -14,16 +14,20 @@ public class BiographyController : Controller
 
     private readonly IUnitOfWork _unitOfWork;
     private readonly IWebHostEnvironment _hostEnvironment;
+    private IBlobUploader _blobUploader;
 
-    public BiographyController(IUnitOfWork unitOfWork, IWebHostEnvironment hostEnvironment)
+
+    public BiographyController(IUnitOfWork unitOfWork, IWebHostEnvironment hostEnvironment,IBlobUploader blobUploader)
     {
         _unitOfWork = unitOfWork;
         _hostEnvironment = hostEnvironment;
+        _blobUploader = blobUploader;
     }
 
  
     [HttpGet]
     [Route("/dashboard/biographys")]
+    [Authorize(Roles = Constants.Role_Admin+","+Constants.Role_Staff)]
     public IActionResult Index()
     {
         return File("~/dashboard/biographys/index.html", "text/html");
@@ -53,7 +57,7 @@ public class BiographyController : Controller
    
     [HttpGet]
     [Route(Constants.List_All_Biographies_Endpoint)]
-    //[Authorize(Roles = Constants.Role_Admin+","+Constants.Role_Staff)]
+    [Authorize(Roles = Constants.Role_Admin+","+Constants.Role_Staff)]
     public IActionResult GetAll()
     {
         IEnumerable<Biography> biographies = _unitOfWork.biography.GetAll();
@@ -63,7 +67,7 @@ public class BiographyController : Controller
     [HttpPost]
     [RequestFormLimits(MultipartBodyLengthLimit = 6104857600)]
     [RequestSizeLimit(6104857600)]
-   // [Authorize(Roles = Constants.Role_Admin)]
+   [Authorize(Roles = Constants.Role_Admin)]
     [Route(Constants.Upsert_Biography_Endpoint)]
     public IActionResult Upsert([FromForm] Biographies biographies)
     {
@@ -131,21 +135,25 @@ public class BiographyController : Controller
     {
         string biographyImages;
         List<string> biographyImageList = new List<string>();
-        string wwwRootPath = _hostEnvironment.WebRootPath;
+        // string wwwRootPath = _hostEnvironment.WebRootPath;
         foreach (var file in Images)
         {
             if (file != null)
             {
+               
                 string fileName = file.FileName + Guid.NewGuid().ToString();
-                var uploads = Path.Combine(wwwRootPath, @"biographyImages");
-                var extension = Path.GetExtension(file.FileName);
+                string fileUri=   _blobUploader.UploadBiographyImage(file, fileName);
+                
+                
+                // var uploads = Path.Combine(wwwRootPath, @"biographyImages");
+                // var extension = Path.GetExtension(file.FileName);
 
-                using (var fileStreams = new FileStream(Path.Combine(uploads, fileName + extension), FileMode.Create))
-                {
-                    file.CopyTo(fileStreams);
-                }
+                // using (var fileStreams = new FileStream(Path.Combine(uploads, fileName + extension), FileMode.Create))
+                // {
+                //     file.CopyTo(fileStreams);
+                // }
 
-                biographyImageList.Add(@"/biographyImages/" + fileName + extension);
+                biographyImageList.Add(fileUri);
             }
         }
 
@@ -345,16 +353,19 @@ public class BiographyController : Controller
         {
             if (file != null)
             {
+                // string fileName = file.FileName + Guid.NewGuid().ToString();
+                // var uploads = Path.Combine(wwwRootPath, @"biographyVideos");
+                // var extension = Path.GetExtension(file.FileName);
+
+                // using (var fileStreams = new FileStream(Path.Combine(uploads, fileName + extension), FileMode.Create))
+                // {
+                //     file.CopyTo(fileStreams);
+                // }
+                
                 string fileName = file.FileName + Guid.NewGuid().ToString();
-                var uploads = Path.Combine(wwwRootPath, @"biographyVideos");
-                var extension = Path.GetExtension(file.FileName);
+                string fileUri=   _blobUploader.UploadBiographyVideo(file, fileName);
 
-                using (var fileStreams = new FileStream(Path.Combine(uploads, fileName + extension), FileMode.Create))
-                {
-                    file.CopyTo(fileStreams);
-                }
-
-                biographyVideoList.Add(@"/biographyVideos/" + fileName + extension);
+                biographyVideoList.Add(fileUri);
             }
         }
 

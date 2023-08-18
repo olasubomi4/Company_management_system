@@ -1,15 +1,29 @@
 using System.Net.Mail;
 using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.Extensions.Logging;
 using MimeKit;
+using ObaGroupUtility;
 using SmtpClient = MailKit.Net.Smtp.SmtpClient;
 
 namespace ObaGroup.Utility;
 
 public class EmailSender:IEmailSender
 {
+  private static readonly ILogger _logger = LoggerFactory.Create(builder =>
+  {
+    builder.AddConsole();
+  }).CreateLogger("EmailSender");
+
+  private readonly IKeyVaultManager _keyVaultManager;
+  public EmailSender(IKeyVaultManager keyVaultManager)
+  {
+    _keyVaultManager = keyVaultManager;
+  }
     public Task SendEmailAsync(string email, string subject, string htmlMessage)
     {
+      try
+      {
         var body = $@"
 <html xmlns=""http://www.w3.org/1999/xhtml"">
   <head>
@@ -324,20 +338,30 @@ public class EmailSender:IEmailSender
 
 ";
         var emailToSend = new MimeMessage();
-        emailToSend.From.Add(MailboxAddress.Parse("obagroup422@gmail.com"));
+        string broadCastingMail = _keyVaultManager.GetBrodCastingMail();
+        string broadCastingMailPassword = _keyVaultManager.GetBrodCastingMailPassword();
+        
+        emailToSend.From.Add(MailboxAddress.Parse(broadCastingMail));
         emailToSend.To.Add(MailboxAddress.Parse(email));
         emailToSend.Subject = subject;
-        emailToSend.Body =new TextPart(MimeKit.Text.TextFormat.Html){Text = body};
+        emailToSend.Body = new TextPart(MimeKit.Text.TextFormat.Html) { Text = body };
 
-        
+
         using (var emailClient = new SmtpClient())
         {
-            emailClient.Connect("smtp.gmail.com",587,MailKit.Security.SecureSocketOptions.StartTls);
-            emailClient.Authenticate("obagroup422@gmail.com","uufbhrpmrazrqxkn");
-            emailClient.Send(emailToSend);
-            emailClient.Disconnect(true);
+          emailClient.Connect("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
+          emailClient.Authenticate(broadCastingMail, "uufbhrpmrazrqxkn");
+          emailClient.Send(emailToSend);
+          emailClient.Disconnect(true);
 
         }
+
         return Task.CompletedTask;
+      }
+      catch (Exception e)
+      {
+        _logger.LogError("Could not send mail to because "+ e);
+        return null;
+      }
     }
 }

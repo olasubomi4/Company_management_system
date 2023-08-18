@@ -5,32 +5,34 @@ using ObaGoupDataAccess.Data;
 using ObaGoupDataAccess.Repository;
 using ObaGoupDataAccess.Repository.IRepository;
 using ObaGroupModel;
+using ObaGroupUtility;
+using RestSharp;
 
 namespace ObaGoupDataAccess;
 
-public class OAuthTokenProperties
+public class OAuthTokenProperties:IOAuthTokenProperties
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IUnitOfWork _unitOfWork;
-    public string accessToken;
+    private readonly Icryption _cryption;
+
     
     private static readonly ILogger _logger = LoggerFactory.Create(builder =>
     {
         builder.AddConsole();
     }).CreateLogger("OAuthTokenProperties");
     
-    public OAuthTokenProperties(IHttpContextAccessor httpContextAccessor, IUnitOfWork unitOfWork)
+    public OAuthTokenProperties(IHttpContextAccessor httpContextAccessor, IUnitOfWork unitOfWork,Icryption cryption)
     {
         _httpContextAccessor = httpContextAccessor;
         _unitOfWork = unitOfWork;
+        _cryption = cryption;
     }
     
     public string GetAccessToken()
     {
         _logger.LogInformation("GETTING ACCESS TOKEN");
-        var context = _httpContextAccessor.HttpContext;
-        var token = context.Request.Cookies["OauthTokenAccessToken"] ?? "";
-       _logger.LogInformation("Token ="+token);
+        var token = new GoogleTokensUtility(_httpContextAccessor,_cryption).GetAccessToken();
        return token;
     }
     public int GetExpires_in()
@@ -51,33 +53,54 @@ public class OAuthTokenProperties
         {
             return null;
         }
-        var refreshToken=userOauthRefreshToken.RefreshToken;
-        _logger.LogInformation("refresh token ="+ refreshToken);
+        string? refreshToken= null;
+        if (!string.IsNullOrEmpty(userOauthRefreshToken.RefreshToken))
+        {
+             refreshToken=_cryption.Decrypt(userOauthRefreshToken.RefreshToken);
+        }
+       
+   
         return refreshToken;
     }
-    
+
+    public void RevokeAppAccessToCalendar(string accessToken)
+    {
+        RestClient restClient = new RestClient();
+        RestSharp.RestRequest request = new RestSharp.RestRequest();
+        
+        request.AddQueryParameter("token", accessToken);
+
+        restClient.BaseUrl = new System.Uri(Constants.Google_Revoke_Token_Endpoint);
+        var response = restClient.Post(request);
+        
+        Console.WriteLine(response.Content);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            RevokeToken(accessToken);
+        }
+    }
     public void RevokeToken(string accessToken)
     {
         _logger.LogInformation("REVOKING TOKEN");
-        var context = _httpContextAccessor.HttpContext;
-        context.Response.Cookies.Append("OauthTokenAccessToken", accessToken);
         
-        context.Response.Cookies.Delete("OauthTokenIdToken");
-        
+        new GoogleTokensUtility(_httpContextAccessor,_cryption).SetAccessToken(accessToken);
+        new GoogleTokensUtility(_httpContextAccessor,_cryption).DeleteOauthTokenId();
         var user = _httpContextAccessor.HttpContext.User;
         var userEmail = user.FindFirst(ClaimTypes.Email)?.Value;
         var userOauthRefreshTokenObj=_unitOfWork.UserOauthRefreshTokenRepository.GetFirstOrDefault(u => u.ApplicationUser.Email == userEmail);
-        _unitOfWork.UserOauthRefreshTokenRepository.Remove(userOauthRefreshTokenObj);
-        
+        if (userOauthRefreshTokenObj != null)
+        {
+           _unitOfWork.UserOauthRefreshTokenRepository.Remove(userOauthRefreshTokenObj);
+           _unitOfWork.Save();
+        }
         _logger.LogInformation("DONE REVOKING TOKEN");
     }
     
-    public void overrideAccessToken(string accessTokenFromGoogle)
+    public void OverrideAccessToken(string accessTokenFromGoogle)
     {        
-        _logger.LogInformation("OVERRIDING ACCESS TOKEN = "+accessTokenFromGoogle);
-        var context = _httpContextAccessor.HttpContext;
-        accessToken = accessTokenFromGoogle;
-        context.Response.Cookies.Append("OauthTokenAccessToken", accessToken);
+        _logger.LogInformation("OVERRIDING ACCESS TOKEN");
+        string accessToken = accessTokenFromGoogle;
+        new GoogleTokensUtility(_httpContextAccessor,_cryption).SetAccessToken(accessToken);
         _logger.LogInformation("DONE OVERRIDING ACCESS TOKEN");
     }
 }

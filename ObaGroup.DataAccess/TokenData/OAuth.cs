@@ -11,17 +11,19 @@ using RestSharp;
 
 namespace ObaGoupDataAccess;
 
-public  class OAuth
+public  class OAuth:IOauth
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly OAuthTokenProperties oAuthTokenProperties;
+    private readonly IOAuthTokenProperties _oAuthTokenProperties;
+    private readonly IKeyVaultManager _keyVaultManager;
 
-    public OAuth(IUnitOfWork unitOfWork,IHttpContextAccessor httpContextAccessor)
+    public OAuth(IUnitOfWork unitOfWork,IHttpContextAccessor httpContextAccessor,IKeyVaultManager keyVaultManager,IOAuthTokenProperties oAuthTokenProperties)
     {
         _unitOfWork = unitOfWork;
         _httpContextAccessor = httpContextAccessor;
-        oAuthTokenProperties = new OAuthTokenProperties(_httpContextAccessor, _unitOfWork);
+        _oAuthTokenProperties = oAuthTokenProperties;
+        _keyVaultManager = keyVaultManager;
     }
     
     private static readonly ILogger _logger = LoggerFactory.Create(builder =>
@@ -31,29 +33,24 @@ public  class OAuth
     
     public Boolean RefreshTokens()
     {
-        var currentDirectory = Directory.GetCurrentDirectory();
-        var tokenFile = currentDirectory+"/tokens.json";
-        var credentialsFile =
-            currentDirectory+"/client_secret_87857337556-iqm8t560cfhc8ddln4mdk88ahl311na9.apps.googleusercontent.com.json";
-        var credentials = JObject.Parse((System.IO.File.ReadAllText(credentialsFile)));
+
+        var googleCalenderGrantPermissionClientSecret = _keyVaultManager.GetGoogleCalenderGrantPermissionClientSecret();
+        var googleCalenderGrantPermissionClientId = _keyVaultManager.GetGoogleCalenderGrantPermissionClientId();
+
 
         RestClient restClient = new RestClient();
         RestSharp.RestRequest request = new RestSharp.RestRequest();
         
-        var client_id=credentials["web"]["client_id"].ToString();
-        var clientSecret = credentials["web"]["client_secret"].ToString();
-
         _logger.LogInformation("checking if refresh token exist");
 
-        var refresh_tokens = oAuthTokenProperties.GetRefreshToken();
-        request.AddQueryParameter("client_id", client_id);
-        request.AddQueryParameter("client_secret", clientSecret);
+        var refresh_tokens = _oAuthTokenProperties.GetRefreshToken();
+        request.AddQueryParameter("client_id", googleCalenderGrantPermissionClientId);
+        request.AddQueryParameter("client_secret", googleCalenderGrantPermissionClientSecret);
         request.AddQueryParameter("grant_type", "refresh_token");
         request.AddQueryParameter("refresh_token", refresh_tokens);
 
         restClient.BaseUrl = new System.Uri(Constants.Google_Get_Token_Endpoint);
         var response = restClient.Post(request);
-        _logger.LogCritical(response.Content.ToString());
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             JObject newTokens = JObject.Parse(response.Content);
@@ -62,14 +59,13 @@ public  class OAuth
            
                 if (newTokens["access_token"] != null)
                 {
-                    _logger.LogInformation("Access token = "+ newTokens["access_token"].ToString());
                     
-                    oAuthTokenProperties.overrideAccessToken(newTokens["access_token"].ToString());
+                    _oAuthTokenProperties.OverrideAccessToken(newTokens["access_token"].ToString());
                     
-                    var accessToken = oAuthTokenProperties.GetAccessToken(); 
+                    var accessToken = _oAuthTokenProperties.GetAccessToken(); 
                     while (accessToken == null)
                     {
-                        accessToken = oAuthTokenProperties.GetAccessToken();
+                        accessToken = _oAuthTokenProperties.GetAccessToken();
                     }
                     _logger.LogInformation("Access token was saved");
                 }

@@ -25,6 +25,8 @@ public class ApplicationUserRepository : Repository<ApplicationUser>, IApplicati
             objFromDb.Position = obj.Position;
 
         }
+
+        _db.ApplicationUsers.Update(objFromDb);
     }
 
   

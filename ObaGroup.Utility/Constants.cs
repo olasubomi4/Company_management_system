@@ -22,7 +22,7 @@ public static class Constants
     public const string Google_Get_Token_Endpoint = "https://oauth2.googleapis.com/token";
     public const string Google_Revoke_Token_Endpoint = "https://oauth2.googleapis.com/revoke";
 
-    public const string Get_A_Document_Endpoint = "/Dashboard/Document/";
+    public const string Get_A_Document_Endpoint = "/Dashboard/Document";
     public const string Upsert_A_Document_Endpoint = "/Dashboard/Document/Upsert";
     public const string List_Documents_Endpoint = "/Dashboard/Document/GetAll/";
     public const string Delete_A_Document_File_Endpoint = "/Dashboard/Document/DeleteFile/";
@@ -32,7 +32,6 @@ public static class Constants
 
     public const string Update_User_Profile_Endpoint = "/Dashboard/Profile/Update";
     public const string Change_User_profile_Password_Endpoint = "/Dashboard/Profile/ChangePassword";
-    public const string Reset_Password_Endpoint = "/Dashboard/Profile/ResetPassword";
     public const string Resend_Email_Verification_Endpoint = "/Dashboard/Profile/ResendEmailVerification";
     
     public const string Create_User_EndPoint = "/Dashboard/Admin/CreateUser";
@@ -45,7 +44,7 @@ public static class Constants
     public const string Login_Google_Callback_Endpoint = "/Google/Callback/Login";
     public const string Logout_Endpoint = "/Logout";
     public const string Confirm_Email_Endpoint = "/ConfirmEmail";
-    public const string Forgot_Password_Endpoint = "/ForgotPassword";
+
     
     public const string Upsert_Biography_Endpoint = "/Dashboard/Admin/Biography/Upsert";
     public const string List_All_Biographies_Endpoint = "/Dashboard/Biography/GetAll";

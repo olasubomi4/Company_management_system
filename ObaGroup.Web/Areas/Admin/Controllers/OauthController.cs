@@ -12,14 +12,19 @@ namespace Oba_group2.Areas.Admin.Controllers;
 
 public  class OauthController : Controller
 {
-    private readonly string currentDirectory = Directory.GetCurrentDirectory();
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IKeyVaultManager _keyVaultManager;
+    private readonly Icryption _cryption;
+    private readonly IOAuthTokenProperties _oAuthTokenProperties;
 
-    public OauthController(IHttpContextAccessor httpContextAccessor, IUnitOfWork unitOfWork)
+    public OauthController(IHttpContextAccessor httpContextAccessor, IUnitOfWork unitOfWork,IKeyVaultManager keyVaultManager,Icryption cryption,IOAuthTokenProperties oAuthTokenProperties)
     {
         _httpContextAccessor = httpContextAccessor;
         _unitOfWork = unitOfWork;
+        _keyVaultManager = keyVaultManager;
+        _cryption = cryption;
+        _oAuthTokenProperties = oAuthTokenProperties;
     }
     
     [Route(Constants.Google_Calendar_Callback_Endpoint)]
@@ -27,8 +32,7 @@ public  class OauthController : Controller
     {
         ResponseModel responseModel = new ResponseModel();
         if (string.IsNullOrWhiteSpace(error))
-        {
-            string uri= this.GetTokens(code);
+        { string uri= this.GetTokens(code);
            return Redirect(uri);
         }
         return Redirect(failedAttempt(error));
@@ -42,20 +46,14 @@ public  class OauthController : Controller
     [HttpPost]
     public string GetTokens(string code)
     {
-        OAuthTokenProperties oAuthTokenProperties = new OAuthTokenProperties(_httpContextAccessor,_unitOfWork);
-        var tokenFile = currentDirectory+"/tokens.json";
-        var credentialsFile =
-            currentDirectory+"/client_secret_87857337556-iqm8t560cfhc8ddln4mdk88ahl311na9.apps.googleusercontent.com.json";
-        var credentials = JObject.Parse((System.IO.File.ReadAllText(credentialsFile)));
-
         RestClient restClient = new RestClient();
         RestSharp.RestRequest request = new RestSharp.RestRequest();
-        
-        var client_id=credentials["web"]["client_id"].ToString();
-        var clientSecret = credentials["web"]["client_secret"].ToString();
 
-        request.AddQueryParameter("client_id", client_id);
-        request.AddQueryParameter("client_secret", clientSecret);
+        var googleCalenderGrantPermissionClientSecret = _keyVaultManager.GetGoogleCalenderGrantPermissionClientSecret();
+        var googleCalenderGrantPermissionClientId = _keyVaultManager.GetGoogleCalenderGrantPermissionClientId();
+
+        request.AddQueryParameter("client_id", googleCalenderGrantPermissionClientId);
+        request.AddQueryParameter("client_secret", googleCalenderGrantPermissionClientSecret);
         request.AddQueryParameter("code", code);
         request.AddQueryParameter("grant_type", "authorization_code");
         request.AddQueryParameter("redirect_uri",  $"{Request.Scheme}://{Request.Host}{Constants.Google_Calendar_Callback_Endpoint}");
@@ -63,7 +61,6 @@ public  class OauthController : Controller
         restClient.BaseUrl = new System.Uri(Constants.Google_Get_Token_Endpoint);
         var response =  restClient.Post(request);
         string responseContent = response.Content.ToString();
-    
         
         var token = JObject.Parse(responseContent);
         OauthToken oauthToken = new OauthToken();
@@ -93,6 +90,10 @@ public  class OauthController : Controller
             {
                 oauthToken.refresh_token = token["refresh_token"].ToString();
             }
+            else
+            {
+             _oAuthTokenProperties.RevokeAppAccessToCalendar(oauthToken.access_token);
+            }
         }
         Console.WriteLine(oauthToken);
         
@@ -101,9 +102,10 @@ public  class OauthController : Controller
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             Console.WriteLine("GETTING VALUE FROM METHOD");
-            Console.WriteLine(oAuthTokenProperties.GetAccessToken());
+            Console.WriteLine(_oAuthTokenProperties.GetAccessToken());
                 
-            System.IO.File.WriteAllText(tokenFile,response.Content);
+            _keyVaultManager.UpsertSecret("GoogleCalendarToken", response.Content);
+            
             Console.WriteLine("hello");
             Console.WriteLine(response.Content);
             return $"{Request.Scheme}://{Request.Host}{Constants.Create_Event_Endpoint}";
@@ -115,13 +117,7 @@ public  class OauthController : Controller
     [HttpPost]
     public IActionResult RevokeTokens()
     {
-        OAuthTokenProperties oAuthTokenProperties = new OAuthTokenProperties(_httpContextAccessor,_unitOfWork);
-        //var tokenFile = currentDirectory+"/tokens.json";
-        //var credentialsFile = currentDirectory+"/client_secret_87857337556-iqm8t560cfhc8ddln4mdk88ahl311na9.apps.googleusercontent.com.json";
-      //  var tokens = JObject.Parse((System.IO.File.ReadAllText(tokenFile)));
-
-     
-        var access_token =oAuthTokenProperties.GetAccessToken();
+        var access_token =_oAuthTokenProperties.GetAccessToken();
         Console.WriteLine(access_token);
         RestClient restClient = new RestClient();
         RestSharp.RestRequest request = new RestSharp.RestRequest();
@@ -134,7 +130,7 @@ public  class OauthController : Controller
         Console.WriteLine(response.Content);
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
-            oAuthTokenProperties.RevokeToken(access_token);
+            _oAuthTokenProperties.RevokeToken(access_token);
             return Ok(response.Content);
         }
         return BadRequest(response.Content);
@@ -142,64 +138,54 @@ public  class OauthController : Controller
     
     public void SetCsrfToken(OauthToken oauthToken)
     {
-        var context = _httpContextAccessor.HttpContext;
+
         
         if (oauthToken.access_token != null)
         {
-            Response.Cookies.Append("OauthTokenAccessToken", oauthToken.access_token, new CookieOptions
-            {
-                HttpOnly = false
-            });
-            context.Session.SetString("OauthTokenAccessToken", oauthToken.access_token);
+            new GoogleTokensUtility(_httpContextAccessor,_cryption).SetAccessToken(oauthToken.access_token);
         }
 
         if (oauthToken.id_token != null)
         {
-            Response.Cookies.Append("OauthTokenIdToken", oauthToken.id_token, new CookieOptions
-            {
-                HttpOnly = false
-            });
-            context.Session.SetString("OauthTokenIdToken", oauthToken.id_token);
+            new GoogleTokensUtility(_httpContextAccessor,_cryption).SetOauthTokenId(oauthToken.id_token);
         }
 
         if (oauthToken.token_type != null)
         {
-            Response.Cookies.Append("OauthTokenType", oauthToken.token_type, new CookieOptions
-            {
-                HttpOnly = false
-            });
-            context.Session.SetString("OauthTokenType", oauthToken.token_type);
+            new GoogleTokensUtility(_httpContextAccessor,_cryption).SetOauthTokenType(oauthToken.token_type);
         }
 
         if (oauthToken.refresh_token != null)
         {
-            UserOauthRefreshToken userOauthRefreshToken = new UserOauthRefreshToken();
             var user = _httpContextAccessor.HttpContext.User;
             var userEmail = user.FindFirst(ClaimTypes.Email)?.Value;
+         
             ApplicationUser applicationUser = _unitOfWork.ApplicationUser.GetFirstOrDefault(u => u.Email == userEmail);
+            UserOauthRefreshToken userOauthRefreshToken = _unitOfWork.UserOauthRefreshTokenRepository.GetFirstOrDefault(u => u.ApplicationUser == applicationUser);
 
-            userOauthRefreshToken.RefreshToken = oauthToken.refresh_token;
-            userOauthRefreshToken.ApplicationUser = applicationUser;
-            _unitOfWork.UserOauthRefreshTokenRepository.Upsert(userOauthRefreshToken);
+            if (userOauthRefreshToken != null)
+            {
+                userOauthRefreshToken.RefreshToken =_cryption.Encrypt(oauthToken.refresh_token);
+                _unitOfWork.UserOauthRefreshTokenRepository.Update(userOauthRefreshToken);
+            }
+            else
+            {
+                userOauthRefreshToken = new UserOauthRefreshToken();
+                userOauthRefreshToken.RefreshToken = _cryption.Encrypt(oauthToken.refresh_token);
+                userOauthRefreshToken.ApplicationUser = applicationUser;
+                _unitOfWork.UserOauthRefreshTokenRepository.Add(userOauthRefreshToken);
+            }
+            _unitOfWork.Save();
         }
 
         if (oauthToken.expires_in != null)
         {
-            Response.Cookies.Append("OauthExpiresIn", oauthToken.expires_in.ToString(), new CookieOptions
-            {
-                HttpOnly = false
-            });
-            context.Session.SetString("OauthExpiresIn", oauthToken.expires_in.ToString());
+            new GoogleTokensUtility(_httpContextAccessor,_cryption).SetOauthTokenExpiresIn(oauthToken.expires_in.ToString()); 
         }
 
         if (oauthToken.scope != null)
         {
-
-            Response.Cookies.Append("oauthTokenScope", oauthToken.scope, new CookieOptions
-            {
-                HttpOnly = false
-            });
-            context.Session.SetString("oauthTokenScope", oauthToken.scope);
+            new GoogleTokensUtility(_httpContextAccessor,_cryption).SetOauthTokenScope(oauthToken.scope);
         }
     }
 }

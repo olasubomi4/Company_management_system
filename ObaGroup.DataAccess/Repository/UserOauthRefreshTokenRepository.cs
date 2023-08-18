@@ -1,5 +1,6 @@
 using ObaGoupDataAccess.Data;
 using ObaGroupModel;
+using ObaGroupUtility;
 
 namespace ObaGoupDataAccess.Repository.IRepository;
 
@@ -11,22 +12,9 @@ public class UserOauthRefreshTokenRepository : Repository<UserOauthRefreshToken>
     {
         _db = db;
     }
-
-    public void Upsert(UserOauthRefreshToken obj)
+    
+    public void Update(UserOauthRefreshToken obj)
     {
-        var refreshTokenObj = _db.UserOauthRefreshToken.FirstOrDefault(u => u.ApplicationUser.Email == obj.ApplicationUser.Email);
-
-        if (refreshTokenObj== null)
-        {
-          /* var userIdFromDb = refreshTokenObj.Email;
-            if (string.IsNullOrWhiteSpace(userIdFromDb))
-            {
-            */
-                _db.UserOauthRefreshToken.Add(obj);
-                _db.SaveChanges();
-           // }
-        }
-
         _db.UserOauthRefreshToken.Update(obj);
     }
 }

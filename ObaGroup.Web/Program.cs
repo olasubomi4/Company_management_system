@@ -1,16 +1,17 @@
-using System.Collections.Immutable;
-using Microsoft.AspNetCore.Http.Features;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
-
+using ObaGoupDataAccess;
 using ObaGroup.Utility;
-using Microsoft.Extensions.DependencyInjection;
+
 using ObaGoupDataAccess.Data;
 using ObaGoupDataAccess.DataAccess.DbInitializer;
 using ObaGoupDataAccess.Repository;
 using ObaGoupDataAccess.Repository.IRepository;
 using ObaGroupUtility;
+
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,26 +24,38 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 ));
 
 
-/*builder.Services.AddAuthentication().AddGoogle(googleOptions =>
-{
-    googleOptions.ClientId = builder.Configuration.GetSection("GoogleAuthSettings")
-        .GetValue<string>("ClientId");
-    googleOptions.ClientSecret = builder.Configuration.GetSection("GoogleAuthSettings")
-        .GetValue<string>("ClientSecret");
-});
-*/
+// /*builder.Services.AddAuthentication().AddGoogle(googleOptions =>
+// {
+//     googleOptions.ClientId = builder.Configuration.GetSection("GoogleAuthSettings")
+//         .GetValue<string>("ClientId");
+//     googleOptions.ClientSecret = builder.Configuration.GetSection("GoogleAuthSettings")
+//         .GetValue<string>("ClientSecret");
+// });
+// */
 
 builder.Services.AddIdentity<IdentityUser,IdentityRole>().AddDefaultTokenProviders().AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddCors();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IDbIntializer, DbInitalizer>();
-builder.Services.AddSingleton<IEmailSender, EmailSender>();
+builder.Services.AddScoped<IEmailSender, EmailSender>();
+builder.Services.AddScoped <IKeyVaultManager,KeyVaultManager>();
+builder.Services.AddScoped<Icryption, Cryption>();
+builder.Services.AddScoped<IGoogleTokensUtility, GoogleTokensUtility>();
+builder.Services.AddScoped <IBlobUploader, BlobUploader>();
+builder.Services.AddScoped<IOauth, OAuth>();
+builder.Services.AddScoped<IOAuthTokenProperties, OAuthTokenProperties>();
+string kvUri = builder.Configuration.GetSection("keyVaultUrl").Value;
+builder.Services.AddSingleton(new SecretClient(new Uri(kvUri), new DefaultAzureCredential()));
 
+
+IKeyVaultManager _keyVaultManager = new KeyVaultManager(new SecretClient(new Uri(kvUri), new DefaultAzureCredential()));
+var googleSignInClientId = _keyVaultManager.GetGoogleSignInClientId();
+var googleSignInClientSecret = _keyVaultManager.GetGoogleSignInClientSecret();
 
 builder.Services.AddAuthentication().AddGoogle(googleOptions =>
 {
-    googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-    googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+    googleOptions.ClientId = googleSignInClientId;
+    googleOptions.ClientSecret =googleSignInClientSecret;
 });
 
 builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
@@ -104,6 +117,7 @@ app.MapControllerRoute(
 
 app.Run();
 
+
 void SeedDatabase()
 {
     using (var scope = app.Services.CreateScope())
@@ -112,3 +126,4 @@ void SeedDatabase()
         dbInitializer.Initialize();
     }
 }
+

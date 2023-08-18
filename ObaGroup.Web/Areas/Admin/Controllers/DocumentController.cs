@@ -1,10 +1,7 @@
 
 using System.Text;
 using System.Text.Json;
-using Microsoft.AspNetCore.Antiforgery;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using ObaGoupDataAccess.Repository.IRepository;
 using ObaGroupModel;
 using ObaGroupUtility;
@@ -19,11 +16,13 @@ public class DocumentController : Controller
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IWebHostEnvironment _hostEnvironment;
+    private IBlobUploader _blobUploader;
     
-    public DocumentController(IUnitOfWork unitOfWork, IWebHostEnvironment hostEnvironment )
+    public DocumentController(IUnitOfWork unitOfWork, IWebHostEnvironment hostEnvironment,IBlobUploader blobUploader)
     {
         _unitOfWork = unitOfWork;
         _hostEnvironment = hostEnvironment;
+        _blobUploader = blobUploader;
     }
     // GET
 
@@ -100,31 +99,30 @@ public class DocumentController : Controller
 
         obj = documents.Document;
         string type = obj.Type;
-       
         var files = documents.Files;
         string wwwRootPath = _hostEnvironment.WebRootPath;
         foreach (var file in files)
         {
             if (file != null)
             {
+      
+                // var uploads = Path.Combine(wwwRootPath, @"documents");
+                // if (obj.DocumentUrl != null)
+                // {
+                //     var oldImagePath = Path.Combine(wwwRootPath, obj.DocumentUrl.TrimStart('/'));
+                //     if (System.IO.File.Exists(oldImagePath))
+                //     {
+                //         System.IO.File.Delete(oldImagePath);
+                //     }
+                // }
+                //
+                // using (var fileStreams = new FileStream(Path.Combine(uploads, fileName + extension), FileMode.Create))
+                // {
+                //     file.CopyTo(fileStreams);
+                // }
                 string fileName = file.FileName+Guid.NewGuid().ToString();
-                var uploads = Path.Combine(wwwRootPath, @"documents");
-                var extension = Path.GetExtension(file.FileName);
-
-                if (obj.DocumentUrl != null)
-                {
-                    var oldImagePath = Path.Combine(wwwRootPath, obj.DocumentUrl.TrimStart('/'));
-                    if (System.IO.File.Exists(oldImagePath))
-                    {
-                        System.IO.File.Delete(oldImagePath);
-                    }
-                }
-
-                using (var fileStreams = new FileStream(Path.Combine(uploads, fileName + extension), FileMode.Create))
-                {
-                    file.CopyTo(fileStreams);
-                }
-                documentsUrl.Add( @"/documents/" + fileName + extension);
+                string documentUri= _blobUploader.UploadDocument(file, fileName);
+                documentsUrl.Add(documentUri);
                 type=getDocumentType(file, type);
             }
         }
@@ -197,11 +195,14 @@ public class DocumentController : Controller
 
        foreach (var documentUrl in documentUrlList)
        {
-           var oldImagePath = Path.Combine(_hostEnvironment.WebRootPath, documentUrl.TrimStart('/'));
-           if (System.IO.File.Exists(oldImagePath))
-           {
-               System.IO.File.Delete(oldImagePath);
-           }
+           string fileName = new Uri(documentUrl).Segments[2];
+
+           _blobUploader.DeleteDocument(fileName);
+           // var oldImagePath = Path.Combine(_hostEnvironment.WebRootPath, documentUrl.TrimStart('/'));
+           // if (System.IO.File.Exists(oldImagePath))
+           // {
+           //     System.IO.File.Delete(oldImagePath);
+           // }
        }
     
        _unitOfWork.document.Remove(obj);
@@ -217,7 +218,7 @@ public class DocumentController : Controller
    public IActionResult DeleteFile(int? id,[FromForm] string fileUrl)
    {
        ResponseModel responseModel = new ResponseModel();
-       fileUrl = fileUrl.Replace("\\", "");
+       // fileUrl = fileUrl.Replace("\\", "");
        if (id == null)
        {
            responseModel.Message = "Missing id field";
@@ -265,11 +266,16 @@ public class DocumentController : Controller
        }
        if (documentExist)
        {
-           var oldImagePath = Path.Combine(_hostEnvironment.WebRootPath, fileUrl.TrimStart('/'));
-           if (System.IO.File.Exists(oldImagePath))
-           {
-               System.IO.File.Delete(oldImagePath);
-           }
+           
+           string fileName = new Uri(fileUrl).Segments[2];
+
+           _blobUploader.DeleteDocument(fileName);
+           
+           // var oldImagePath = Path.Combine(_hostEnvironment.WebRootPath, fileUrl.TrimStart('/'));
+           // if (System.IO.File.Exists(oldImagePath))
+           // {
+           //     System.IO.File.Delete(oldImagePath);
+           // }
        }
 
        obj.DocumentUrl = JsonSerializer.Serialize(documentUrlList);

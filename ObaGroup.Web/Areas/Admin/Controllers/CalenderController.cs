@@ -1,55 +1,45 @@
-using System.Globalization;
-using System.Security.Claims;
 using System.Text.Json;
 using System.Web;
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Auth.OAuth2.Flows;
-using Google.Apis.Auth.OAuth2.Responses;
-using Google.Apis.Calendar.v3;
 using Google.Apis.Calendar.v3.Data;
-using Google.Apis.Discovery.v1;
-using Google.Apis.Services;
-using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MySql.Data.MySqlClient.Memcached;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 using NuGet.Protocol;
 using ObaGoupDataAccess.Repository.IRepository;
 using ObaGroupModel;
 using ObaGroupModel.Calendar;
-using System.Net.Http.Json;
-using Google.Apis.Requests;
 using ObaGoupDataAccess;
 using ObaGroupUtility;
-using RestSharp;
-using JsonSerializer = System.Text.Json.JsonSerializer;
+
 
 
 namespace Oba_group2.Areas.Admin.Controllers;
 
 [Area("Admin")]
-//[Authorize(Roles = Constants.Role_Admin+","+Constants.Role_Staff)]
+[Authorize(Roles = Constants.Role_Admin+","+Constants.Role_Staff)]
 public class CalenderController: Controller
 {
-    class CalendarListEntryResponse {
-        public Events Events { get; set; }
-    }
+
     private readonly string currentDirectory = Directory.GetCurrentDirectory();
     private readonly IUnitOfWork _unitOfWork;
     private  ApplicationUser applicationUser;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger<CalenderController> _logger;
+    private readonly IKeyVaultManager _keyVaultManager;
+    private readonly IOAuthTokenProperties _oAuthTokenProperties;
+    private readonly IOauth _oAuth;
 
-    public CalenderController(IUnitOfWork unitOfWork,IHttpContextAccessor httpContextAccessor,ILogger<CalenderController> logger)
+    public CalenderController(IUnitOfWork unitOfWork,IHttpContextAccessor httpContextAccessor,ILogger<CalenderController> logger,IKeyVaultManager keyVaultManager,IOAuthTokenProperties oAuthTokenProperties,IOauth oauth)
     {
         _unitOfWork = unitOfWork;
         _httpContextAccessor = httpContextAccessor;
         _logger = logger;
+        _keyVaultManager = keyVaultManager;
+        _oAuth = oauth;
+        _oAuthTokenProperties = oAuthTokenProperties;
+
     }
+
     [HttpGet(Constants.Get_All_Events)]
     public IActionResult Get()
     {
@@ -77,8 +67,6 @@ public class CalenderController: Controller
     [Route(Constants.Create_Event_Endpoint)]
     public async Task<IActionResult> uploadToGoogle([FromForm] CalendarEvent calendarEvents)
     {
-        OAuthTokenProperties oAuthTokenProperties = new OAuthTokenProperties(_httpContextAccessor,_unitOfWork);
-        OAuth oAuth = new OAuth(_unitOfWork,_httpContextAccessor);
         ResponseModel responseModel = new ResponseModel();
         if (!ModelState.IsValid)
         {
@@ -138,21 +126,19 @@ public class CalenderController: Controller
             }
         };
 
-        var tokenFile =  currentDirectory+ "/tokens.json";
-        var apiKeyFIle =  currentDirectory+"/Apikey.json";
-        
-        var apiKeyJson = JObject.Parse((System.IO.File.ReadAllText(apiKeyFIle)));
 
-        var apiKey = apiKeyJson["ApiKey"].ToString();
+
+
+        var googleCalendarApiKey = _keyVaultManager.GetGoogleCalendarApiKey();
         var sendUpdates = "all";
         
-        if (!oAuth.RefreshTokens())
+        if (!_oAuth.RefreshTokens())
         {
             return Redirect($"{Request.Scheme}://{Request.Host}{Constants.Google_Calendar_Authorization_Endpoint}");
 
         
         }
-        var accessToken = oAuthTokenProperties.GetAccessToken(); 
+        var accessToken = _oAuthTokenProperties.GetAccessToken(); 
         if (accessToken == null)
         {
             return Redirect($"{Request.Scheme}://{Request.Host}{Constants.Google_Calendar_Authorization_Endpoint}");
@@ -171,7 +157,7 @@ public class CalenderController: Controller
         var body = model;
      
         var query = HttpUtility.ParseQueryString(builder.Query);
-        query["key"] = apiKey;
+        query["key"] = googleCalendarApiKey;
         query["sendUpdates"] = sendUpdates;
         builder.Query = query.ToString();
 
@@ -203,11 +189,8 @@ public class CalenderController: Controller
     [Route(Constants.List_Events_Endpoint)]
     public async Task<IActionResult> ListEvents(ListCalendarEventParams calendarEventParams)
     {
-        OAuthTokenProperties oAuthTokenProperties = new OAuthTokenProperties(_httpContextAccessor,_unitOfWork);
-        OAuth oAuth = new OAuth(_unitOfWork,_httpContextAccessor);
         var calendarId = "primary";
-        var tokenFile =  currentDirectory+ "/tokens.json";
-        var apiKeyFIle =  currentDirectory+"/Apikey.json";
+        var googleCalendarApiKey = _keyVaultManager.GetGoogleCalendarApiKey();
         var orderBy = "startTime";
 
         ResponseModel responseModel = new ResponseModel();
@@ -227,16 +210,14 @@ public class CalenderController: Controller
         calendarEventParams.EventMinTimeRange = DateTime.Parse(calendarEventParams.EventMinTimeRange).ToString("yyyy-MM-ddTHH:mm:sszzz");
         calendarEventParams.EventMaxTimeRange = DateTime.Parse(calendarEventParams.EventMaxTimeRange).ToString("yyyy-MM-ddTHH:mm:sszzz");
 
-        if (!oAuth.RefreshTokens())
+        if (!_oAuth.RefreshTokens())
         {
             //return Redirect($"{Request.Scheme}://{Request.Host}{Constants.Google_Calendar_Authorization_Endpoint}");
             return Ok($"{Request.Scheme}://{Request.Host}{Constants.Google_Calendar_Authorization_Endpoint}");
         }
-        var token = oAuthTokenProperties.GetAccessToken();//JObject.Parse((System.IO.File.ReadAllText(tokenFile)));
-        var apiKeyJson = JObject.Parse((System.IO.File.ReadAllText(apiKeyFIle)));
 
-        var apiKey = apiKeyJson["ApiKey"].ToString();
-        
+        var token = _oAuthTokenProperties.GetAccessToken();
+
         if (string.IsNullOrWhiteSpace(token))
         {
             return Ok($"{Request.Scheme}://{Request.Host}{Constants.Google_Calendar_Authorization_Endpoint}");
@@ -252,7 +233,7 @@ public class CalenderController: Controller
         headers.Add("Accept", "application/json");
 
         var query = HttpUtility.ParseQueryString(builder.Query);
-        query["key"] = apiKey;
+        query["key"] = googleCalendarApiKey;
         query["timeMax"] =calendarEventParams.EventMaxTimeRange ;
         query["timeMin"] = calendarEventParams.EventMinTimeRange;
         query["timeZone"] = calendarEventParams.timeZone;
@@ -284,8 +265,7 @@ public class CalenderController: Controller
     [Route(Constants.Get_An_Event_Endpoint)]
     public async Task<IActionResult> GetAnEvent(GetAnEventParam getAnEventParam)
     {
-        OAuthTokenProperties oAuthTokenProperties = new OAuthTokenProperties(_httpContextAccessor,_unitOfWork);
-        OAuth oAuth =  new OAuth(_unitOfWork,_httpContextAccessor);
+        var googleCalendarApiKey = _keyVaultManager.GetGoogleCalendarApiKey();
         ResponseModel responseModel = new ResponseModel();
         if (!ModelState.IsValid)
         {
@@ -297,26 +277,19 @@ public class CalenderController: Controller
         }
         
         var calendarId = "primary";
-        var tokenFile =  currentDirectory+ "/tokens.json";
-        var apiKeyFIle =  currentDirectory+"/Apikey.json";
 
-
-        if (!oAuth.RefreshTokens())
+        if (!_oAuth.RefreshTokens())
         {
             return Redirect($"{Request.Scheme}://{Request.Host}{Constants.Google_Calendar_Authorization_Endpoint}");
         }
-        var token = oAuthTokenProperties.GetAccessToken(); //JObject.Parse((System.IO.File.ReadAllText(tokenFile)));
-        var apiKeyJson = JObject.Parse((System.IO.File.ReadAllText(apiKeyFIle)));
+        var token = _oAuthTokenProperties.GetAccessToken(); //JObject.Parse((System.IO.File.ReadAllText(tokenFile)));
 
-        var apiKey = apiKeyJson["ApiKey"].ToString();
-        
         if (string.IsNullOrWhiteSpace(token))
         {
             Redirect($"{Request.Scheme}://{Request.Host}{Constants.Google_Calendar_Callback_Endpoint}");
         }
         
  
-
         var accessToken = token;//tokens["access_token"].ToString();
         
         HttpClient client = new HttpClient();
@@ -326,7 +299,7 @@ public class CalenderController: Controller
         headers.Add("Accept", "application/json");
 
         var query = HttpUtility.ParseQueryString(builder.Query);
-        query["key"] = apiKey;
+        query["key"] = googleCalendarApiKey;
         builder.Query = query.ToString();
         
         Console.WriteLine(builder.Query);
@@ -354,9 +327,9 @@ public class CalenderController: Controller
     [Route(Constants.Delete_An_Event_Endpoint)]
     public async Task<IActionResult> DeleteAnEvent( DeleteAnEventParam deleteAnEventParam)
     {
-        OAuthTokenProperties oAuthTokenProperties = new OAuthTokenProperties(_httpContextAccessor,_unitOfWork);
-        OAuth oAuth =  new OAuth(_unitOfWork,_httpContextAccessor);
         ResponseModel responseModel = new ResponseModel();
+        var googleCalendarApiKey = _keyVaultManager.GetGoogleCalendarApiKey();
+        
         if (!ModelState.IsValid)
         {
             responseModel.Message = "Bad Request";
@@ -368,18 +341,17 @@ public class CalenderController: Controller
         
         var calendarId = "primary";
         var sendUpdate = "all";
-        var tokenFile =  currentDirectory+ "/tokens.json";
-        var apiKeyFIle =  currentDirectory+"/Apikey.json";
+ 
 
-        if (!oAuth.RefreshTokens())
+
+        if (!_oAuth.RefreshTokens())
         {
             return Redirect($"{Request.Scheme}://{Request.Host}{Constants.Google_Calendar_Authorization_Endpoint}");
         }
         
-        var token = oAuthTokenProperties.GetAccessToken();//JObject.Parse((System.IO.File.ReadAllText(tokenFile)));
-        var apiKeyJson = JObject.Parse((System.IO.File.ReadAllText(apiKeyFIle)));
+        var token = _oAuthTokenProperties.GetAccessToken();//JObject.Parse((System.IO.File.ReadAllText(tokenFile)));
 
-        var apiKey = apiKeyJson["ApiKey"].ToString();
+
         if (string.IsNullOrWhiteSpace(token))
         {
             Redirect($"{Request.Scheme}://{Request.Host}{Constants.Google_Calendar_Authorization_Endpoint}");
@@ -394,7 +366,7 @@ public class CalenderController: Controller
         headers.Add("Accept", "application/json");
 
         var query = HttpUtility.ParseQueryString(builder.Query);
-        query["key"] = apiKey;
+        query["key"] = googleCalendarApiKey;
         query["sendUpdates"] = sendUpdate;
         builder.Query = query.ToString();
 
@@ -423,8 +395,6 @@ public class CalenderController: Controller
     [Route(Constants.Patch_An_event_Endpoint)]
     public async Task<IActionResult> UpdateAnEvent([FromForm] PatchEvent patchEvent)
     {
-        OAuthTokenProperties oAuthTokenProperties = new OAuthTokenProperties(_httpContextAccessor,_unitOfWork);
-        OAuth oAuth = new OAuth(_unitOfWork,_httpContextAccessor);
         IEnumerable<string> errors;
         ResponseModel responseModel = new ResponseModel();
         if (!ModelState.IsValid)
@@ -525,18 +495,15 @@ public class CalenderController: Controller
             patchEventbody.Reminders.Overrides = eventReminder;
         }
         var calendarId = "primary";
-        var tokenFile =  currentDirectory+ "/tokens.json";
-        var apiKeyFIle =  currentDirectory+"/Apikey.json";
+        var googleCalendarApiKey = _keyVaultManager.GetGoogleCalendarApiKey();
+
         
-        if (!oAuth.RefreshTokens())
+        if (!_oAuth.RefreshTokens())
         {
-            return Redirect("https://localhost:7151/calendar");
+            return Redirect($"{Request.Scheme}://{Request.Host}{Constants.Google_Calendar_Authorization_Endpoint}");
         }
-        var token = oAuthTokenProperties.GetAccessToken();//JObject.Parse((System.IO.File.ReadAllText(tokenFile)));
-        var apiKeyJson = JObject.Parse((System.IO.File.ReadAllText(apiKeyFIle)));
-
-        var apiKey = apiKeyJson["ApiKey"].ToString();
-
+        var token = _oAuthTokenProperties.GetAccessToken();//JObject.Parse((System.IO.File.ReadAllText(tokenFile)));
+      
         if (string.IsNullOrWhiteSpace(token))
         {
             Redirect($"{Request.Scheme}://{Request.Host}{Constants.Google_Calendar_Authorization_Endpoint}");
@@ -559,7 +526,7 @@ public class CalenderController: Controller
         headers.Add("Accept", "application/json");
 
         var query = HttpUtility.ParseQueryString(builder.Query);
-        query["key"] = apiKey;
+        query["key"] = googleCalendarApiKey;
        // query["events"] = patchEvent.EventId;
         query["sendUpdates"] = sendUpdates;
         builder.Query = query.ToString();
@@ -574,7 +541,7 @@ public class CalenderController: Controller
         
         client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-        var patchEndpoint = $"{Constants.Google_Calendar_BaseURL}/primary/events/{patchEvent.EventId}?key={apiKey}";
+        var patchEndpoint = $"{Constants.Google_Calendar_BaseURL}/primary/events/{patchEvent.EventId}?key={googleCalendarApiKey}";
 
         var patchContent = new StringContent(
             patchEventbody.ToJson(),
@@ -609,13 +576,10 @@ public class CalenderController: Controller
     public ActionResult OauthRedirect()
     {
         Console.WriteLine(currentDirectory);
-        var credentialsFile = currentDirectory+"/client_secret_87857337556-iqm8t560cfhc8ddln4mdk88ahl311na9.apps.googleusercontent.com.json";
-        JObject credentials = JObject.Parse((System.IO.File.ReadAllText(credentialsFile)));
-        var client_id= credentials["web"]["client_id"].ToString();
-        Console.WriteLine(client_id);
+        var googleCalenderGrantPermissionClientId = _keyVaultManager.GetGoogleCalenderGrantPermissionClientId();
 
         var referringUrl = HttpContext.Request.Headers["Referer"];
-        Console.WriteLine(referringUrl);
+
         string loginHint = User.Identity.Name;
 
         var redirectUrl = "https://accounts.google.com/o/oauth2/v2/auth?" +
@@ -626,8 +590,8 @@ public class CalenderController: Controller
                           "response_type=code&" +
                           "state=referringUrl&" +
                           "redirect_uri="+$"{Request.Scheme}://{Request.Host}{Constants.Google_Calendar_Callback_Endpoint}&" +
-                          "client_id=" +client_id;
-        _logger.LogInformation(redirectUrl);
+                          "client_id=" +googleCalenderGrantPermissionClientId;
+
         return Redirect(redirectUrl);
     }
 }
