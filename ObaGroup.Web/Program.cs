@@ -19,11 +19,14 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(
-    builder.Configuration.GetConnectionString("DefaultConnection")
-));
 
+    
+    
 
+string kvUri = builder.Configuration.GetSection("keyVaultUrl").Value;
+IKeyVaultManager _keyVaultManager = new KeyVaultManager(new SecretClient(new Uri(kvUri), new DefaultAzureCredential()));
+
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(_keyVaultManager.GetDbConnectionString()));
 // /*builder.Services.AddAuthentication().AddGoogle(googleOptions =>
 // {
 //     googleOptions.ClientId = builder.Configuration.GetSection("GoogleAuthSettings")
@@ -44,11 +47,13 @@ builder.Services.AddScoped<IGoogleTokensUtility, GoogleTokensUtility>();
 builder.Services.AddScoped <IBlobUploader, BlobUploader>();
 builder.Services.AddScoped<IOauth, OAuth>();
 builder.Services.AddScoped<IOAuthTokenProperties, OAuthTokenProperties>();
-string kvUri = builder.Configuration.GetSection("keyVaultUrl").Value;
+
+
+
 builder.Services.AddSingleton(new SecretClient(new Uri(kvUri), new DefaultAzureCredential()));
 
 
-IKeyVaultManager _keyVaultManager = new KeyVaultManager(new SecretClient(new Uri(kvUri), new DefaultAzureCredential()));
+
 var googleSignInClientId = _keyVaultManager.GetGoogleSignInClientId();
 var googleSignInClientSecret = _keyVaultManager.GetGoogleSignInClientSecret();
 

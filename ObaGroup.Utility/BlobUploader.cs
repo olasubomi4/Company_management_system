@@ -19,6 +19,7 @@ public class BlobUploader:IBlobUploader
         string storageAccountName = _keyVaultManager.GetStorageAccountName();
         string accessKey = _keyVaultManager.GetBlobAccessKey();
         var blobUri = $"https://{storageAccountName}.blob.core.windows.net";
+        
         var credential = new StorageSharedKeyCredential(storageAccountName, accessKey);
         blobServiceClient= new BlobServiceClient(new Uri(blobUri),credential);
     }

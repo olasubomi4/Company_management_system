@@ -21,6 +21,7 @@ public class KeyVaultManager:IKeyVaultManager
     private string _blobAccessKey;
     private string _broadCastingMail;
     private string _broadCastingMailPassword;
+    private string _dbConnectionString;
     
     private static readonly ILogger _logger = LoggerFactory.Create(builder =>
     {
@@ -40,6 +41,16 @@ public class KeyVaultManager:IKeyVaultManager
         }
 
         return _googleCalenderGrantPermissionClientSecret;
+    }
+
+    public string GetDbConnectionString()
+    {
+        if (string.IsNullOrEmpty(_dbConnectionString))
+        {
+            _dbConnectionString =GetSecret("DbConnectionString").Result.ToString();
+        }
+
+        return _dbConnectionString;
     }
 
     public string GetBrodCastingMail()

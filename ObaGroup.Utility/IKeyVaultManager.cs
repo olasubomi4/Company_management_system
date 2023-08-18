@@ -14,6 +14,7 @@ public interface IKeyVaultManager
     public string GetAesIv();
     string GetBrodCastingMailPassword();
     string GetBrodCastingMail();
+    public string GetDbConnectionString();
 
     public string GetGoogleSignInClientId();
     public string GetGoogleSignInClientSecret();
