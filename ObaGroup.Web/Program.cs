@@ -65,10 +65,12 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
-//builder.Services.ConfigureApplicationCookie(options =>
-//{
-//    options.AccessDeniedPath = "/MyHttpStatuses/AccessDenied";
-//});
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.AccessDeniedPath = Constants.Access_Denied_Endpoint;
+    options.LoginPath = Constants.Login_Endpoint;
+    options.LogoutPath = Constants.Logout_Endpoint;
+});
 /*builder.Services.AddAntiforgery(options =>
 {
     options.Cookie.Name = "X-CSRF-TOKEN";
@@ -101,7 +103,6 @@ app.UseCors(builder =>
 //app.UseStatusCodePagesWithReExecute(Constants.Access_Denied_Endpoint);
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 
 app.UseRouting();
 SeedDatabase();

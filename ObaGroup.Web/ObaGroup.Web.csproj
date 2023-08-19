@@ -151,6 +151,7 @@
       <_ContentIncludedByDefault Remove="Views\Document\Index.cshtml" />
       <_ContentIncludedByDefault Remove="Areas\Admin\Views\Calender\Index.cshtml" />
       <_ContentIncludedByDefault Remove="Areas\Admin\Views\Calender\Upsert.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Admin\Views\Account copy\Login.cshtml" />
     </ItemGroup>
 
     <ItemGroup>
