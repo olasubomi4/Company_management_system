@@ -3,6 +3,7 @@ using ObaGroupUtility;
 
 namespace Oba_group2.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class HomeController : Controller
     {
             
@@ -10,6 +11,7 @@ namespace Oba_group2.Areas.Admin.Controllers
         {
             builder.AddConsole();
         }).CreateLogger("Home");
+        
         [HttpGet("")]
         public IActionResult Index()
         {

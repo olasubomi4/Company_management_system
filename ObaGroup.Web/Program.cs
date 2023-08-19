@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using ObaGoupDataAccess;
 using ObaGroup.Utility;
-
 using ObaGoupDataAccess.Data;
 using ObaGoupDataAccess.DataAccess.DbInitializer;
 using ObaGoupDataAccess.Repository;
@@ -16,24 +15,11 @@ using ObaGroupUtility;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
-
 string kvUri = builder.Configuration.GetSection("keyVaultUrl").Value;
 IKeyVaultManager _keyVaultManager = new KeyVaultManager(new SecretClient(new Uri(kvUri), new DefaultAzureCredential()));
 
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(_keyVaultManager.GetDbConnectionString()));
-// /*builder.Services.AddAuthentication().AddGoogle(googleOptions =>
-// {
-//     googleOptions.ClientId = builder.Configuration.GetSection("GoogleAuthSettings")
-//         .GetValue<string>("ClientId");
-//     googleOptions.ClientSecret = builder.Configuration.GetSection("GoogleAuthSettings")
-//         .GetValue<string>("ClientSecret");
-// });
-// */
-
 builder.Services.AddIdentity<IdentityUser,IdentityRole>().AddDefaultTokenProviders().AddEntityFrameworkStores<ApplicationDbContext>();
-builder.Services.AddCors();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IDbIntializer, DbInitalizer>();
 builder.Services.AddScoped<IEmailSender, EmailSender>();
@@ -87,18 +73,16 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 var app = builder.Build();
 
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+else
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-app.UseCors(builder =>
-{
-    builder.WithOrigins("http://localhost:3000")
-           .AllowAnyHeader()
-           .AllowAnyMethod();
-});
+
 
 //app.UseStatusCodePagesWithReExecute(Constants.Access_Denied_Endpoint);
 app.UseHttpsRedirection();
@@ -110,12 +94,12 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseSession();
 app.MapRazorPages();
+app.MapControllers();
 app.MapControllerRoute(
     name: "default",
     pattern: "{area=Admin}/{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
-
 
 void SeedDatabase()
 {
