@@ -22,7 +22,7 @@ builder.Services.AddControllersWithViews();
 string kvUri = builder.Configuration.GetSection("keyVaultUrl").Value;
 IKeyVaultManager _keyVaultManager = new KeyVaultManager(new SecretClient(new Uri(kvUri), new DefaultAzureCredential()));
 
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(_keyVaultManager.GetDbConnectionString()));
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer("Server=tcp:obagroup.database.windows.net,1433;Initial Catalog=ObaGroup;Persist Security Info=False;User ID=ObaGroup;Password=DareStagingApp456;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"));
 // /*builder.Services.AddAuthentication().AddGoogle(googleOptions =>
 // {
 //     googleOptions.ClientId = builder.Configuration.GetSection("GoogleAuthSettings")
