@@ -15,11 +15,11 @@ using ObaGroupUtility;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// string kvUri = builder.Configuration.GetSection("keyVaultUrl").Value;
-// IKeyVaultManager _keyVaultManager = new KeyVaultManager(new SecretClient(new Uri(kvUri), new DefaultAzureCredential()));
+string kvUri = builder.Configuration.GetSection("keyVaultUrl").Value;
+IKeyVaultManager _keyVaultManager = new KeyVaultManager(new SecretClient(new Uri(kvUri), new DefaultAzureCredential()));
 
-// builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(_keyVaultManager.GetDbConnectionString()));
-// builder.Services.AddIdentity<IdentityUser,IdentityRole>().AddDefaultTokenProviders().AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddIdentity<IdentityUser,IdentityRole>().AddDefaultTokenProviders().AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IDbIntializer, DbInitalizer>();
 builder.Services.AddScoped<IEmailSender, EmailSender>();
@@ -29,13 +29,13 @@ builder.Services.AddScoped<IGoogleTokensUtility, GoogleTokensUtility>();
 builder.Services.AddScoped <IBlobUploader, BlobUploader>();
 builder.Services.AddScoped<IOauth, OAuth>();
 builder.Services.AddScoped<IOAuthTokenProperties, OAuthTokenProperties>();
-// builder.Services.AddSingleton(new SecretClient(new Uri(kvUri), new DefaultAzureCredential()));
+builder.Services.AddSingleton(new SecretClient(new Uri(kvUri), new DefaultAzureCredential()));
 
 
-
+//
 // var googleSignInClientId = _keyVaultManager.GetGoogleSignInClientId();
 // var googleSignInClientSecret = _keyVaultManager.GetGoogleSignInClientSecret();
-//
+
 // builder.Services.AddAuthentication().AddGoogle(googleOptions =>
 // {
 //     googleOptions.ClientId = googleSignInClientId;
@@ -89,7 +89,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-// SeedDatabase();
+SeedDatabase();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseSession();
@@ -101,12 +101,12 @@ app.MapControllerRoute(
 
 app.Run();
 
-// void SeedDatabase()
-// {
-//     using (var scope = app.Services.CreateScope())
-//     {
-//         var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbIntializer>();
-//         dbInitializer.Initialize();
-//     }
-// }
+void SeedDatabase()
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbIntializer>();
+        dbInitializer.Initialize();
+    }
+}
 
