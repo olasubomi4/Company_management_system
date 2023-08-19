@@ -1,164 +1,163 @@
-@model Documents
-@{
-    ViewBag.Title = "title";
-  //  Layout = "_Layout";
-}
-
-<form id="uploadForm" method="post" enctype="multipart/form-data">
-
-    <div class="border p-3 mt-4">
-        <div class="row pb-2">
-            <h2 class="text-primary">@(Model.Document.Id!=0?"Update":"Create")  Document</h2>
-            <hr/>
-        </div>
-        @if (@Model.Document.Id != 0)
-        {
-            <input hidden asp-for="@Model.Document.Id">
-            <input hidden asp-for="@Model.Document.DocumentUrl">
-            <input hidden asp-for="@Model.Document.Type">
-        }
-        <div class="row">
-            <div class="col-10">
-                    
-            </div>
-            <div class="col-2">
-                    
-            </div>
-                
-        </div>
-                 
-        <div asp-validation-summary="All"></div>
-        
-            <div class="mb-3">
-                <label asp-for="Document.Name"> Document name</label>
-                <input asp-for="Document.Name" class="form-control"/>
-                <span asp-validation-for="Document.Name" class="text-danger"></span>
-            </div>
-        <div class="mb-3">
-                <label asp-for="Document.CreationDate"> CreationDate</label>
-                <input asp-for="Document.CreationDate" asp-format="{0:yyyy-MM-ddTHH:mm}" class="form-control"  >
-                <span asp-validation-for="Document.CreationDate" class="text-danger"></span>
-            </div>
-        <div class="mb-3">
-            <label asp-for="Document.EmailAddress"> EmailAddress </label>
-            <input asp-for="Document.EmailAddress" class="form-control"/>
-            <span asp-validation-for="Document.EmailAddress" class="text-danger"></span>
-        </div>
-       
-            <div class="mb-3">
-                <label asp-for="Document.Staff"> Staff </label>
-                <input asp-for="Document.Staff" class="form-control"/>
-                <span asp-validation-for="Document.Staff" class="text-danger"></span>
-            </div>
-        
-        <div class="mb-3">
-            <div class="form-group">
-                <label asp-for="Files"> Document </label>
-                <input type="file" id="uploadBox" name="files" asp-for="Files" class="form-control" multiple/>
-            </div>
-            
-        </div>
-        </div>
-        <div class="col-12">
-            
-            @if (Model.Document.Id != 0)
-            {
-                <button type="submit" class="btn btn-primary" style="width:150px">Update</button>
-            }
-            else{
-                <button type="submit" onclick="return ValidateInput()"  class="btn btn-primary" style="width:150px">Create</button>
-            }
-            <a asp-controller="Document" asp-action="Index" class="btn btn-secondary" style="width: 150px">Back to List
-            </a>
-        </div>
-        <div>
-            <div class="col-2">
-                <img src="@Model.Document.DocumentUrl" width="100%" style="border-radius: 5px"; border:1px solid #bbb96/>
-            </div>
-        </div>
-</form>
-
-
-<div id="loadingScreen" class="text-center" style="display:none">
-    <h2>Loading...</h2>
-    <div class="spinner-border" role="status">
-        <span class="visually-hidden">Loading...</span>
-    </div>
-</div>
-
-<div id="successMessage" class="alert alert-success" role="alert" style="display:none">
-    File uploaded successfully!
-</div>
-
-<div id="errorMessage" class="alert alert-danger" role="alert" style="display:none">
-    Error uploading file.
-</div>
-
-
-@section Scripts{
-    @{
-        /*<link href="~/css/loading.css" rel="stylesheet" />
-        <script src="~/js/loading.js"></script>
-        */
-        <partial name="_ValidationScriptsPartial"/>
-    }
-    <script>
-    function ValidateInput(){
-    if (document.getElementById("uploadBox").value=="")
-        {
-           Swal.fire({
-             icon: 'error',
-             title: 'Oops...',
-             text: 'Please Upload an Document!',
-          
-           });
-           return false;
-           }
-    }
-    </script>
-   <script>
-       $("#uploadForm").submit(function (event) {
-           // Prevent the default form submission behavior
-           event.preventDefault();
-           
-           // Show the loading screen and hide the form
-           $("#loadingScreen").show();
-           $("#uploadForm").hide();
-           
-           // Create a FormData object to upload the file
-           var formData = new FormData(this);
-           
-           // Use jQuery's ajax method to upload the file
-           $.ajax({
-               url: "https://localhost:7151/Admin/Document/Upsert",
-               type: "POST",
-               data: formData,
-               processData: false,
-               contentType: false,
-               xhr: function () {
-                   // Get the native XHR object and attach an event listener to track upload progress
-                   var xhr = $.ajaxSettings.xhr();
-                   xhr.upload.addEventListener("progress", function (event) {
-                       if (event.lengthComputable) {
-                           var progress = Math.round((event.loaded / event.total) * 100);
-                           $("#loadingScreen h2").text("Uploading... " + progress + "%");
-                       }
-                   });
-                   return xhr;
-               },
-               success: function () {
-                   // Hide the loading screen and show the success message
-                   $("#loadingScreen").hide();
-                   $("#successMessage").show();
-               },
-               error: function () {
-                   // Hide the loading screen and show the error message
-                   $("#loadingScreen").hide();
-                   $("#errorMessage").show();
-               }
-           });
-       });
-   </script>
-
-    
-}
+@* @model Documents *@
+@* @{ *@
+@*     ViewBag.Title = "title"; *@
+@*   //  Layout = "_Layout"; *@
+@* } *@
+@* *@
+@* <form id="uploadForm" method="post" enctype="multipart/form-data"> *@
+@* *@
+@*     <div class="border p-3 mt-4"> *@
+@*         <div class="row pb-2"> *@
+@*             <h2 class="text-primary">@(Model.Document.Id!=0?"Update":"Create")  Document</h2> *@
+@*             <hr/> *@
+@*         </div> *@
+@*         @if (@Model.Document.Id != 0) *@
+@*         { *@
+@*             <input hidden asp-for="@Model.Document.Id"> *@
+@*             <input hidden asp-for="@Model.Document.DocumentUrl"> *@
+@*             <input hidden asp-for="@Model.Document.Type"> *@
+@*         } *@
+@*         <div class="row"> *@
+@*             <div class="col-10"> *@
+@*                      *@
+@*             </div> *@
+@*             <div class="col-2"> *@
+@*                      *@
+@*             </div> *@
+@*                  *@
+@*         </div> *@
+@*                   *@
+@*         <div asp-validation-summary="All"></div> *@
+@*          *@
+@*             <div class="mb-3"> *@
+@*                 <label asp-for="Document.Name"> Document name</label> *@
+@*                 <input asp-for="Document.Name" class="form-control"/> *@
+@*                 <span asp-validation-for="Document.Name" class="text-danger"></span> *@
+@*             </div> *@
+@*         <div class="mb-3"> *@
+@*                 <label asp-for="Document.CreationDate"> CreationDate</label> *@
+@*                 <input asp-for="Document.CreationDate" asp-format="{0:yyyy-MM-ddTHH:mm}" class="form-control"  > *@
+@*                 <span asp-validation-for="Document.CreationDate" class="text-danger"></span> *@
+@*             </div> *@
+@*         <div class="mb-3"> *@
+@*             <label asp-for="Document.EmailAddress"> EmailAddress </label> *@
+@*             <input asp-for="Document.EmailAddress" class="form-control"/> *@
+@*             <span asp-validation-for="Document.EmailAddress" class="text-danger"></span> *@
+@*         </div> *@
+@*         *@
+@*             <div class="mb-3"> *@
+@*                 <label asp-for="Document.Staff"> Staff </label> *@
+@*                 <input asp-for="Document.Staff" class="form-control"/> *@
+@*                 <span asp-validation-for="Document.Staff" class="text-danger"></span> *@
+@*             </div> *@
+@*          *@
+@*         <div class="mb-3"> *@
+@*             <div class="form-group"> *@
+@*                 <label asp-for="Files"> Document </label> *@
+@*                 <input type="file" id="uploadBox" name="files" asp-for="Files" class="form-control" multiple/> *@
+@*             </div> *@
+@*              *@
+@*         </div> *@
+@*         </div> *@
+@*         <div class="col-12"> *@
+@*              *@
+@*             @if (Model.Document.Id != 0) *@
+@*             { *@
+@*                 <button type="submit" class="btn btn-primary" style="width:150px">Update</button> *@
+@*             } *@
+@*             else{ *@
+@*                 <button type="submit" onclick="return ValidateInput()"  class="btn btn-primary" style="width:150px">Create</button> *@
+@*             } *@
+@*          *@
+@*         </div> *@
+@*         <div> *@
+@*             <div class="col-2"> *@
+@*                 <img src="@Model.Document.DocumentUrl" width="100%" style="border-radius: 5px"; border:1px solid #bbb96/> *@
+@*             </div> *@
+@*         </div> *@
+@* </form> *@
+@* *@
+@* *@
+@* <div id="loadingScreen" class="text-center" style="display:none"> *@
+@*     <h2>Loading...</h2> *@
+@*     <div class="spinner-border" role="status"> *@
+@*         <span class="visually-hidden">Loading...</span> *@
+@*     </div> *@
+@* </div> *@
+@* *@
+@* <div id="successMessage" class="alert alert-success" role="alert" style="display:none"> *@
+@*     File uploaded successfully! *@
+@* </div> *@
+@* *@
+@* <div id="errorMessage" class="alert alert-danger" role="alert" style="display:none"> *@
+@*     Error uploading file. *@
+@* </div> *@
+@* *@
+@* *@
+@* @section Scripts{ *@
+@*     @{ *@
+@*         /*<link href="~/css/loading.css" rel="stylesheet" /> *@
+@*         <script src="~/js/loading.js"></script> *@
+@*         */ *@
+@*         <partial name="_ValidationScriptsPartial"/> *@
+@*     } *@
+@*     <script> *@
+@*     function ValidateInput(){ *@
+@*     if (document.getElementById("uploadBox").value=="") *@
+@*         { *@
+@*            Swal.fire({ *@
+@*              icon: 'error', *@
+@*              title: 'Oops...', *@
+@*              text: 'Please Upload an Document!', *@
+@*            *@
+@*            }); *@
+@*            return false; *@
+@*            } *@
+@*     } *@
+@*     </script> *@
+@*    <script> *@
+@*        $("#uploadForm").submit(function (event) { *@
+@*            // Prevent the default form submission behavior *@
+@*            event.preventDefault(); *@
+@*             *@
+@*            // Show the loading screen and hide the form *@
+@*            $("#loadingScreen").show(); *@
+@*            $("#uploadForm").hide(); *@
+@*             *@
+@*            // Create a FormData object to upload the file *@
+@*            var formData = new FormData(this); *@
+@*             *@
+@*            // Use jQuery's ajax method to upload the file *@
+@*            $.ajax({ *@
+@*                url: "https://localhost:7151/Admin/Document/Upsert", *@
+@*                type: "POST", *@
+@*                data: formData, *@
+@*                processData: false, *@
+@*                contentType: false, *@
+@*                xhr: function () { *@
+@*                    // Get the native XHR object and attach an event listener to track upload progress *@
+@*                    var xhr = $.ajaxSettings.xhr(); *@
+@*                    xhr.upload.addEventListener("progress", function (event) { *@
+@*                        if (event.lengthComputable) { *@
+@*                            var progress = Math.round((event.loaded / event.total) * 100); *@
+@*                            $("#loadingScreen h2").text("Uploading... " + progress + "%"); *@
+@*                        } *@
+@*                    }); *@
+@*                    return xhr; *@
+@*                }, *@
+@*                success: function () { *@
+@*                    // Hide the loading screen and show the success message *@
+@*                    $("#loadingScreen").hide(); *@
+@*                    $("#successMessage").show(); *@
+@*                }, *@
+@*                error: function () { *@
+@*                    // Hide the loading screen and show the error message *@
+@*                    $("#loadingScreen").hide(); *@
+@*                    $("#errorMessage").show(); *@
+@*                } *@
+@*            }); *@
+@*        }); *@
+@*    </script> *@
+@* *@
+@*      *@
+@* } *@
