@@ -65,19 +65,6 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.LoginPath = Constants.Login_Endpoint;
     options.LogoutPath = Constants.Logout_Endpoint;
 });
-/*builder.Services.AddAntiforgery(options =>
-{
-    options.Cookie.Name = "X-CSRF-TOKEN";
-    options.HeaderName = "X-CSRF-TOKEN";
-});
-*/
-/*builder.Services.Configure<FormOptions>(options =>
-{
-    options.MultipartBodyLengthLimit =  500 * 1024 * 1024; // 50 MB
-});
-*/
-
-
 
 var app = builder.Build();
 
