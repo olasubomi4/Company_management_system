@@ -3,6 +3,7 @@ using Azure.Security.KeyVault.Secrets;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using ObaGoupDataAccess;
 using ObaGroup.Utility;
 using ObaGoupDataAccess.Data;
@@ -17,7 +18,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 string kvUri = builder.Configuration.GetSection("keyVaultUrl").Value;
-IKeyVaultManager _keyVaultManager = new KeyVaultManager(new SecretClient(new Uri(kvUri), new DefaultAzureCredential()));
+
+IKeyVaultManager _keyVaultManager = new KeyVaultManager(new SecretClient(new Uri(kvUri),
+    new ClientSecretCredential("26b1c6e9-36aa-4650-8b9f-56efa2b6171b", "f770007e-660d-4906-9385-79733207df5e",
+        "y6H8Q~C9jS3PgBSc_H8kQ7RlygiWSgYNSOXpRbRK")));
 
 // builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(_keyVaultManager.GetDbConnectionString()));
@@ -32,8 +36,11 @@ builder.Services.AddScoped<IGoogleTokensUtility, GoogleTokensUtility>();
 builder.Services.AddScoped <IBlobUploader, BlobUploader>();
 builder.Services.AddScoped<IOauth, OAuth>();
 builder.Services.AddScoped<IOAuthTokenProperties, OAuthTokenProperties>();
-builder.Services.AddSingleton(new SecretClient(new Uri(kvUri), new DefaultAzureCredential()));
+// builder.Services.AddSingleton(new SecretClient(new Uri(kvUri), new DefaultAzureCredential()));
 
+builder.Services.AddSingleton(new SecretClient(new Uri(kvUri),
+    new ClientSecretCredential("26b1c6e9-36aa-4650-8b9f-56efa2b6171b", "f770007e-660d-4906-9385-79733207df5e",
+        "y6H8Q~C9jS3PgBSc_H8kQ7RlygiWSgYNSOXpRbRK")));
 
 
 var googleSignInClientId = _keyVaultManager.GetGoogleSignInClientId();
