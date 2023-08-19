@@ -107,7 +107,7 @@ public class AccountController : Controller
         }
         
         _logger.LogInformation("going to view");
-        
+        // return File("~/dashboard/profile/index.html", "text/html"); 
         return View();
     }
     [HttpGet]

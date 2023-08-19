@@ -27,10 +27,3 @@ public class AccessDeniedController : Controller
     }
 }
 
-/*[HttpGet("/AccessDenied")]
-    public IActionResult Index()
-    {
-        return Unauthorized("you dont have access");
-    }
-}
-*/
