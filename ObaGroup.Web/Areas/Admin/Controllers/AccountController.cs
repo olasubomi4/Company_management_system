@@ -97,11 +97,11 @@ public class AccountController : Controller
     [Route(Constants.Login_Endpoint)]
     public ActionResult Login()
     {
-        var redirectUrl = $"{Request.Scheme}://{Request.Host}{Constants.UploadPage}";
-        if (User.Identity.IsAuthenticated)
-        {
-            return Redirect(redirectUrl);
-        }
+        // var redirectUrl = $"{Request.Scheme}://{Request.Host}{Constants.UploadPage}";
+        // if (User.Identity.IsAuthenticated)
+        // {
+        //     return Redirect(redirectUrl);
+        // }
         return View();
     }
     [HttpGet]

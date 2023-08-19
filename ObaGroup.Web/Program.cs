@@ -19,10 +19,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-
-    
-    
-
 string kvUri = builder.Configuration.GetSection("keyVaultUrl").Value;
 IKeyVaultManager _keyVaultManager = new KeyVaultManager(new SecretClient(new Uri(kvUri), new DefaultAzureCredential()));
 
@@ -47,9 +43,6 @@ builder.Services.AddScoped<IGoogleTokensUtility, GoogleTokensUtility>();
 builder.Services.AddScoped <IBlobUploader, BlobUploader>();
 builder.Services.AddScoped<IOauth, OAuth>();
 builder.Services.AddScoped<IOAuthTokenProperties, OAuthTokenProperties>();
-
-
-
 builder.Services.AddSingleton(new SecretClient(new Uri(kvUri), new DefaultAzureCredential()));
 
 
