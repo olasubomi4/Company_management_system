@@ -17,9 +17,9 @@ namespace Oba_group2.Areas.Admin.Controllers
         {
             
             _logger.LogCritical("redirect to login");
-            // var redirectUrl = $"{Request.Scheme}://{Request.Host}{Constants.Login_Endpoint}";
-            // return Redirect(redirectUrl);
-            return View();
+            var redirectUrl = $"{Request.Scheme}://{Request.Host}{Constants.Login_Endpoint}";
+            return Redirect(redirectUrl);
+            // return View();
 
         }
     }

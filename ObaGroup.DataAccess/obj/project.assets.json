@@ -1,7 +1,7 @@
 {
   "version": 3,
   "targets": {
-    "net6.0": {
+    "net7.0": {
       "Azure.Core/1.33.0": {
         "type": "package",
         "dependencies": {
@@ -5585,7 +5585,7 @@
       },
       "ObaGroup.Model/1.0.0": {
         "type": "project",
-        "framework": ".NETCoreApp,Version=v6.0",
+        "framework": ".NETCoreApp,Version=v7.0",
         "dependencies": {
           "Google.Apis.Auth": "1.60.0",
           "Google.Apis.Calendar.v3": "1.60.0.3017",
@@ -5615,7 +5615,7 @@
       },
       "ObaGroup.Utility/1.0.0": {
         "type": "project",
-        "framework": ".NETCoreApp,Version=v6.0",
+        "framework": ".NETCoreApp,Version=v7.0",
         "dependencies": {
           "Azure.Extensions.AspNetCore.Configuration.Secrets": "1.2.2",
           "Azure.Identity": "1.9.0",
@@ -14419,7 +14419,7 @@
     }
   },
   "projectFileDependencyGroups": {
-    "net6.0": [
+    "net7.0": [
       "Google.Apis.Auth >= 1.60.0",
       "Google.Apis.Calendar.v3 >= 1.60.0.3017",
       "Google.Apis.Discovery.v1 >= 1.60.0",
@@ -14462,14 +14462,14 @@
         "/Users/subomiodekunle/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
-        "net6.0"
+        "net7.0"
       ],
       "sources": {
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
-        "net6.0": {
-          "targetAlias": "net6.0",
+        "net7.0": {
+          "targetAlias": "net7.0",
           "projectReferences": {
             "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Model/ObaGroup.Model.csproj": {
               "projectPath": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Model/ObaGroup.Model.csproj"
@@ -14487,8 +14487,8 @@
       }
     },
     "frameworks": {
-      "net6.0": {
-        "targetAlias": "net6.0",
+      "net7.0": {
+        "targetAlias": "net7.0",
         "dependencies": {
           "Google.Apis.Auth": {
             "target": "Package",
@@ -14599,7 +14599,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/6.0.412/RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/7.0.307/RuntimeIdentifierGraph.json"
       }
     }
   },
@@ -14608,10 +14608,10 @@
       "code": "NU1701",
       "level": "Warning",
       "warningLevel": 1,
-      "message": "Package 'RestSharp 105.2.1' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net6.0'. This package may not be fully compatible with your project.",
+      "message": "Package 'RestSharp 105.2.1' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net7.0'. This package may not be fully compatible with your project.",
       "libraryId": "RestSharp",
       "targetGraphs": [
-        "net6.0"
+        "net7.0"
       ]
     }
   ]

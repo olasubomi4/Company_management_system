@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "HIoT5Sce4TrAuqb9/5OajwUSNjVo+XjUuBHzvD4mXT1zUHOmJER0aa+eDGzarG/dV2JJ571fguTFZbvn/EdyIg==",
+  "dgSpecHash": "Czju6bvInlKDQo9kNetg4/lMDA8yRUiCMeMlEHnWYD3p/Sud6DO1Im+F4TnAjcj25kBTG0HZNL4OtEBxeYcrqQ==",
   "success": true,
   "projectFilePath": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.DataAccess/ObaGroup.DataAccess.csproj",
   "expectedPackageFiles": [
@@ -297,10 +297,10 @@
       "code": "NU1701",
       "level": "Warning",
       "warningLevel": 1,
-      "message": "Package 'RestSharp 105.2.1' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net6.0'. This package may not be fully compatible with your project.",
+      "message": "Package 'RestSharp 105.2.1' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net7.0'. This package may not be fully compatible with your project.",
       "libraryId": "RestSharp",
       "targetGraphs": [
-        "net6.0"
+        "net7.0"
       ]
     }
   ]

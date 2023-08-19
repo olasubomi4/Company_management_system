@@ -14,6 +14,7 @@ using ObaGroupUtility;
 
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddControllersWithViews();
 
 string kvUri = builder.Configuration.GetSection("keyVaultUrl").Value;
 IKeyVaultManager _keyVaultManager = new KeyVaultManager(new SecretClient(new Uri(kvUri), new DefaultAzureCredential()));
@@ -47,11 +48,9 @@ builder.Services.AddAuthentication().AddGoogle(googleOptions =>
 builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 builder.Services.AddSession(options =>
 {
-    // Set a timeout for the session
-    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.IdleTimeout = TimeSpan.FromMinutes(100);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
 builder.Services.ConfigureApplicationCookie(options =>
 {
@@ -91,24 +90,23 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-// SeedDatabase();
+SeedDatabase();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseSession();
 app.MapRazorPages();
-app.MapControllers();
 app.MapControllerRoute(
     name: "default",
     pattern: "{area=Admin}/{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
 
-// void SeedDatabase()
-// {
-//     using (var scope = app.Services.CreateScope())
-//     {
-//         var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbIntializer>();
-//         dbInitializer.Initialize();
-//     }
-// }
-//
+void SeedDatabase()
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbIntializer>();
+        dbInitializer.Initialize();
+    }
+}
+
