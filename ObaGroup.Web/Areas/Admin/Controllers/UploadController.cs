@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ObaGroupUtility;
 
-namespace Oba_group2.Areas.Admin.Controllers;
+namespace ObaGWebroup.Controllers;
 
 public class UploadController : Controller
 {

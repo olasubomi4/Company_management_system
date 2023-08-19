@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using ObaGroupModel;
 using ObaGroupUtility;
 
-namespace Oba_group2.Areas.Admin.Controllers;
+namespace ObaGWebroup.Controllers;
 
 //[ApiController]
 public class AccessDeniedController : Controller

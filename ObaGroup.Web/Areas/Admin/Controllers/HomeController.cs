@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using ObaGroupUtility;
 
-namespace Oba_group2.Areas.Admin.Controllers;
+namespace ObaGWebroup.Controllers;
 
-// [Area("Admin")]
+[Area("Admin")]
 public class HomeController : Controller
 {
     private static readonly ILogger _logger =

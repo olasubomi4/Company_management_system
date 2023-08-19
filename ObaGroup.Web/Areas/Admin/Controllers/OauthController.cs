@@ -1,5 +1,7 @@
+using System;
 using System.Net;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using ObaGoupDataAccess;
@@ -8,7 +10,7 @@ using ObaGroupModel;
 using ObaGroupUtility;
 using RestSharp;
 
-namespace Oba_group2.Areas.Admin.Controllers;
+namespace ObaGWebroup.Controllers;
 
 public class OauthController : Controller
 {

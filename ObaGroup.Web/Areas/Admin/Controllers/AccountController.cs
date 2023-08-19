@@ -12,9 +12,8 @@ using ObaGoupDataAccess.Repository.IRepository;
 using ObaGroupModel;
 using ObaGroupUtility;
 
-namespace Oba_group2.Areas.Admin.Controllers;
-
-// [Area("Admin")]
+namespace ObaGWebroup.Controllers;
+[Area("Admin")]
 public class AccountController : Controller
 {
     private readonly IBlobUploader _blobUploader;

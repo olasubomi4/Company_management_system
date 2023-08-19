@@ -12,11 +12,9 @@ using ObaGroup.Utility;
 using ObaGroupUtility;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddControllersWithViews();
+// var kvUri = builder.Configuration.GetSection("keyVaultUrl").Value;
 
-var kvUri = builder.Configuration.GetSection("keyVaultUrl").Value;
-
-IKeyVaultManager _keyVaultManager = new KeyVaultManager(new SecretClient(new Uri(kvUri),
+IKeyVaultManager _keyVaultManager = new KeyVaultManager(new SecretClient(new Uri("https://obagroupkey.vault.azure.net/"),
     new ClientSecretCredential("26b1c6e9-36aa-4650-8b9f-56efa2b6171b", "f770007e-660d-4906-9385-79733207df5e",
         "y6H8Q~C9jS3PgBSc_H8kQ7RlygiWSgYNSOXpRbRK")));
 
@@ -37,9 +35,12 @@ builder.Services.AddScoped<IOauth, OAuth>();
 builder.Services.AddScoped<IOAuthTokenProperties, OAuthTokenProperties>();
 // builder.Services.AddSingleton(new SecretClient(new Uri(kvUri), new DefaultAzureCredential()));
 
-builder.Services.AddSingleton(new SecretClient(new Uri(kvUri),
+builder.Services.AddSingleton(new SecretClient(new Uri("https://obagroupkey.vault.azure.net/"),
     new ClientSecretCredential("26b1c6e9-36aa-4650-8b9f-56efa2b6171b", "f770007e-660d-4906-9385-79733207df5e",
         "y6H8Q~C9jS3PgBSc_H8kQ7RlygiWSgYNSOXpRbRK")));
+
+
+builder.Services.AddControllersWithViews();
 
 
 var googleSignInClientId = _keyVaultManager.GetGoogleSignInClientId();
@@ -64,7 +65,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.LoginPath = Constants.Login_Endpoint;
     options.LogoutPath = Constants.Logout_Endpoint;
 });
-
+builder.Services.AddDistributedMemoryCache();
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -87,11 +88,12 @@ SeedDatabase();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseSession();
-app.MapRazorPages();
+
 app.MapControllerRoute(
     "default",
-    "{area=Admin}/{controller=Home}/{action=Index}/{id?}");
+    "{area=Admin}/{controller=Account}/{action=Login}");
 
+app.MapRazorPages();
 app.Run();
 
 void SeedDatabase()

@@ -5,7 +5,7 @@ using ObaGoupDataAccess.Repository.IRepository;
 using ObaGroupModel;
 using ObaGroupUtility;
 
-namespace Oba_group2.Areas.Admin.Controllers;
+namespace ObaGWebroup.Controllers;
 
 [Area("Admin")]
 [Authorize(Roles = Constants.Role_Admin + "," + Constants.Role_Staff)]

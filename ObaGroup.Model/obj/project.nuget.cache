@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "mA1nrJ9yFiHiwy3ztIQSsn2VDb6Az3TshGJEimB34dFoFoTKAC2mvM/+E4+JjC8+5F6cD/5xcHXtuVPy1zKSBg==",
+  "dgSpecHash": "XpzfTHred9N/QOPx2w2V+ikVF1L1MZIJINtZoQcqhgMhA7Z3zsZTK116Q4ESV45QABMX+Ooz95Bmm88ugNuU/w==",
   "success": true,
-  "projectFilePath": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Model/ObaGroup.Model.csproj",
+  "projectFilePath": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Model/ObaGroupModel.csproj",
   "expectedPackageFiles": [
     "/Users/subomiodekunle/.nuget/packages/bouncycastle.netcore/1.8.3/bouncycastle.netcore.1.8.3.nupkg.sha512",
     "/Users/subomiodekunle/.nuget/packages/google.apis/1.60.0/google.apis.1.60.0.nupkg.sha512",

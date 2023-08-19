@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33712.159
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObaGroup.Web", "ObaGroup.Web\ObaGroup.Web.csproj", "{BBEB7869-03C5-485F-8FB6-885A82CD5C5C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObaGWebroup", "ObaGroup.Web\ObaGWebroup.csproj", "{BBEB7869-03C5-485F-8FB6-885A82CD5C5C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObaGroup.DataAccess", "ObaGroup.DataAccess\ObaGroup.DataAccess.csproj", "{21D47E2C-7BE3-47A8-9CCC-567C1692CECC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObaGoupDataAccess", "ObaGroup.DataAccess\ObaGoupDataAccess.csproj", "{21D47E2C-7BE3-47A8-9CCC-567C1692CECC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObaGroup.Model", "ObaGroup.Model\ObaGroup.Model.csproj", "{15B41C0A-2D6A-4A1D-9D23-C44EEB1A1CD9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObaGroupModel", "ObaGroup.Model\ObaGroupModel.csproj", "{15B41C0A-2D6A-4A1D-9D23-C44EEB1A1CD9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObaGroup.Utility", "ObaGroup.Utility\ObaGroup.Utility.csproj", "{87DA9A53-0771-4CC9-895A-9CD41C9F37C3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObaGroupUtility", "ObaGroup.Utility\ObaGroupUtility.csproj", "{87DA9A53-0771-4CC9-895A-9CD41C9F37C3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

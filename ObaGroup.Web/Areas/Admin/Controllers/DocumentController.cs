@@ -1,13 +1,19 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ObaGoupDataAccess.Repository.IRepository;
 using ObaGroupModel;
 using ObaGroupUtility;
 
-namespace Oba_group2.Areas.Admin.Controllers;
+namespace ObaGWebroup.Controllers;
 
-// [Area("Admin")]
+[Area("Admin")]
 //[Authorize(Roles = Constants.Role_Admin)]
 public class DocumentController : Controller
 {
