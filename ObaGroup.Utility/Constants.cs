@@ -15,7 +15,7 @@ public static class Constants
     public const string Delete_An_Event_Endpoint = "/Dashboard/Calendar/DeleteAnEvent";
     public const string Patch_An_event_Endpoint = "/Dashboard/Calendar/PatchAnEvent";
     public const string Get_Refresh_Token_Endpoint = "/Dashboard/Calendar/RefreshToken";
-    
+
     public const string Google_Calendar_Callback_Endpoint = "/oauth/callback";
     public const string Google_Calendar_Authorization_Endpoint = "/oauth/calendar";
     public const string Google_Calendar_BaseURL = "https://www.googleapis.com/calendar/v3/calendars";
@@ -33,24 +33,23 @@ public static class Constants
     public const string Update_User_Profile_Endpoint = "/Dashboard/Profile/Update";
     public const string Change_User_profile_Password_Endpoint = "/Dashboard/Profile/ChangePassword";
     public const string Resend_Email_Verification_Endpoint = "/Dashboard/Profile/ResendEmailVerification";
-    
+
     public const string Create_User_EndPoint = "/Dashboard/Admin/CreateUser";
     public const string Get_All_User_Endpoint = "/Dashboard/Admin/GetAllUsers";
     public const string Get_Logged_in_user_Endpoint = "/Dashboard/Admin/GetLoggedInUser";
     public const string Get_User_By_Id = "/Dashboard/Admin/GetUserById";
     public const string Delete_A_User_Endpoint = "/Dashboard/Admin/DeleteAUser";
-    
+
     public const string Login_Endpoint = "/Login";
     public const string Login_Google_Callback_Endpoint = "/Google/Callback/Login";
     public const string Logout_Endpoint = "/Logout";
     public const string Confirm_Email_Endpoint = "/ConfirmEmail";
 
-    
+
     public const string Upsert_Biography_Endpoint = "/Dashboard/Admin/Biography/Upsert";
     public const string List_All_Biographies_Endpoint = "/Dashboard/Biography/GetAll";
     public const string Delete_A_Biography_Endpoint = "/Dashboard/Admin/Biography/Delete/";
     public const string Delete_A_Biography_Image_Endpoint = "/Dashboard/Admin/Biography/Delete/Image";
     public const string Delete_A_BioGraphy_Video_Endpoint = "/Dashboard/Admin/Biography/Delete/Video";
     public const string Get_A_Biography_Endpoint = "/Dashboard/Biography";
-    
 }

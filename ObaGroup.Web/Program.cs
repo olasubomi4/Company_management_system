@@ -3,37 +3,36 @@ using Azure.Security.KeyVault.Secrets;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using ObaGoupDataAccess;
-using ObaGroup.Utility;
 using ObaGoupDataAccess.Data;
 using ObaGoupDataAccess.DataAccess.DbInitializer;
 using ObaGoupDataAccess.Repository;
 using ObaGoupDataAccess.Repository.IRepository;
+using ObaGroup.Utility;
 using ObaGroupUtility;
-
-
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
-string kvUri = builder.Configuration.GetSection("keyVaultUrl").Value;
+var kvUri = builder.Configuration.GetSection("keyVaultUrl").Value;
 
 IKeyVaultManager _keyVaultManager = new KeyVaultManager(new SecretClient(new Uri(kvUri),
     new ClientSecretCredential("26b1c6e9-36aa-4650-8b9f-56efa2b6171b", "f770007e-660d-4906-9385-79733207df5e",
         "y6H8Q~C9jS3PgBSc_H8kQ7RlygiWSgYNSOXpRbRK")));
 
 // builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(_keyVaultManager.GetDbConnectionString()));
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(_keyVaultManager.GetDbConnectionString()));
 
-builder.Services.AddIdentity<IdentityUser,IdentityRole>().AddDefaultTokenProviders().AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddDefaultTokenProviders()
+    .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IDbIntializer, DbInitalizer>();
 builder.Services.AddScoped<IEmailSender, EmailSender>();
-builder.Services.AddScoped <IKeyVaultManager,KeyVaultManager>();
+builder.Services.AddScoped<IKeyVaultManager, KeyVaultManager>();
 builder.Services.AddScoped<Icryption, Cryption>();
 builder.Services.AddScoped<IGoogleTokensUtility, GoogleTokensUtility>();
-builder.Services.AddScoped <IBlobUploader, BlobUploader>();
+builder.Services.AddScoped<IBlobUploader, BlobUploader>();
 builder.Services.AddScoped<IOauth, OAuth>();
 builder.Services.AddScoped<IOAuthTokenProperties, OAuthTokenProperties>();
 // builder.Services.AddSingleton(new SecretClient(new Uri(kvUri), new DefaultAzureCredential()));
@@ -49,7 +48,7 @@ var googleSignInClientSecret = _keyVaultManager.GetGoogleSignInClientSecret();
 builder.Services.AddAuthentication().AddGoogle(googleOptions =>
 {
     googleOptions.ClientId = googleSignInClientId;
-    googleOptions.ClientSecret =googleSignInClientSecret;
+    googleOptions.ClientSecret = googleSignInClientSecret;
 });
 
 builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
@@ -90,8 +89,8 @@ app.UseAuthorization();
 app.UseSession();
 app.MapRazorPages();
 app.MapControllerRoute(
-    name: "default",
-    pattern: "{area=Admin}/{controller=Home}/{action=Index}/{id?}");
+    "default",
+    "{area=Admin}/{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
 
@@ -103,4 +102,3 @@ void SeedDatabase()
         dbInitializer.Initialize();
     }
 }
-

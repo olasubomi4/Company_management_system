@@ -1,6 +1,5 @@
 using ObaGoupDataAccess.Data;
 using ObaGoupDataAccess.Repository.IRepository;
-using ObaGroupModel;
 
 namespace ObaGoupDataAccess.Repository;
 
@@ -16,17 +15,16 @@ public class UnitOfWork : IUnitOfWork
         eventViewModel = new CalendarRepository(_db);
         biography = new BiographyRepository(_db);
         UserOauthRefreshTokenRepository = new UserOauthRefreshTokenRepository(_db);
-
     }
+
     public IDocumentRepository document { get; }
-    public IApplicationUserRepository ApplicationUser{get;}
-    public ICalendarRepository eventViewModel{get;}
+    public IApplicationUserRepository ApplicationUser { get; }
+    public ICalendarRepository eventViewModel { get; }
     public IBiographyRepository biography { get; }
-    
-    public  IUserOauthRefreshTokenRepository UserOauthRefreshTokenRepository { get; }
+
+    public IUserOauthRefreshTokenRepository UserOauthRefreshTokenRepository { get; }
 
 
-    
     public void Save()
     {
         _db.SaveChanges();

@@ -2,5 +2,5 @@ namespace ObaGoupDataAccess;
 
 public interface IOauth
 {
-    Boolean RefreshTokens();
+    bool RefreshTokens();
 }

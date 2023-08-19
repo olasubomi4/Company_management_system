@@ -1,4 +1,3 @@
-using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Http;
 
 namespace ObaGroupUtility;
@@ -11,7 +10,4 @@ public interface IBlobUploader
     public string UploadProfileImage(IFormFile formFile, string blobName);
 
     public void DeleteDocument(string blobName);
-
-
-
 }

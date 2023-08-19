@@ -5,59 +5,68 @@ using Microsoft.AspNetCore.Http;
 
 namespace ObaGroupUtility;
 
-public class BlobUploader:IBlobUploader
+public class BlobUploader : IBlobUploader
 {
-    private IKeyVaultManager _keyVaultManager;
-    private string DocumentContainer = "documents";
-    private string BiographyImages = "biographyimages";
-    private string BiographyVideos = "biographyvideos";
-    private string ProfileImages = "profileimages";
-    private BlobServiceClient blobServiceClient;
+    private readonly IKeyVaultManager _keyVaultManager;
+    private readonly string BiographyImages = "biographyimages";
+    private readonly string BiographyVideos = "biographyvideos";
+    private readonly BlobServiceClient blobServiceClient;
+    private readonly string DocumentContainer = "documents";
+    private readonly string ProfileImages = "profileimages";
+
     public BlobUploader(IKeyVaultManager keyVaultManager)
     {
         _keyVaultManager = keyVaultManager;
-        string storageAccountName = _keyVaultManager.GetStorageAccountName();
-        string accessKey = _keyVaultManager.GetBlobAccessKey();
+        var storageAccountName = _keyVaultManager.GetStorageAccountName();
+        var accessKey = _keyVaultManager.GetBlobAccessKey();
         var blobUri = $"https://{storageAccountName}.blob.core.windows.net";
-        
-        var credential = new StorageSharedKeyCredential(storageAccountName, accessKey);
-        blobServiceClient= new BlobServiceClient(new Uri(blobUri),credential);
-    }
-    
-    public string UploadDocument(IFormFile formFile, string blobName)
-    { 
 
-        BlobContainerClient blobContainer = blobServiceClient.GetBlobContainerClient(DocumentContainer);
+        var credential = new StorageSharedKeyCredential(storageAccountName, accessKey);
+        blobServiceClient = new BlobServiceClient(new Uri(blobUri), credential);
+    }
+
+    public string UploadDocument(IFormFile formFile, string blobName)
+    {
+        var blobContainer = blobServiceClient.GetBlobContainerClient(DocumentContainer);
         return UploadBlob(formFile, blobName, blobContainer);
     }
+
     public string UploadBiographyImage(IFormFile formFile, string blobName)
-    { 
-        BlobContainerClient blobContainer = blobServiceClient.GetBlobContainerClient(BiographyImages);
+    {
+        var blobContainer = blobServiceClient.GetBlobContainerClient(BiographyImages);
         return UploadBlob(formFile, blobName, blobContainer);
     }
+
     public string UploadBiographyVideo(IFormFile formFile, string blobName)
-    { 
-        BlobContainerClient blobContainer = blobServiceClient.GetBlobContainerClient(BiographyVideos);
+    {
+        var blobContainer = blobServiceClient.GetBlobContainerClient(BiographyVideos);
         return UploadBlob(formFile, blobName, blobContainer);
     }
+
     public string UploadProfileImage(IFormFile formFile, string blobName)
-    { 
-        BlobContainerClient blobContainer = blobServiceClient.GetBlobContainerClient(ProfileImages);
+    {
+        var blobContainer = blobServiceClient.GetBlobContainerClient(ProfileImages);
         return UploadBlob(formFile, blobName, blobContainer);
     }
-    private string UploadBlob(IFormFile formFile,string blobName,BlobContainerClient blobContainer)
+
+    public void DeleteDocument(string blobName)
+    {
+        var blobContainer = blobServiceClient.GetBlobContainerClient(DocumentContainer);
+        DeleteBlob(blobName, blobContainer);
+    }
+
+    private string UploadBlob(IFormFile formFile, string blobName, BlobContainerClient blobContainer)
     {
         blobName = ModifyBlobName(blobName);
-        BlobClient blobClient = blobContainer.GetBlobClient(blobName);
+        var blobClient = blobContainer.GetBlobClient(blobName);
         blobClient.Upload(formFile.OpenReadStream(), true);
         return blobClient.Uri.ToString();
     }
 
     private string ModifyBlobName(string blobName)
     {
-
-        int desiredLength = 50; // Set your desired total length here
-        int uuidLength = 10;
+        var desiredLength = 50; // Set your desired total length here
+        var uuidLength = 10;
 
         blobName = RemoveSpecialCharcters(blobName);
         blobName = RemoveWhiteSpaceAndConvertTextToLowerCase(blobName);
@@ -66,9 +75,9 @@ public class BlobUploader:IBlobUploader
             : blobName;
 
         // Generate a UUID
-        string uuid = Guid.NewGuid().ToString("N").Substring(0, uuidLength);
+        var uuid = Guid.NewGuid().ToString("N").Substring(0, uuidLength);
 
-         blobName = blobName + uuid;
+        blobName = blobName + uuid;
 
         return blobName;
     }
@@ -81,21 +90,13 @@ public class BlobUploader:IBlobUploader
 
     private string RemoveWhiteSpaceAndConvertTextToLowerCase(string blobName)
     {
-         blobName = Regex.Replace(blobName, @"\s+", "");
-         return blobName.ToLower();
-    }
-    
-    public void DeleteDocument(string blobName)
-    { 
-        
-        BlobContainerClient blobContainer = blobServiceClient.GetBlobContainerClient(DocumentContainer);
-         DeleteBlob(blobName, blobContainer);
-    }
-    private void DeleteBlob(string blobName,BlobContainerClient blobContainer)
-    {
-        BlobClient blobClient = blobContainer.GetBlobClient(blobName);
-        int status = blobClient.Delete().Status;
+        blobName = Regex.Replace(blobName, @"\s+", "");
+        return blobName.ToLower();
     }
 
-    
+    private void DeleteBlob(string blobName, BlobContainerClient blobContainer)
+    {
+        var blobClient = blobContainer.GetBlobClient(blobName);
+        var status = blobClient.Delete().Status;
+    }
 }

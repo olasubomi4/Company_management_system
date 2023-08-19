@@ -3,7 +3,7 @@ namespace ObaGroupUtility;
 public interface IKeyVaultManager
 {
     // public Task<string> GetSecret(string secretName);
-    public Task<string> UpsertSecret(string secretName,string secretValue);
+    public Task<string> UpsertSecret(string secretName, string secretValue);
 
     public string GetGoogleCalendarToken();
 

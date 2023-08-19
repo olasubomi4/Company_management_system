@@ -13,5 +13,4 @@ public interface IGoogleTokensUtility
     void SetOauthTokenExpiresIn(string newOauthTokenExpiresIn);
     string GetOauthTokenScope();
     void SetOauthTokenScope(string newOauthTokenScope);
-
 }

@@ -2,71 +2,71 @@ using Microsoft.AspNetCore.Http;
 
 namespace ObaGroupUtility;
 
-public  class GoogleTokensUtility:IGoogleTokensUtility
+public class GoogleTokensUtility : IGoogleTokensUtility
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    private Icryption _cryption;
+    private readonly Icryption _cryption;
 
-    public GoogleTokensUtility(IHttpContextAccessor httpContextAccessor,Icryption cryption)
+    public GoogleTokensUtility(IHttpContextAccessor httpContextAccessor, Icryption cryption)
     {
         _httpContextAccessor = httpContextAccessor;
         _cryption = cryption;
     }
 
-    public  string GetAccessToken()
+    public string GetAccessToken()
     {
-        return _cryption.Decrypt(_httpContextAccessor.HttpContext.Session.GetString("OauthTokenAccessToken"))??"";
+        return _cryption.Decrypt(_httpContextAccessor.HttpContext.Session.GetString("OauthTokenAccessToken")) ?? "";
     }
 
-    public   void SetAccessToken(string newAccessToken)
+    public void SetAccessToken(string newAccessToken)
     {
-        _httpContextAccessor.HttpContext.Session.SetString("OauthTokenAccessToken",_cryption.Encrypt( newAccessToken));
-    }
-    
-    
-    public  string GetOauthTokenId()
-    {
-        return _cryption.Decrypt(_httpContextAccessor.HttpContext.Session.GetString("OauthTokenIdToken"))??"";
+        _httpContextAccessor.HttpContext.Session.SetString("OauthTokenAccessToken", _cryption.Encrypt(newAccessToken));
     }
 
-    public   void SetOauthTokenId(string newOauthTokenId)
+
+    public string GetOauthTokenId()
     {
-        _httpContextAccessor.HttpContext.Session.SetString("OauthTokenIdToken", _cryption.Encrypt(newOauthTokenId));
+        return _cryption.Decrypt(_httpContextAccessor.HttpContext.Session.GetString("OauthTokenIdToken")) ?? "";
     }
-    
-    public  void DeleteOauthTokenId()
+
+    public void DeleteOauthTokenId()
     {
         _httpContextAccessor.HttpContext.Session.Remove("OauthTokenIdToken");
     }
-    public  string GetOauthTokenType()
+
+    public string GetOauthTokenType()
     {
-        return _cryption.Decrypt(_httpContextAccessor.HttpContext.Session.GetString("OauthTokenType"))??"";
+        return _cryption.Decrypt(_httpContextAccessor.HttpContext.Session.GetString("OauthTokenType")) ?? "";
     }
 
-    public   void SetOauthTokenType(string newOauthTokenType)
+    public void SetOauthTokenType(string newOauthTokenType)
     {
-        _httpContextAccessor.HttpContext.Session.SetString("OauthTokenType",_cryption.Encrypt( newOauthTokenType));
-    }
-    
-    public  string GetOauthTokenExpiresIn()
-    {
-        return _cryption.Decrypt( _httpContextAccessor.HttpContext.Session.GetString("OauthExpiresIn"))??"";
+        _httpContextAccessor.HttpContext.Session.SetString("OauthTokenType", _cryption.Encrypt(newOauthTokenType));
     }
 
-    public   void SetOauthTokenExpiresIn(string newOauthTokenExpiresIn)
+    public string GetOauthTokenExpiresIn()
     {
-        _httpContextAccessor.HttpContext.Session.SetString("OauthExpiresIn",  _cryption.Encrypt(newOauthTokenExpiresIn));
-    }
-    
-    public  string GetOauthTokenScope()
-    {
-        return _cryption.Decrypt( _httpContextAccessor.HttpContext.Session.GetString("oauthTokenScope"))??"";
+        return _cryption.Decrypt(_httpContextAccessor.HttpContext.Session.GetString("OauthExpiresIn")) ?? "";
     }
 
-    public   void SetOauthTokenScope(string newOauthTokenScope)
+    public void SetOauthTokenExpiresIn(string newOauthTokenExpiresIn)
+    {
+        _httpContextAccessor.HttpContext.Session.SetString("OauthExpiresIn", _cryption.Encrypt(newOauthTokenExpiresIn));
+    }
+
+    public string GetOauthTokenScope()
+    {
+        return _cryption.Decrypt(_httpContextAccessor.HttpContext.Session.GetString("oauthTokenScope")) ?? "";
+    }
+
+    public void SetOauthTokenScope(string newOauthTokenScope)
     {
         _httpContextAccessor.HttpContext.Session.SetString("oauthTokenScope", _cryption.Encrypt(newOauthTokenScope));
+    }
 
+    public void SetOauthTokenId(string newOauthTokenId)
+    {
+        _httpContextAccessor.HttpContext.Session.SetString("OauthTokenIdToken", _cryption.Encrypt(newOauthTokenId));
     }
 }
