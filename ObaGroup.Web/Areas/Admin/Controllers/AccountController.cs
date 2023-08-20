@@ -82,10 +82,7 @@ public class AccountController : Controller
     {
         var redirectUrl = $"{Request.Scheme}://{Request.Host}{Constants.UploadPage}";
 
-        _logger.LogInformation("redirect url " + redirectUrl);
         if (User.Identity.IsAuthenticated) return Redirect(redirectUrl);
-
-        _logger.LogInformation("going to view");
 
         return View();
     }
