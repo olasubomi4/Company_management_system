@@ -38,12 +38,12 @@ public class DocumentController : Controller
         return File("~/dashboard/documents/index.html", "text/html");
     }
     [HttpGet]
-    [Route("dashboard/documents/details/{pid}")]
+    [Route("~/dashboard/documents/details/{pid}")]
     public IActionResult EachDoc(string pid)
     {
         var documents = _unitOfWork.document.GetAll();
 
-        return File("~/dashboard/documents/details[pid]/index.html", "text/html");
+        return File("~/dashboard/documents/details/[pid]/index.html", "text/html");
     }
 
 
