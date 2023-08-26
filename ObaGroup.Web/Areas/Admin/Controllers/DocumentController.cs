@@ -41,7 +41,7 @@ public class DocumentController : Controller
     [Route("~/dashboard/documents/details/{pid}")]
     public IActionResult EachDoc(string pid)
     {
-        var documents = _unitOfWork.document.GetAll();
+        // var documents = _unitOfWork.document.GetAll();
 
         return File("~/dashboard/documents/details/[pid]/index.html", "text/html");
     }
