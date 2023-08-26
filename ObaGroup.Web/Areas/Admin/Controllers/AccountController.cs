@@ -680,7 +680,7 @@ public class AccountController : Controller
             // }
 
             var fileName = imageFile.Image.FileName + Guid.NewGuid();
-            var fileUri = _blobUploader.UploadProfileImage(imageFile.Image, fileName);
+            var fileUri = _blobUploader.UploadProfileImage(imageFile.Image, fileName,Path.GetExtension(imageFile.Image.FileName));
 
             ImageUrl = fileUri;
             return ImageUrl;
@@ -723,4 +723,5 @@ public class AccountController : Controller
         [EmailAddress]
         public string Email { get; set; }
     }
+   
 }

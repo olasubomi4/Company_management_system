@@ -2234,6 +2234,33 @@
           }
         }
       },
+      "MimeTypeMap.List/2.1.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard1.0/MimeTypeMap.List.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard1.0/MimeTypeMap.List.dll": {}
+        }
+      },
+      "MimeTypeMapOfficial/1.0.17": {
+        "type": "package",
+        "compile": {
+          "lib/netcoreapp3.1/MimeTypes.dll": {}
+        },
+        "runtime": {
+          "lib/netcoreapp3.1/MimeTypes.dll": {}
+        }
+      },
+      "MimeTypesMap/1.0.8": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/MimeTypesMap.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/MimeTypesMap.dll": {}
+        }
+      },
       "MySql.Data/8.0.22": {
         "type": "package",
         "dependencies": {
@@ -6883,6 +6910,48 @@
         "lib/netstandard2.1/MimeKit.xml",
         "mimekit.3.6.0.nupkg.sha512",
         "mimekit.nuspec"
+      ]
+    },
+    "MimeTypeMap.List/2.1.0": {
+      "sha512": "iBJs+8c0yWJxLebko6pSHKjAJe/DpaSCy2uRfheK/joGDFWk6DxsEFbEXfI9XtwyklS0tlznz/ks2ODXw77Nmw==",
+      "type": "package",
+      "path": "mimetypemap.list/2.1.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/netstandard1.0/MimeTypeMap.List.dll",
+        "mimetypemap.list.2.1.0.nupkg.sha512",
+        "mimetypemap.list.nuspec"
+      ]
+    },
+    "MimeTypeMapOfficial/1.0.17": {
+      "sha512": "f6DSQSYTckCjq1ifRj0fSLiEmDv+22uo4+JjTeb3MNZK3Ban1XLjA+bTQtD+/7x2NBEAGzBLYIRpS1IU2OgIAw==",
+      "type": "package",
+      "path": "mimetypemapofficial/1.0.17",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net452/MimeTypes.dll",
+        "lib/net48/MimeTypes.dll",
+        "lib/netcoreapp2.2/MimeTypes.dll",
+        "lib/netcoreapp3.1/MimeTypes.dll",
+        "lib/netstandard2.0/MimeTypes.dll",
+        "mimetypemapofficial.1.0.17.nupkg.sha512",
+        "mimetypemapofficial.nuspec"
+      ]
+    },
+    "MimeTypesMap/1.0.8": {
+      "sha512": "iOm6Zar+yVROhlyrGGSJTfThvNoHLUeYeQQND9YD/ot/nA2qsWUp9kP2MHTdF9P7I8afW6eCf8vdELLZjDFdSQ==",
+      "type": "package",
+      "path": "mimetypesmap/1.0.8",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net452/MimeTypesMap.dll",
+        "lib/netstandard1.1/MimeTypesMap.dll",
+        "lib/netstandard2.0/MimeTypesMap.dll",
+        "mimetypesmap.1.0.8.nupkg.sha512",
+        "mimetypesmap.nuspec"
       ]
     },
     "MySql.Data/8.0.22": {
@@ -11555,6 +11624,9 @@
       "Microsoft.EntityFrameworkCore.Sqlite >= 6.0.0",
       "Microsoft.EntityFrameworkCore.Tools >= 6.0.0",
       "Microsoft.Extensions.DependencyInjection >= 6.0.0",
+      "MimeTypeMap.List >= 2.1.0",
+      "MimeTypeMapOfficial >= 1.0.17",
+      "MimeTypesMap >= 1.0.8",
       "MySql.Data.EntityFrameworkCore >= 8.0.22",
       "RestClient >= 3.1024.23771",
       "RestRequest >= 1.2.0",
@@ -11686,6 +11758,18 @@
           "Microsoft.Extensions.DependencyInjection": {
             "target": "Package",
             "version": "[6.0.0, )"
+          },
+          "MimeTypeMap.List": {
+            "target": "Package",
+            "version": "[2.1.0, )"
+          },
+          "MimeTypeMapOfficial": {
+            "target": "Package",
+            "version": "[1.0.17, )"
+          },
+          "MimeTypesMap": {
+            "target": "Package",
+            "version": "[1.0.8, )"
           },
           "MySql.Data.EntityFrameworkCore": {
             "target": "Package",

@@ -119,10 +119,11 @@ public class DocumentController : Controller
                 // {
                 //     file.CopyTo(fileStreams);
                 // }
-                var fileName = file.FileName + Guid.NewGuid();
-                var documentUri = _blobUploader.UploadDocument(file, fileName);
-                documentsUrl.Add(documentUri);
                 type = getDocumentType(file, type);
+                var fileName = file.FileName + Guid.NewGuid();
+                var documentUri = _blobUploader.UploadDocument(file, fileName,type);
+                documentsUrl.Add(documentUri);
+                
             }
 
         obj.Type = type;

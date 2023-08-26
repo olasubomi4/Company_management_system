@@ -126,6 +126,18 @@
               "target": "Package",
               "version": "[6.0.0, )"
             },
+            "MimeTypeMap.List": {
+              "target": "Package",
+              "version": "[2.1.0, )"
+            },
+            "MimeTypeMapOfficial": {
+              "target": "Package",
+              "version": "[1.0.17, )"
+            },
+            "MimeTypesMap": {
+              "target": "Package",
+              "version": "[1.0.8, )"
+            },
             "MySql.Data.EntityFrameworkCore": {
               "target": "Package",
               "version": "[8.0.22, )"

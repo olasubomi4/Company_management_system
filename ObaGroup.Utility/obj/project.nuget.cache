@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "CfNL8XIur3IkDmbT2kGjz9aovWVMsGd/VCr70dN7txl2BYd2iyND/0gLSPk1AEz8sQiAZljf2KOppraam2Kxeg==",
+  "dgSpecHash": "bJZa/yLwL/T2Tj4EMDT1RBsmWrkdQ1fVuc8fWjmrqQD2o7pWnexEsBvf6islo14xXhvCYCDQLmjQp9biJD++Rg==",
   "success": true,
   "projectFilePath": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Utility/ObaGroupUtility.csproj",
   "expectedPackageFiles": [
@@ -129,6 +129,9 @@
     "/Users/subomiodekunle/.nuget/packages/microsoft.win32.registry/4.7.0/microsoft.win32.registry.4.7.0.nupkg.sha512",
     "/Users/subomiodekunle/.nuget/packages/microsoft.win32.systemevents/4.7.0/microsoft.win32.systemevents.4.7.0.nupkg.sha512",
     "/Users/subomiodekunle/.nuget/packages/mimekit/3.6.0/mimekit.3.6.0.nupkg.sha512",
+    "/Users/subomiodekunle/.nuget/packages/mimetypemap.list/2.1.0/mimetypemap.list.2.1.0.nupkg.sha512",
+    "/Users/subomiodekunle/.nuget/packages/mimetypemapofficial/1.0.17/mimetypemapofficial.1.0.17.nupkg.sha512",
+    "/Users/subomiodekunle/.nuget/packages/mimetypesmap/1.0.8/mimetypesmap.1.0.8.nupkg.sha512",
     "/Users/subomiodekunle/.nuget/packages/mysql.data/8.0.22/mysql.data.8.0.22.nupkg.sha512",
     "/Users/subomiodekunle/.nuget/packages/mysql.data.entityframeworkcore/8.0.22/mysql.data.entityframeworkcore.8.0.22.nupkg.sha512",
     "/Users/subomiodekunle/.nuget/packages/netstandard.library/1.6.1/netstandard.library.1.6.1.nupkg.sha512",

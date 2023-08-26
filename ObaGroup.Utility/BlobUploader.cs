@@ -1,8 +1,12 @@
 using System.Text.RegularExpressions;
+using Azure;
 using Azure.Storage;
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
+using HeyRed.Mime;
 using Microsoft.AspNetCore.Http;
-
+// using MimeTypeMap.List;
+//
 namespace ObaGroupUtility;
 
 public class BlobUploader : IBlobUploader
@@ -25,28 +29,28 @@ public class BlobUploader : IBlobUploader
         blobServiceClient = new BlobServiceClient(new Uri(blobUri), credential);
     }
 
-    public string UploadDocument(IFormFile formFile, string blobName)
+    public string UploadDocument(IFormFile formFile, string blobName,string extension)
     {
         var blobContainer = blobServiceClient.GetBlobContainerClient(DocumentContainer);
-        return UploadBlob(formFile, blobName, blobContainer);
+        return UploadBlob(formFile, blobName, blobContainer,extension);
     }
 
-    public string UploadBiographyImage(IFormFile formFile, string blobName)
+    public string UploadBiographyImage(IFormFile formFile, string blobName,string extension)
     {
         var blobContainer = blobServiceClient.GetBlobContainerClient(BiographyImages);
-        return UploadBlob(formFile, blobName, blobContainer);
+        return UploadBlob(formFile, blobName, blobContainer,extension);
     }
 
-    public string UploadBiographyVideo(IFormFile formFile, string blobName)
+    public string UploadBiographyVideo(IFormFile formFile, string blobName,string extension)
     {
         var blobContainer = blobServiceClient.GetBlobContainerClient(BiographyVideos);
-        return UploadBlob(formFile, blobName, blobContainer);
+        return UploadBlob(formFile, blobName, blobContainer,extension);
     }
 
-    public string UploadProfileImage(IFormFile formFile, string blobName)
+    public string UploadProfileImage(IFormFile formFile, string blobName,string extension)
     {
         var blobContainer = blobServiceClient.GetBlobContainerClient(ProfileImages);
-        return UploadBlob(formFile, blobName, blobContainer);
+        return UploadBlob(formFile, blobName, blobContainer,extension);
     }
 
     public void DeleteDocument(string blobName)
@@ -55,11 +59,16 @@ public class BlobUploader : IBlobUploader
         DeleteBlob(blobName, blobContainer);
     }
 
-    private string UploadBlob(IFormFile formFile, string blobName, BlobContainerClient blobContainer)
+    private string UploadBlob(IFormFile formFile, string blobName, BlobContainerClient blobContainer,string extension)
     {
         blobName = ModifyBlobName(blobName);
         var blobClient = blobContainer.GetBlobClient(blobName);
-        blobClient.Upload(formFile.OpenReadStream(), true);
+        BlobUploadOptions options = new BlobUploadOptions
+        {
+            HttpHeaders = new BlobHttpHeaders { ContentType = DetermineMimeType(extension) },
+            Conditions =new BlobRequestConditions { IfNoneMatch = new ETag("*") }
+        };
+        blobClient.Upload(formFile.OpenReadStream(),options);
         return blobClient.Uri.ToString();
     }
 
@@ -98,5 +107,17 @@ public class BlobUploader : IBlobUploader
     {
         var blobClient = blobContainer.GetBlobClient(blobName);
         var status = blobClient.Delete().Status;
+    }
+
+    private string DetermineMimeType(string extension)
+    {
+        if (string.IsNullOrEmpty(extension))
+        {
+            return "application/octet-stream";  
+        }
+        else
+        {
+           return MimeTypesMap.GetMimeType(extension)?? "application/octet-stream";
+        }
     }
 }

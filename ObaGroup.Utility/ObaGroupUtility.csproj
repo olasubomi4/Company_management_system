@@ -35,6 +35,9 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+        <PackageReference Include="MimeTypeMap.List" Version="2.1.0" />
+        <PackageReference Include="MimeTypeMapOfficial" Version="1.0.17" />
+        <PackageReference Include="MimeTypesMap" Version="1.0.8" />
         <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="8.0.22" />
         <PackageReference Include="RestClient" Version="3.1024.23771" />
         <PackageReference Include="RestRequest" Version="1.2.0" />

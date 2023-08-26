@@ -12,8 +12,10 @@ public class Biography
     public string LastName { get; set; }
 
     public string Position { get; set; }
+    
+    public string Description { get; set; }
 
-    //   [AllowedFileExtensions(new []{".jpg", ".png", ".gif",".jpeg"})]
+    // [AllowedFileExtensions(new []{".jpg", ".png", ".gif",".jpeg"})]
     [ValidateNever] public string profileImageUrl { get; set; }
 
     //[AllowedFileExtensions(new []{".mp4", ".mkv",".mov",".avi"})]

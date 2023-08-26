@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 using ObaGroupModel;
 
 namespace ObaGoupDataAccess.Data;
@@ -16,4 +17,5 @@ public class ApplicationDbContext : IdentityDbContext
 
     public DbSet<Biography> Biographies { get; set; }
     public DbSet<UserOauthRefreshToken> UserOauthRefreshToken { get; set; }
+    
 }

@@ -133,7 +133,7 @@ public class BiographyController : Controller
             if (file != null)
             {
                 var fileName = file.FileName + Guid.NewGuid();
-                var fileUri = _blobUploader.UploadBiographyImage(file, fileName);
+                var fileUri = _blobUploader.UploadBiographyImage(file, fileName,Path.GetExtension(file.FileName));
 
 
                 // var uploads = Path.Combine(wwwRootPath, @"biographyImages");
@@ -347,7 +347,7 @@ public class BiographyController : Controller
                 //     file.CopyTo(fileStreams);
                 // }
                 var fileName = file.FileName + Guid.NewGuid();
-                var fileUri = _blobUploader.UploadBiographyVideo(file, fileName);
+                var fileUri = _blobUploader.UploadBiographyVideo(file, fileName,Path.GetExtension(file.FileName));
 
                 biographyVideoList.Add(fileUri);
             }
@@ -364,4 +364,5 @@ public class BiographyController : Controller
             if (System.IO.File.Exists(oldImagePath)) System.IO.File.Delete(oldImagePath);
         }
     }
+
 }

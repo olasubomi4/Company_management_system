@@ -633,3 +633,6 @@
 /Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/obj/Debug/net6.0/ObaGWebroup.pdb
 /Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/obj/Debug/net6.0/ObaGWebroup.genruntimeconfig.cache
 /Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/obj/Debug/net6.0/ref/ObaGWebroup.dll
+/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/bin/Debug/net6.0/MimeTypeMap.List.dll
+/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/bin/Debug/net6.0/MimeTypes.dll
+/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/bin/Debug/net6.0/MimeTypesMap.dll
