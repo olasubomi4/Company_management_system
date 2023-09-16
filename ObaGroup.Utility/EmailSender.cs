@@ -255,7 +255,7 @@ public class EmailSender : IEmailSender
                       <td>
                         <h3 style=""vertical-align: top"">
                           <img
-                            src=""https://imgbox.com/lrcD0H63""
+                            src=""https://i.ibb.co/T4tV03r/Whats-App-Image-2023-08-26-at-17-57-06.jpg""
                             alt=""logo""
                             width=""200""
                             style=""vertical-align: top; width: 200px""
