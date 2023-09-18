@@ -17,5 +17,6 @@ public class ApplicationDbContext : IdentityDbContext
 
     public DbSet<Biography> Biographies { get; set; }
     public DbSet<UserOauthRefreshToken> UserOauthRefreshToken { get; set; }
-    
+ 
+
 }
