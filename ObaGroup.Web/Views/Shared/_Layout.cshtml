@@ -1,70 +1,43 @@
-﻿@using Microsoft.AspNetCore.Identity
-@using ObaGroupUtility
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>@ViewData["Title"] - Oba_group2</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
-       <link rel="stylesheet" href="~/css/loadScreen.css" asp-append-version="true"/>
-    <link rel="stylesheet" href="~/Oba_group2.styles.css" asp-append-version="true"/>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" asp-append-version="true"/>
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css" asp-append-version="true"/>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
-    		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.0.1/fullcalendar.min.css">
 
+    <link rel="stylesheet" href="~/loginStyles/login.css"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9"
+        crossorigin="anonymous"/>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"/>
 </head>
 <body>
 <header>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-        <div class="container-fluid">
-          
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                <ul class="navbar-nav flex-grow-1">
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="Document" asp-action="Index">Document</a>
-                    </li>
-
-                    @if (User.IsInRole(Constants.Role_Admin))
-                     {
-                         <li class="nav-item">
-                             <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register a user</a>
-                         </li>
-                     }
-                </ul>
-                <partial name="_LoginPartial"/>
-            </div>
-        </div>
+    <nav class="navigation-bar">
+        <img src="~/icons/ObaLogo.jpg" alt="logo"/>
+        <h3>O.B.A GROUP</h3>
     </nav>
 </header>
-<div class="container">
-    <main role="main" class="pb-3">
+<div class="login_container">
+    <main role="main">
         <partial name="_Notification"/>
         @RenderBody()
     </main>
 </div>
 
-<footer class="border-top footer text-muted">
-    <div class="container">
-        &copy; 2023 - Oba_group2 - 
-    </div>
-</footer>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
-<script src="~/js/site.js" asp-append-version="true"></script>
-<script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js" asp-append-version="true"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-<script src="https://cdn.tiny.cloud/1/e7neqyihq8q0jmqid1easwl1iumd7cqogamr0kc7b3tumaj0/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+    crossorigin="anonymous"></script>
 
-@await RenderSectionAsync("Scripts", required: false)
-
+@await RenderSectionAsync("Scripts", false)
 </body>
 </html>

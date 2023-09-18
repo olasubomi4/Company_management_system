@@ -14,25 +14,17 @@ public class Repository<T> : IRepository<T> where T : class
     public Repository(ApplicationDbContext db)
     {
         _db = db;
-        this.dbSet = _db.Set<T>();
+        dbSet = _db.Set<T>();
     }
-    public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter=null,string? includeProperties = null)
+
+    public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter = null, string? includeProperties = null)
     {
-        
         IQueryable<T> query = dbSet;
-        if (filter != null)
-        {
-            query = query.Where(filter);
-        }
+        if (filter != null) query = query.Where(filter);
         if (includeProperties != null)
-        {
-            foreach (var includprop in includeProperties.Split(new char[]{','}, StringSplitOptions.RemoveEmptyEntries))
-            {
+            foreach (var includprop in includeProperties.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
                 query = query.Include(includprop);
-            }
-        }
         return query.ToList();
-        
     }
 
     public void Add(T entity)
@@ -40,17 +32,13 @@ public class Repository<T> : IRepository<T> where T : class
         dbSet.Add(entity);
     }
 
-    public T GetFirstOrDefault(Expression<Func<T, bool>> filter,string? includeProperties = null,bool tracked=true)
+    public T GetFirstOrDefault(Expression<Func<T, bool>> filter, string? includeProperties = null, bool tracked = true)
     {
         IQueryable<T> query = dbSet;
         query = query.Where(filter);
         if (includeProperties != null)
-        {
-            foreach (var includprop in includeProperties.Split(new char[]{','}, StringSplitOptions.RemoveEmptyEntries))
-            {
+            foreach (var includprop in includeProperties.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
                 query = query.Include(includprop);
-            }
-        }
         return query.FirstOrDefault();
     }
 

@@ -6,8 +6,8 @@ namespace ObaGoupDataAccess.Repository;
 
 public class DocumentRepository : Repository<Document>, IDocumentRepository
 {
-    private  ApplicationDbContext _db;
-    
+    private readonly ApplicationDbContext _db;
+
     public DocumentRepository(ApplicationDbContext db) : base(db)
     {
         _db = db;
@@ -16,7 +16,5 @@ public class DocumentRepository : Repository<Document>, IDocumentRepository
     public void Update(Document obj)
     {
         _db.Documents.Update(obj);
-
     }
-
 }

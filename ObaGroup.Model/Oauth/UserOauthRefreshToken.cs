@@ -6,14 +6,11 @@ namespace ObaGroupModel;
 
 public class UserOauthRefreshToken
 {
+    [Key] public int Id { get; set; }
 
-    [Key]
-    public int Id { get; set; } 
-    
     [ForeignKey("ApplicationUserId")]
     [ValidateNever]
     public ApplicationUser ApplicationUser { get; set; }
-    
-    [ValidateNever]
-    public string RefreshToken { get; set; }
+
+    [ValidateNever] public string RefreshToken { get; set; }
 }

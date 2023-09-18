@@ -6,6 +6,5 @@ public class _Notification : PageModel
 {
     public void OnGet()
     {
-        
     }
 }

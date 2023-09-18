@@ -1,169 +1,152 @@
-using System.Globalization;
-using System.Security.Claims;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 using System.Web;
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Auth.OAuth2.Flows;
-using Google.Apis.Auth.OAuth2.Responses;
-using Google.Apis.Calendar.v3;
 using Google.Apis.Calendar.v3.Data;
-using Google.Apis.Discovery.v1;
-using Google.Apis.Services;
-using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MySql.Data.MySqlClient.Memcached;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 using NuGet.Protocol;
+using ObaGoupDataAccess;
 using ObaGoupDataAccess.Repository.IRepository;
 using ObaGroupModel;
 using ObaGroupModel.Calendar;
-using System.Net.Http.Json;
-using Google.Apis.Requests;
-using ObaGoupDataAccess;
 using ObaGroupUtility;
-using RestSharp;
-using JsonSerializer = System.Text.Json.JsonSerializer;
 
-
-namespace Oba_group2.Areas.Admin.Controllers;
+namespace ObaGWebroup.Controllers;
 
 [Area("Admin")]
-[Authorize(Roles = Constants.Role_Admin+","+Constants.Role_Staff)]
-public class CalenderController: Controller
+[Authorize(Roles = Constants.Role_Admin + "," + Constants.Role_Staff)]
+public class CalenderController : Controller
 {
-    class CalendarListEntryResponse {
-        public Events Events { get; set; }
-    }
-    private readonly string currentDirectory = Directory.GetCurrentDirectory();
-    private readonly IUnitOfWork _unitOfWork;
-    private  ApplicationUser applicationUser;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IKeyVaultManager _keyVaultManager;
     private readonly ILogger<CalenderController> _logger;
+    private readonly IOauth _oAuth;
+    private readonly IOAuthTokenProperties _oAuthTokenProperties;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public CalenderController(IUnitOfWork unitOfWork,IHttpContextAccessor httpContextAccessor,ILogger<CalenderController> logger)
+    private readonly string currentDirectory = Directory.GetCurrentDirectory();
+    private ApplicationUser applicationUser;
+
+    public CalenderController(IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor,
+        ILogger<CalenderController> logger, IKeyVaultManager keyVaultManager,
+        IOAuthTokenProperties oAuthTokenProperties, IOauth oauth)
     {
         _unitOfWork = unitOfWork;
         _httpContextAccessor = httpContextAccessor;
         _logger = logger;
+        _keyVaultManager = keyVaultManager;
+        _oAuth = oauth;
+        _oAuthTokenProperties = oAuthTokenProperties;
     }
-    
-    
+
+    [HttpGet(Constants.Get_All_Events)]
+    public IActionResult Get()
+    {
+        return File("~/dashboard/calendar/index.html", "text/html");
+    }
+
     [HttpGet(Constants.Create_Event_Endpoint)]
     public IActionResult uploadToGoogle(string? error)
     {
         if (error != null)
         {
-            ResponseModel responseModel = new ResponseModel();
+            var responseModel = new ResponseModel();
             ModelState.AddModelError(string.Empty, error);
             responseModel.Message = error;
             responseModel.StatusCode = 400;
             var errors2 = ModelState.Values.SelectMany(v => v.Errors)
                 .Select(e => e.ErrorMessage);
-            
-            return BadRequest(new {responseModel, Errors =errors2});
+
+            return BadRequest(new { responseModel, Errors = errors2 });
         }
-        return Ok();
+
+        return File("~/dashboard/calendar/create/index.html", "text/html");
     }
-    
+
     [HttpPost]
     [Route(Constants.Create_Event_Endpoint)]
     public async Task<IActionResult> uploadToGoogle([FromForm] CalendarEvent calendarEvents)
     {
-        OAuthTokenProperties oAuthTokenProperties = new OAuthTokenProperties(_httpContextAccessor,_unitOfWork);
-        OAuth oAuth = new OAuth(_unitOfWork,_httpContextAccessor);
-        ResponseModel responseModel = new ResponseModel();
+        var responseModel = new ResponseModel();
         if (!ModelState.IsValid)
         {
             responseModel.Message = "Bad Request";
             responseModel.StatusCode = 400;
             var errors2 = ModelState.Values.SelectMany(v => v.Errors)
                 .Select(e => e.ErrorMessage);
-            return BadRequest(new {responseModel, Errors =errors2 });
-        }
-        if (calendarEvents.EndDateTimeZone == null)
-        {
-            calendarEvents.EndDateTimeZone = "Africa/Lagos";
-        }
-        if (calendarEvents.StartDateTimeZone == null)
-        {
-            calendarEvents.StartDateTimeZone = "Africa/Lagos";
+            return BadRequest(new { responseModel, Errors = errors2 });
         }
 
-        if (calendarEvents.EmailReminderTime==null)
-        {
-            calendarEvents.EmailReminderTime = 0;
-        }
-        if (calendarEvents.PopUpReminderTime==null)
-        {
-            calendarEvents.PopUpReminderTime = 0;
-        }
-        List<EventAttendee> eventAttendees = new List<EventAttendee>();
+        if (calendarEvents.EndDateTimeZone == null) calendarEvents.EndDateTimeZone = "Africa/Lagos";
+        if (calendarEvents.StartDateTimeZone == null) calendarEvents.StartDateTimeZone = "Africa/Lagos";
+
+        if (calendarEvents.EmailReminderTime == null) calendarEvents.EmailReminderTime = 0;
+        if (calendarEvents.PopUpReminderTime == null) calendarEvents.PopUpReminderTime = 0;
+        var eventAttendees = new List<EventAttendee>();
         foreach (var attendee in calendarEvents.AttendeeEmail)
-        {
-            eventAttendees.Add(new EventAttendee() { Email = attendee});
-        }
-        Event newEvent = new Event()
+            eventAttendees.Add(new EventAttendee { Email = attendee });
+        var newEvent = new Event
         {
             Summary = calendarEvents.Summary,
             Location = calendarEvents.Location,
             Description = calendarEvents.Description,
-            Start = new EventDateTime()
+            Start = new EventDateTime
             {
                 DateTime = DateTime.Parse(calendarEvents.StartDateTime),
-                TimeZone = calendarEvents.StartDateTimeZone,
+                TimeZone = calendarEvents.StartDateTimeZone
             },
-            End = new EventDateTime()
+            End = new EventDateTime
             {
                 DateTime = DateTime.Parse(calendarEvents.EndDateTime),
-                TimeZone = calendarEvents.EndDateTimeZone,
+                TimeZone = calendarEvents.EndDateTimeZone
             },
-            
+
             Attendees = eventAttendees,
-            
-            Reminders = new Event.RemindersData()
+
+            Reminders = new Event.RemindersData
             {
                 UseDefault = false,
-                Overrides = new EventReminder[] {
-                    new EventReminder() { Method = "email", Minutes = calendarEvents.EmailReminderTime*60 },
-                    new EventReminder() { Method = "popup", Minutes = calendarEvents.EmailReminderTime*60},
+                Overrides = new EventReminder[]
+                {
+                    new() { Method = "email", Minutes = calendarEvents.EmailReminderTime * 60 },
+                    new() { Method = "popup", Minutes = calendarEvents.EmailReminderTime * 60 }
                 }
             }
         };
 
-        var tokenFile =  currentDirectory+ "/tokens.json";
-        var apiKeyFIle =  currentDirectory+"/Apikey.json";
-        
-        var apiKeyJson = JObject.Parse((System.IO.File.ReadAllText(apiKeyFIle)));
 
-        var apiKey = apiKeyJson["ApiKey"].ToString();
+        var googleCalendarApiKey = _keyVaultManager.GetGoogleCalendarApiKey();
         var sendUpdates = "all";
-        
-        if (!oAuth.RefreshTokens())
-        {
+
+        if (!_oAuth.RefreshTokens())
             return Redirect($"{Request.Scheme}://{Request.Host}{Constants.Google_Calendar_Authorization_Endpoint}");
-        }
-        var accessToken = oAuthTokenProperties.GetAccessToken(); 
+        var accessToken = _oAuthTokenProperties.GetAccessToken();
         if (accessToken == null)
-        {
             return Redirect($"{Request.Scheme}://{Request.Host}{Constants.Google_Calendar_Authorization_Endpoint}");
-        }
-        
-        string model = newEvent.ToJson().ToString();
-        
-        HttpClient client = new HttpClient();
-        var builder = new UriBuilder(Constants.Google_Calendar_BaseURL+"/primary/events");
+
+        var model = newEvent.ToJson();
+
+        var client = new HttpClient();
+        var builder = new UriBuilder(Constants.Google_Calendar_BaseURL + "/primary/events");
         var headers = new Dictionary<string, string>();
         headers.Add("Authorization", "Bearer " + accessToken);
         headers.Add("Accept", "application/json");
-      
+
         var body = model;
-     
+
         var query = HttpUtility.ParseQueryString(builder.Query);
-        query["key"] = apiKey;
+        query["key"] = googleCalendarApiKey;
         query["sendUpdates"] = sendUpdates;
         builder.Query = query.ToString();
 
@@ -172,229 +155,182 @@ public class CalenderController: Controller
             Content = new StringContent(body)
         };
 
-        foreach (var header in headers)
-        {
-            request.Headers.Add(header.Key,header.Value);
-        }
+        foreach (var header in headers) request.Headers.Add(header.Key, header.Value);
 
-        var response =  await client.SendAsync(request);
+        var response = await client.SendAsync(request);
 
-        if (response.IsSuccessStatusCode)
-        {
-            return Ok(await response.Content.ReadAsStringAsync());
-        }
-        
-        GoogleCalendarApiError googleCalendarApiError =  response.Content.ReadFromJsonAsync<GoogleCalendarApiError>().Result;
+        if (response.IsSuccessStatusCode) return Ok(await response.Content.ReadAsStringAsync());
+
+        var googleCalendarApiError = response.Content.ReadFromJsonAsync<GoogleCalendarApiError>().Result;
         responseModel.Message = googleCalendarApiError.error.message;
         responseModel.StatusCode = googleCalendarApiError.error.code;
-        return BadRequest(new {responseModel, Errors =googleCalendarApiError});
+        return BadRequest(new { responseModel, Errors = googleCalendarApiError });
     }
 
-    
+
     [HttpGet]
     [Route(Constants.List_Events_Endpoint)]
     public async Task<IActionResult> ListEvents(ListCalendarEventParams calendarEventParams)
     {
-        OAuthTokenProperties oAuthTokenProperties = new OAuthTokenProperties(_httpContextAccessor,_unitOfWork);
-        OAuth oAuth = new OAuth(_unitOfWork,_httpContextAccessor);
         var calendarId = "primary";
-        var tokenFile =  currentDirectory+ "/tokens.json";
-        var apiKeyFIle =  currentDirectory+"/Apikey.json";
+        var googleCalendarApiKey = _keyVaultManager.GetGoogleCalendarApiKey();
         var orderBy = "startTime";
 
-        ResponseModel responseModel = new ResponseModel();
+        var responseModel = new ResponseModel();
         if (!ModelState.IsValid)
         {
             responseModel.Message = "Bad Request";
             responseModel.StatusCode = 400;
             var errors2 = ModelState.Values.SelectMany(v => v.Errors)
                 .Select(e => e.ErrorMessage);
-            return BadRequest(new {responseModel, Errors =errors2 });
+            return BadRequest(new { responseModel, Errors = errors2 });
         }
-        
-        if (calendarEventParams.timeZone==null)
-        {
-            calendarEventParams.timeZone = "Africa/Lagos";
-        }
-        calendarEventParams.EventMinTimeRange = DateTime.Parse(calendarEventParams.EventMinTimeRange).ToString("yyyy-MM-ddTHH:mm:sszzz");
-        calendarEventParams.EventMaxTimeRange = DateTime.Parse(calendarEventParams.EventMaxTimeRange).ToString("yyyy-MM-ddTHH:mm:sszzz");
 
-        if (!oAuth.RefreshTokens())
-        {
-            return Redirect($"{Request.Scheme}://{Request.Host}{Constants.Google_Calendar_Authorization_Endpoint}");
-        }
-        var token = oAuthTokenProperties.GetAccessToken();//JObject.Parse((System.IO.File.ReadAllText(tokenFile)));
-        var apiKeyJson = JObject.Parse((System.IO.File.ReadAllText(apiKeyFIle)));
+        if (calendarEventParams.timeZone == null) calendarEventParams.timeZone = "Africa/Lagos";
+        calendarEventParams.EventMinTimeRange =
+            DateTime.Parse(calendarEventParams.EventMinTimeRange).ToString("yyyy-MM-ddTHH:mm:sszzz");
+        calendarEventParams.EventMaxTimeRange =
+            DateTime.Parse(calendarEventParams.EventMaxTimeRange).ToString("yyyy-MM-ddTHH:mm:sszzz");
 
-        var apiKey = apiKeyJson["ApiKey"].ToString();
-        
+        if (!_oAuth.RefreshTokens())
+            //return Redirect($"{Request.Scheme}://{Request.Host}{Constants.Google_Calendar_Authorization_Endpoint}");
+            return Ok($"{Request.Scheme}://{Request.Host}{Constants.Google_Calendar_Authorization_Endpoint}");
+
+        var token = _oAuthTokenProperties.GetAccessToken();
+
         if (string.IsNullOrWhiteSpace(token))
-        {
-          return  Redirect($"{Request.Scheme}://{Request.Host}{Constants.Google_Calendar_Authorization_Endpoint}");
-        }
-        
+            return Ok($"{Request.Scheme}://{Request.Host}{Constants.Google_Calendar_Authorization_Endpoint}");
+        //return  Redirect($"{Request.Scheme}://{Request.Host}{Constants.Google_Calendar_Authorization_Endpoint}");
         var accessToken = token;
-        
-        HttpClient client = new HttpClient();
-        var builder = new UriBuilder(Constants.Google_Calendar_BaseURL+"/"+calendarId+"/events?");
+
+        var client = new HttpClient();
+        var builder = new UriBuilder(Constants.Google_Calendar_BaseURL + "/" + calendarId + "/events?");
         var headers = new Dictionary<string, string>();
         headers.Add("Authorization", "Bearer " + accessToken);
         headers.Add("Accept", "application/json");
 
         var query = HttpUtility.ParseQueryString(builder.Query);
-        query["key"] = apiKey;
-        query["timeMax"] =calendarEventParams.EventMaxTimeRange ;
+        query["key"] = googleCalendarApiKey;
+        query["timeMax"] = calendarEventParams.EventMaxTimeRange;
         query["timeMin"] = calendarEventParams.EventMinTimeRange;
         query["timeZone"] = calendarEventParams.timeZone;
         builder.Query = query.ToString();
-        
+
         Console.WriteLine(builder.Query);
         Console.WriteLine(builder.ToString());
         var request = new HttpRequestMessage(HttpMethod.Get, builder.Uri);
-        foreach (var header in headers)
-        {
-            request.Headers.Add(header.Key,header.Value);
-        }
+        foreach (var header in headers) request.Headers.Add(header.Key, header.Value);
 
-        
-        var response =  await client.SendAsync(request);
-        if (response.IsSuccessStatusCode)
-        {
-            
-            return Ok( await response.Content.ReadFromJsonAsync<JsonElement>());
-        }
 
-        GoogleCalendarApiError googleCalendarApiError =  response.Content.ReadFromJsonAsync<GoogleCalendarApiError>().Result;
+        var response = await client.SendAsync(request);
+        if (response.IsSuccessStatusCode) return Ok(await response.Content.ReadFromJsonAsync<JsonElement>());
+
+        var googleCalendarApiError = response.Content.ReadFromJsonAsync<GoogleCalendarApiError>().Result;
         responseModel.Message = googleCalendarApiError.error.message;
         responseModel.StatusCode = googleCalendarApiError.error.code;
-        return BadRequest(new {responseModel, Errors =googleCalendarApiError});
+        return BadRequest(new { responseModel, Errors = googleCalendarApiError });
     }
-    
+
     [HttpGet]
     [Route(Constants.Get_An_Event_Endpoint)]
     public async Task<IActionResult> GetAnEvent(GetAnEventParam getAnEventParam)
     {
-        OAuthTokenProperties oAuthTokenProperties = new OAuthTokenProperties(_httpContextAccessor,_unitOfWork);
-        OAuth oAuth =  new OAuth(_unitOfWork,_httpContextAccessor);
-        ResponseModel responseModel = new ResponseModel();
+        var googleCalendarApiKey = _keyVaultManager.GetGoogleCalendarApiKey();
+        var responseModel = new ResponseModel();
         if (!ModelState.IsValid)
         {
             responseModel.Message = "Bad Request";
             responseModel.StatusCode = 400;
             var errors2 = ModelState.Values.SelectMany(v => v.Errors)
                 .Select(e => e.ErrorMessage);
-            return BadRequest(new {responseModel, Errors =errors2 });
+            return BadRequest(new { responseModel, Errors = errors2 });
         }
-        
+
         var calendarId = "primary";
-        var tokenFile =  currentDirectory+ "/tokens.json";
-        var apiKeyFIle =  currentDirectory+"/Apikey.json";
 
-
-        if (!oAuth.RefreshTokens())
-        {
+        if (!_oAuth.RefreshTokens())
             return Redirect($"{Request.Scheme}://{Request.Host}{Constants.Google_Calendar_Authorization_Endpoint}");
-        }
-        var token = oAuthTokenProperties.GetAccessToken(); //JObject.Parse((System.IO.File.ReadAllText(tokenFile)));
-        var apiKeyJson = JObject.Parse((System.IO.File.ReadAllText(apiKeyFIle)));
+        var token = _oAuthTokenProperties.GetAccessToken(); //JObject.Parse((System.IO.File.ReadAllText(tokenFile)));
 
-        var apiKey = apiKeyJson["ApiKey"].ToString();
-        
         if (string.IsNullOrWhiteSpace(token))
-        {
             Redirect($"{Request.Scheme}://{Request.Host}{Constants.Google_Calendar_Callback_Endpoint}");
-        }
-        
- 
 
-        var accessToken = token;//tokens["access_token"].ToString();
-        
-        HttpClient client = new HttpClient();
-        var builder = new UriBuilder(Constants.Google_Calendar_BaseURL+"/"+calendarId+"/events/"+getAnEventParam.eventId);
+
+        var accessToken = token; //tokens["access_token"].ToString();
+
+        var client = new HttpClient();
+        var builder = new UriBuilder(Constants.Google_Calendar_BaseURL + "/" + calendarId + "/events/" +
+                                     getAnEventParam.eventId);
         var headers = new Dictionary<string, string>();
         headers.Add("Authorization", "Bearer " + accessToken);
         headers.Add("Accept", "application/json");
 
         var query = HttpUtility.ParseQueryString(builder.Query);
-        query["key"] = apiKey;
+        query["key"] = googleCalendarApiKey;
         builder.Query = query.ToString();
-        
+
         Console.WriteLine(builder.Query);
         Console.WriteLine(builder.ToString());
         var request = new HttpRequestMessage(HttpMethod.Get, builder.Uri);
-        foreach (var header in headers)
-        {
-            request.Headers.Add(header.Key,header.Value);
-        }
+        foreach (var header in headers) request.Headers.Add(header.Key, header.Value);
 
-        var response =  await client.SendAsync(request);
+        var response = await client.SendAsync(request);
         Console.WriteLine(response.Content.ReadAsStringAsync().Result);
-        if (response.IsSuccessStatusCode)
-        {
-            return Ok(await response.Content.ReadAsStringAsync());
-        }
-        
-        GoogleCalendarApiError googleCalendarApiError =  response.Content.ReadFromJsonAsync<GoogleCalendarApiError>().Result;
+        if (response.IsSuccessStatusCode) return Ok(await response.Content.ReadAsStringAsync());
+
+        var googleCalendarApiError = response.Content.ReadFromJsonAsync<GoogleCalendarApiError>().Result;
         responseModel.Message = googleCalendarApiError.error.message;
         responseModel.StatusCode = googleCalendarApiError.error.code;
-        return BadRequest(new {responseModel, Errors =googleCalendarApiError});
+        return BadRequest(new { responseModel, Errors = googleCalendarApiError });
     }
 
     [HttpDelete]
     [Route(Constants.Delete_An_Event_Endpoint)]
-    public async Task<IActionResult> DeleteAnEvent( DeleteAnEventParam deleteAnEventParam)
+    public async Task<IActionResult> DeleteAnEvent(DeleteAnEventParam deleteAnEventParam)
     {
-        OAuthTokenProperties oAuthTokenProperties = new OAuthTokenProperties(_httpContextAccessor,_unitOfWork);
-        OAuth oAuth =  new OAuth(_unitOfWork,_httpContextAccessor);
-        ResponseModel responseModel = new ResponseModel();
+        var responseModel = new ResponseModel();
+        var googleCalendarApiKey = _keyVaultManager.GetGoogleCalendarApiKey();
+
         if (!ModelState.IsValid)
         {
             responseModel.Message = "Bad Request";
             responseModel.StatusCode = 400;
             var errors2 = ModelState.Values.SelectMany(v => v.Errors)
                 .Select(e => e.ErrorMessage);
-            return BadRequest(new {responseModel, Errors =errors2 });
+            return BadRequest(new { responseModel, Errors = errors2 });
         }
-        
+
         var calendarId = "primary";
         var sendUpdate = "all";
-        var tokenFile =  currentDirectory+ "/tokens.json";
-        var apiKeyFIle =  currentDirectory+"/Apikey.json";
 
-        if (!oAuth.RefreshTokens())
-        {
+
+        if (!_oAuth.RefreshTokens())
             return Redirect($"{Request.Scheme}://{Request.Host}{Constants.Google_Calendar_Authorization_Endpoint}");
-        }
-        
-        var token = oAuthTokenProperties.GetAccessToken();//JObject.Parse((System.IO.File.ReadAllText(tokenFile)));
-        var apiKeyJson = JObject.Parse((System.IO.File.ReadAllText(apiKeyFIle)));
 
-        var apiKey = apiKeyJson["ApiKey"].ToString();
+        var token = _oAuthTokenProperties.GetAccessToken(); //JObject.Parse((System.IO.File.ReadAllText(tokenFile)));
+
+
         if (string.IsNullOrWhiteSpace(token))
-        {
             Redirect($"{Request.Scheme}://{Request.Host}{Constants.Google_Calendar_Authorization_Endpoint}");
-        }
 
-        var accessToken = token;//tokens["access_token"].ToString();
-        
-        HttpClient client = new HttpClient();
-        var builder = new UriBuilder(Constants.Google_Calendar_BaseURL+"/"+calendarId+"/events/"+deleteAnEventParam.eventId);
+        var accessToken = token; //tokens["access_token"].ToString();
+
+        var client = new HttpClient();
+        var builder = new UriBuilder(Constants.Google_Calendar_BaseURL + "/" + calendarId + "/events/" +
+                                     deleteAnEventParam.eventId);
         var headers = new Dictionary<string, string>();
         headers.Add("Authorization", "Bearer " + accessToken);
         headers.Add("Accept", "application/json");
 
         var query = HttpUtility.ParseQueryString(builder.Query);
-        query["key"] = apiKey;
+        query["key"] = googleCalendarApiKey;
         query["sendUpdates"] = sendUpdate;
         builder.Query = query.ToString();
 
         var request = new HttpRequestMessage(HttpMethod.Delete, builder.Uri);
-        foreach (var header in headers)
-        {
-            request.Headers.Add(header.Key,header.Value);
-        }
-        
-        var response =  await client.SendAsync(request);
+        foreach (var header in headers) request.Headers.Add(header.Key, header.Value);
+
+        var response = await client.SendAsync(request);
 
         if (response.IsSuccessStatusCode)
         {
@@ -402,173 +338,131 @@ public class CalenderController: Controller
             responseModel.StatusCode = 200;
             return Ok(responseModel);
         }
-        
-        GoogleCalendarApiError googleCalendarApiError =  response.Content.ReadFromJsonAsync<GoogleCalendarApiError>().Result;
+
+        var googleCalendarApiError = response.Content.ReadFromJsonAsync<GoogleCalendarApiError>().Result;
         responseModel.Message = googleCalendarApiError.error.message;
         responseModel.StatusCode = googleCalendarApiError.error.code;
-        return BadRequest(new {responseModel, Errors =googleCalendarApiError});
+        return BadRequest(new { responseModel, Errors = googleCalendarApiError });
     }
 
     [HttpPatch]
     [Route(Constants.Patch_An_event_Endpoint)]
     public async Task<IActionResult> UpdateAnEvent([FromForm] PatchEvent patchEvent)
     {
-        OAuthTokenProperties oAuthTokenProperties = new OAuthTokenProperties(_httpContextAccessor,_unitOfWork);
-        OAuth oAuth = new OAuth(_unitOfWork,_httpContextAccessor);
         IEnumerable<string> errors;
-        ResponseModel responseModel = new ResponseModel();
+        var responseModel = new ResponseModel();
         if (!ModelState.IsValid)
         {
             responseModel.Message = "Bad Request";
             responseModel.StatusCode = 400;
             errors = ModelState.Values.SelectMany(v => v.Errors)
                 .Select(e => e.ErrorMessage);
-            return BadRequest(new {responseModel, Errors =errors });
+            return BadRequest(new { responseModel, Errors = errors });
         }
 
         var sendUpdates = "all";
-        Event patchEventbody = new Event();
-        if (!string.IsNullOrWhiteSpace(patchEvent.Summary))
-        {
-            patchEventbody.Summary = patchEvent.Summary;
-        }
+        var patchEventbody = new Event();
+        if (!string.IsNullOrWhiteSpace(patchEvent.Summary)) patchEventbody.Summary = patchEvent.Summary;
 
-        if (!string.IsNullOrWhiteSpace(patchEvent.Location))
-        {
-            patchEventbody.Location = patchEvent.Location;
-        }
+        if (!string.IsNullOrWhiteSpace(patchEvent.Location)) patchEventbody.Location = patchEvent.Location;
 
-        if (!string.IsNullOrWhiteSpace(patchEvent.Description))
-        {
-            patchEventbody.Description = patchEvent.Description;
-
-        }
+        if (!string.IsNullOrWhiteSpace(patchEvent.Description)) patchEventbody.Description = patchEvent.Description;
 
         if (!string.IsNullOrWhiteSpace(patchEvent.StartDateTime) ||
             !string.IsNullOrWhiteSpace(patchEvent.StartDateTimeZone))
         {
-            EventDateTime start = new EventDateTime();
+            var start = new EventDateTime();
 
             if (!string.IsNullOrWhiteSpace(patchEvent.StartDateTime))
-            {
                 start.DateTime = DateTime.Parse(patchEvent.StartDateTime);
-            }
 
             if (!string.IsNullOrWhiteSpace(patchEvent.StartDateTimeZone))
-            {
                 start.TimeZone = patchEvent.StartDateTimeZone;
-            }
             else
-            {
                 start.TimeZone = "Africa/Lagos";
-            }
 
             patchEventbody.Start = start;
         }
-        
+
         if (!string.IsNullOrWhiteSpace(patchEvent.EndDateTime) ||
             !string.IsNullOrWhiteSpace(patchEvent.EndDateTimeZone))
         {
-            EventDateTime end = new EventDateTime();
+            var end = new EventDateTime();
 
             if (!string.IsNullOrWhiteSpace(patchEvent.EndDateTime))
-            {
                 end.DateTime = DateTime.Parse(patchEvent.EndDateTime);
-            }
 
             if (!string.IsNullOrWhiteSpace(patchEvent.EndDateTimeZone))
-            {
                 end.TimeZone = patchEvent.EndDateTimeZone;
-            }
             else
-            {
                 end.TimeZone = "Africa/Lagos";
-            }
             patchEventbody.End = end;
         }
-        
-        if (patchEvent.AttendeeEmailList!=null)
+
+        if (patchEvent.AttendeeEmailList != null)
         {
-            List<EventAttendee> eventAttendees = new List<EventAttendee>();
+            var eventAttendees = new List<EventAttendee>();
             foreach (var attendee in patchEvent.AttendeeEmailList)
-            {
-                eventAttendees.Add(new EventAttendee() { Email = attendee});
-            }
+                eventAttendees.Add(new EventAttendee { Email = attendee });
 
             patchEventbody.Attendees = eventAttendees;
         }
 
-        if ((patchEvent.EmailReminderTime > 0) || (patchEvent.PopUpReminderTime > 0))
+        if (patchEvent.EmailReminderTime > 0 || patchEvent.PopUpReminderTime > 0)
         {
-            List<EventReminder> eventReminder = new List<EventReminder>();
+            var eventReminder = new List<EventReminder>();
             if (patchEvent.EmailReminderTime > 0)
-            {
-                eventReminder.Add(new EventReminder()
-                    { Method = "email", Minutes = patchEvent.EmailReminderTime * 60 });
-            }
+                eventReminder.Add(new EventReminder { Method = "email", Minutes = patchEvent.EmailReminderTime * 60 });
 
             if (patchEvent.PopUpReminderTime > null)
-            {
-                eventReminder.Add(new EventReminder()
-                    { Method = "popup", Minutes = patchEvent.EmailReminderTime * 60 });
-            }
+                eventReminder.Add(new EventReminder { Method = "popup", Minutes = patchEvent.EmailReminderTime * 60 });
             patchEventbody.Reminders.Overrides = eventReminder;
         }
-        var calendarId = "primary";
-        var tokenFile =  currentDirectory+ "/tokens.json";
-        var apiKeyFIle =  currentDirectory+"/Apikey.json";
-        
-        if (!oAuth.RefreshTokens())
-        {
-            return Redirect("https://localhost:7151/calendar");
-        }
-        var token = oAuthTokenProperties.GetAccessToken();//JObject.Parse((System.IO.File.ReadAllText(tokenFile)));
-        var apiKeyJson = JObject.Parse((System.IO.File.ReadAllText(apiKeyFIle)));
 
-        var apiKey = apiKeyJson["ApiKey"].ToString();
+        var calendarId = "primary";
+        var googleCalendarApiKey = _keyVaultManager.GetGoogleCalendarApiKey();
+
+
+        if (!_oAuth.RefreshTokens())
+            return Redirect($"{Request.Scheme}://{Request.Host}{Constants.Google_Calendar_Authorization_Endpoint}");
+        var token = _oAuthTokenProperties.GetAccessToken(); //JObject.Parse((System.IO.File.ReadAllText(tokenFile)));
 
         if (string.IsNullOrWhiteSpace(token))
-        {
             Redirect($"{Request.Scheme}://{Request.Host}{Constants.Google_Calendar_Authorization_Endpoint}");
-        }
 
-        var accessToken = token;//tokens["access_token"].ToString();
-        
-        HttpClient client = new HttpClient();
-        var builder = new UriBuilder(Constants.Google_Calendar_BaseURL+"/"+calendarId+"/events/"+patchEvent.EventId);
+        var accessToken = token; //tokens["access_token"].ToString();
+
+        var client = new HttpClient();
+        var builder =
+            new UriBuilder(Constants.Google_Calendar_BaseURL + "/" + calendarId + "/events/" + patchEvent.EventId);
         var headers = new Dictionary<string, string>();
 
-        Console.WriteLine(patchEventbody.ToJson().ToString());
+        Console.WriteLine(patchEventbody.ToJson());
         string body = null;
-        if (patchEventbody != null)
-        {
-             body = patchEventbody.ToJson().ToString();
-        }
-        
+        if (patchEventbody != null) body = patchEventbody.ToJson();
+
         headers.Add("Authorization", "Bearer " + accessToken);
         headers.Add("Accept", "application/json");
 
         var query = HttpUtility.ParseQueryString(builder.Query);
-        query["key"] = apiKey;
-       // query["events"] = patchEvent.EventId;
+        query["key"] = googleCalendarApiKey;
+        // query["events"] = patchEvent.EventId;
         query["sendUpdates"] = sendUpdates;
         builder.Query = query.ToString();
         Console.WriteLine(builder.Uri.ToString());
-        
-        var request = new HttpRequestMessage(new HttpMethod("PATCH"), builder.Uri);
-      
-        if (patchEventbody != null)
-        {
-            request.Content = new StringContent(JsonConvert.SerializeObject(patchEventbody));
-        }
-        
-        client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-        var patchEndpoint = $"{Constants.Google_Calendar_BaseURL}/primary/events/{patchEvent.EventId}?key={apiKey}";
+        var request = new HttpRequestMessage(new HttpMethod("PATCH"), builder.Uri);
+
+        if (patchEventbody != null) request.Content = new StringContent(JsonConvert.SerializeObject(patchEventbody));
+
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+        var patchEndpoint =
+            $"{Constants.Google_Calendar_BaseURL}/primary/events/{patchEvent.EventId}?key={googleCalendarApiKey}";
 
         var patchContent = new StringContent(
             patchEventbody.ToJson(),
-            System.Text.Encoding.UTF8,
+            Encoding.UTF8,
             "application/json");
 
         var patchRequest = new HttpRequestMessage(new HttpMethod("PATCH"), patchEndpoint)
@@ -577,21 +471,15 @@ public class CalenderController: Controller
         };
 
         var response = await client.SendAsync(patchRequest);
-       
-        foreach (var header in headers)
-        {
-            request.Headers.Add(header.Key,header.Value);
-        }
-        var response2 =  await client.SendAsync(request);
-        if (response.IsSuccessStatusCode)
-        {
-            return Ok(await response.Content.ReadAsStringAsync());
-        }
-        
-        GoogleCalendarApiError googleCalendarApiError =  response.Content.ReadFromJsonAsync<GoogleCalendarApiError>().Result;
+
+        foreach (var header in headers) request.Headers.Add(header.Key, header.Value);
+        var response2 = await client.SendAsync(request);
+        if (response.IsSuccessStatusCode) return Ok(await response.Content.ReadAsStringAsync());
+
+        var googleCalendarApiError = response.Content.ReadFromJsonAsync<GoogleCalendarApiError>().Result;
         responseModel.Message = googleCalendarApiError.error.message;
         responseModel.StatusCode = googleCalendarApiError.error.code;
-        return BadRequest(new {responseModel, Errors =googleCalendarApiError});
+        return BadRequest(new { responseModel, Errors = googleCalendarApiError });
     }
 
 
@@ -599,25 +487,23 @@ public class CalenderController: Controller
     public ActionResult OauthRedirect()
     {
         Console.WriteLine(currentDirectory);
-        var credentialsFile = currentDirectory+"/client_secret_87857337556-iqm8t560cfhc8ddln4mdk88ahl311na9.apps.googleusercontent.com.json";
-        JObject credentials = JObject.Parse((System.IO.File.ReadAllText(credentialsFile)));
-        var client_id= credentials["web"]["client_id"].ToString();
-        Console.WriteLine(client_id);
+        var googleCalenderGrantPermissionClientId = _keyVaultManager.GetGoogleCalenderGrantPermissionClientId();
 
         var referringUrl = HttpContext.Request.Headers["Referer"];
-        Console.WriteLine(referringUrl);
-        string loginHint = User.Identity.Name;
+
+        var loginHint = User.Identity.Name;
 
         var redirectUrl = "https://accounts.google.com/o/oauth2/v2/auth?" +
                           "scope=https://www.googleapis.com/auth/calendar+https://www.googleapis.com/auth/calendar.events&" +
                           "access_type=offline&" +
                           "include_granted_scopes=true&" +
-                          "login_hint="+loginHint+"&"+
+                          "login_hint=" + loginHint + "&" +
                           "response_type=code&" +
                           "state=referringUrl&" +
-                          "redirect_uri="+$"{Request.Scheme}://{Request.Host}{Constants.Google_Calendar_Callback_Endpoint}&" +
-                          "client_id=" +client_id;
-        _logger.LogInformation(redirectUrl);
+                          "redirect_uri=" +
+                          $"{Request.Scheme}://{Request.Host}{Constants.Google_Calendar_Callback_Endpoint}&" +
+                          "client_id=" + googleCalenderGrantPermissionClientId;
+
         return Redirect(redirectUrl);
     }
 }

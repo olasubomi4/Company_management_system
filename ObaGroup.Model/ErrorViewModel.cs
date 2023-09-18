@@ -1,4 +1,4 @@
-namespace Oba_group2.Models;
+namespace ObaGroupModel;
 
 public class ErrorViewModel
 {

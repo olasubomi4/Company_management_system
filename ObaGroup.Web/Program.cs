@@ -1,92 +1,94 @@
-using System.Collections.Immutable;
-using Microsoft.AspNetCore.Http.Features;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
-
-using ObaGroup.Utility;
-using Microsoft.Extensions.DependencyInjection;
+using ObaGoupDataAccess;
 using ObaGoupDataAccess.Data;
 using ObaGoupDataAccess.DataAccess.DbInitializer;
 using ObaGoupDataAccess.Repository;
 using ObaGoupDataAccess.Repository.IRepository;
+using ObaGroup.Utility;
 using ObaGroupUtility;
 
-
 var builder = WebApplication.CreateBuilder(args);
+var kvUri = builder.Configuration.GetSection("keyVaultUrl").Value;
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
+IKeyVaultManager _keyVaultManager = new KeyVaultManager(new SecretClient(new Uri("https://obagroupkey.vault.azure.net/"),
+    new DefaultAzureCredential()));
 
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(
-    builder.Configuration.GetConnectionString("DefaultConnection")
-));
+// builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(_keyVaultManager.GetDbConnectionString()));
 
-
-/*builder.Services.AddAuthentication().AddGoogle(googleOptions =>
-{
-    googleOptions.ClientId = builder.Configuration.GetSection("GoogleAuthSettings")
-        .GetValue<string>("ClientId");
-    googleOptions.ClientSecret = builder.Configuration.GetSection("GoogleAuthSettings")
-        .GetValue<string>("ClientSecret");
-});
-*/
-
-builder.Services.AddIdentity<IdentityUser,IdentityRole>().AddDefaultTokenProviders().AddEntityFrameworkStores<ApplicationDbContext>();
-
+builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddDefaultTokenProviders()
+    .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IDbIntializer, DbInitalizer>();
-builder.Services.AddSingleton<IEmailSender, EmailSender>();
+builder.Services.AddScoped<IEmailSender, EmailSender>();
+builder.Services.AddScoped<IKeyVaultManager, KeyVaultManager>();
+builder.Services.AddScoped<Icryption, Cryption>();
+builder.Services.AddScoped<IGoogleTokensUtility, GoogleTokensUtility>();
+builder.Services.AddScoped<IBlobUploader, BlobUploader>();
+builder.Services.AddScoped<IOauth, OAuth>();
+builder.Services.AddScoped<IOAuthTokenProperties, OAuthTokenProperties>();
+builder.Services.AddSingleton(new SecretClient(new Uri(kvUri), new DefaultAzureCredential()));
+
+
+builder.Services.AddControllersWithViews();
+
+
+var googleSignInClientId = _keyVaultManager.GetGoogleSignInClientId();
+var googleSignInClientSecret = _keyVaultManager.GetGoogleSignInClientSecret();
+
+builder.Services.AddAuthentication().AddGoogle(googleOptions =>
+{
+    googleOptions.ClientId = googleSignInClientId;
+    googleOptions.ClientSecret = googleSignInClientSecret;
+});
+
 builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 builder.Services.AddSession(options =>
 {
-    // Set a timeout for the session
-    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.IdleTimeout = TimeSpan.FromMinutes(100);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.AccessDeniedPath = "/MyHttpStatuses/AccessDenied";
+    options.AccessDeniedPath = Constants.Access_Denied_Endpoint;
+    options.LoginPath = Constants.Login_Endpoint;
+    options.LogoutPath = Constants.Logout_Endpoint;
 });
-/*builder.Services.AddAntiforgery(options =>
-{
-    options.Cookie.Name = "X-CSRF-TOKEN";
-    options.HeaderName = "X-CSRF-TOKEN";
-});
-*/
-/*builder.Services.Configure<FormOptions>(options =>
-{
-    options.MultipartBodyLengthLimit =  500 * 1024 * 1024; // 50 MB
-});
-*/
-
+builder.Services.AddDistributedMemoryCache();
 var app = builder.Build();
 
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+else
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 
-app.UseStatusCodePagesWithReExecute(Constants.Access_Denied_Endpoint);
+//app.UseStatusCodePagesWithReExecute(Constants.Access_Denied_Endpoint);
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 
 app.UseRouting();
 SeedDatabase();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseSession();
-app.MapRazorPages();
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{area=Admin}/{controller=Home}/{action=Index}/{id?}");
 
+app.MapControllerRoute(
+    "default",
+    "{area=Admin}/{controller=Account}/{action=Login}");
+
+app.MapRazorPages();
 app.Run();
 
 void SeedDatabase()

@@ -2,7 +2,7 @@ using ObaGroupModel;
 
 namespace ObaGoupDataAccess.Repository.IRepository;
 
-public interface IUserOauthRefreshTokenRepository: IRepository<UserOauthRefreshToken>
+public interface IUserOauthRefreshTokenRepository : IRepository<UserOauthRefreshToken>
 {
-    void Upsert(UserOauthRefreshToken obj);
+    void Update(UserOauthRefreshToken obj);
 }
