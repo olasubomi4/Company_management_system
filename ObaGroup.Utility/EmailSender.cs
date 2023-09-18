@@ -255,7 +255,7 @@ public class EmailSender : IEmailSender
                       <td>
                         <h3 style=""vertical-align: top"">
                           <img
-                            src=""https://1000logos.net/wp-content/uploads/2021/11/Nike-Logo.png""
+                            src=""https://i.ibb.co/T4tV03r/Whats-App-Image-2023-08-26-at-17-57-06.jpg""
                             alt=""logo""
                             width=""200""
                             style=""vertical-align: top; width: 200px""
@@ -313,7 +313,7 @@ public class EmailSender : IEmailSender
                 <tr>
                   <td>
                     <span style=""padding: 4px; color: #2579a9"">Tel</span
-                    >{{number}}
+                    >0703 057 0090,
                     <span style=""padding: 4px; color: #2579a9"">@</span>
                     oba@oba.com
                     <span style=""padding: 4px; color: #2579a9"">W</span>oba
@@ -321,7 +321,7 @@ public class EmailSender : IEmailSender
                 </tr>
                 <tr>
                   <td class=""content-block"">
-                    <span class=""apple-link"">{{address}}</span>
+                    <span class=""apple-link"">35/37 TOWN PLANNING WAY, ILUPEJU, LAGOS STATE</span>
                     <br />
                   </td>
                 </tr>
