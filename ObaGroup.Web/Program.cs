@@ -14,7 +14,7 @@ using ObaGroupUtility;
 var builder = WebApplication.CreateBuilder(args);
 var kvUri = builder.Configuration.GetSection("keyVaultUrl").Value;
 
-IKeyVaultManager _keyVaultManager = new KeyVaultManager(new SecretClient(new Uri("https://obagroupkey.vault.azure.net/"),
+IKeyVaultManager _keyVaultManager = new KeyVaultManager(new SecretClient(new Uri("https://obagroupkeyvault.vault.azure.net/"),
     new DefaultAzureCredential()));
 
 // builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
