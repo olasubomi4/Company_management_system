@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "q1IR+qvD7N0MihZlv3wT63L8wg9kHlupya9+XTukpjE=",
+  "Hash": "w3gNjPNETwJQ8EBbXKtwojNtzXxWMJ7zpHHVTI9GyrU=",
   "Source": "ObaGWebroup",
   "BasePath": "_content/ObaGWebroup",
   "Mode": "Default",
@@ -1309,6 +1309,40 @@
       "OriginalItemSpec": "wwwroot/_next/static/7DKtqPXyRPjaHf4vzLtK3/_ssgManifest.js"
     },
     {
+      "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/_next/static/7nj6azTxVNUlHgfy9jKdU/_buildManifest.js",
+      "SourceId": "ObaGWebroup",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/",
+      "BasePath": "_content/ObaGWebroup",
+      "RelativePath": "_next/static/7nj6azTxVNUlHgfy9jKdU/_buildManifest.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/_next/static/7nj6azTxVNUlHgfy9jKdU/_buildManifest.js"
+    },
+    {
+      "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/_next/static/7nj6azTxVNUlHgfy9jKdU/_ssgManifest.js",
+      "SourceId": "ObaGWebroup",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/",
+      "BasePath": "_content/ObaGWebroup",
+      "RelativePath": "_next/static/7nj6azTxVNUlHgfy9jKdU/_ssgManifest.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/_next/static/7nj6azTxVNUlHgfy9jKdU/_ssgManifest.js"
+    },
+    {
       "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/_next/static/a79t0y9oFLtZ8o5o98Q24/_buildManifest.js",
       "SourceId": "ObaGWebroup",
       "SourceType": "Discovered",
@@ -1479,6 +1513,23 @@
       "OriginalItemSpec": "wwwroot/_next/static/BychpVrrWA_nDkFNf6ulf/_ssgManifest.js"
     },
     {
+      "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/_next/static/chunks/115-21d30d3fa95f0b63.js",
+      "SourceId": "ObaGWebroup",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/",
+      "BasePath": "_content/ObaGWebroup",
+      "RelativePath": "_next/static/chunks/115-21d30d3fa95f0b63.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/_next/static/chunks/115-21d30d3fa95f0b63.js"
+    },
+    {
       "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/_next/static/chunks/115-4e2d6fde72a3029e.js",
       "SourceId": "ObaGWebroup",
       "SourceType": "Discovered",
@@ -1513,6 +1564,23 @@
       "OriginalItemSpec": "wwwroot/_next/static/chunks/198-3f1453ac29c5b9ca.js"
     },
     {
+      "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/_next/static/chunks/2-20cefa414e15552a.js",
+      "SourceId": "ObaGWebroup",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/",
+      "BasePath": "_content/ObaGWebroup",
+      "RelativePath": "_next/static/chunks/2-20cefa414e15552a.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/_next/static/chunks/2-20cefa414e15552a.js"
+    },
+    {
       "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/_next/static/chunks/44-0ca518c166819553.js",
       "SourceId": "ObaGWebroup",
       "SourceType": "Discovered",
@@ -1528,6 +1596,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/_next/static/chunks/44-0ca518c166819553.js"
+    },
+    {
+      "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/_next/static/chunks/523-69a2ff7eee3e7e97.js",
+      "SourceId": "ObaGWebroup",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/",
+      "BasePath": "_content/ObaGWebroup",
+      "RelativePath": "_next/static/chunks/523-69a2ff7eee3e7e97.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/_next/static/chunks/523-69a2ff7eee3e7e97.js"
     },
     {
       "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/_next/static/chunks/711-ac7fc6086194afdd.js",
@@ -1732,6 +1817,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/_next/static/chunks/pages/_app-333461d8240d7817.js"
+    },
+    {
+      "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/_next/static/chunks/pages/_app-5ba4385d3a4236a2.js",
+      "SourceId": "ObaGWebroup",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/",
+      "BasePath": "_content/ObaGWebroup",
+      "RelativePath": "_next/static/chunks/pages/_app-5ba4385d3a4236a2.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/_next/static/chunks/pages/_app-5ba4385d3a4236a2.js"
     },
     {
       "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/_next/static/chunks/pages/_app-6280d113b3069db7.js",
@@ -2006,6 +2108,23 @@
       "OriginalItemSpec": "wwwroot/_next/static/chunks/pages/dashboard/biographys-2e83e9f5346db852.js"
     },
     {
+      "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/_next/static/chunks/pages/dashboard/biographys-4bce21f786474d7f.js",
+      "SourceId": "ObaGWebroup",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/",
+      "BasePath": "_content/ObaGWebroup",
+      "RelativePath": "_next/static/chunks/pages/dashboard/biographys-4bce21f786474d7f.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/_next/static/chunks/pages/dashboard/biographys-4bce21f786474d7f.js"
+    },
+    {
       "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/_next/static/chunks/pages/dashboard/biographys-556ff51541cd96d5.js",
       "SourceId": "ObaGWebroup",
       "SourceType": "Discovered",
@@ -2021,6 +2140,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/_next/static/chunks/pages/dashboard/biographys-556ff51541cd96d5.js"
+    },
+    {
+      "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/_next/static/chunks/pages/dashboard/biographys-5b20b77f38aca36d.js",
+      "SourceId": "ObaGWebroup",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/",
+      "BasePath": "_content/ObaGWebroup",
+      "RelativePath": "_next/static/chunks/pages/dashboard/biographys-5b20b77f38aca36d.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/_next/static/chunks/pages/dashboard/biographys-5b20b77f38aca36d.js"
     },
     {
       "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/_next/static/chunks/pages/dashboard/biographys-5c5ab2e12d1be9e2.js",
@@ -2142,6 +2278,23 @@
       "OriginalItemSpec": "wwwroot/_next/static/chunks/pages/dashboard/calendar-281d84ac5c0d45d5.js"
     },
     {
+      "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/_next/static/chunks/pages/dashboard/calendar-296cbd37afb700aa.js",
+      "SourceId": "ObaGWebroup",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/",
+      "BasePath": "_content/ObaGWebroup",
+      "RelativePath": "_next/static/chunks/pages/dashboard/calendar-296cbd37afb700aa.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/_next/static/chunks/pages/dashboard/calendar-296cbd37afb700aa.js"
+    },
+    {
       "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/_next/static/chunks/pages/dashboard/calendar-5d6ba8d37acb76df.js",
       "SourceId": "ObaGWebroup",
       "SourceType": "Discovered",
@@ -2191,6 +2344,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/_next/static/chunks/pages/dashboard/calendar/create-1a7456173940066c.js"
+    },
+    {
+      "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/_next/static/chunks/pages/dashboard/calendar/create-3007a7bf8123662a.js",
+      "SourceId": "ObaGWebroup",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/",
+      "BasePath": "_content/ObaGWebroup",
+      "RelativePath": "_next/static/chunks/pages/dashboard/calendar/create-3007a7bf8123662a.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/_next/static/chunks/pages/dashboard/calendar/create-3007a7bf8123662a.js"
     },
     {
       "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/_next/static/chunks/pages/dashboard/calendar/create-457b148e90cdc747.js",
@@ -2414,6 +2584,23 @@
       "OriginalItemSpec": "wwwroot/_next/static/chunks/pages/dashboard/documents-d81ca5a5229c7041.js"
     },
     {
+      "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/_next/static/chunks/pages/dashboard/documents-e16357c11bb24ebc.js",
+      "SourceId": "ObaGWebroup",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/",
+      "BasePath": "_content/ObaGWebroup",
+      "RelativePath": "_next/static/chunks/pages/dashboard/documents-e16357c11bb24ebc.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/_next/static/chunks/pages/dashboard/documents-e16357c11bb24ebc.js"
+    },
+    {
       "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/_next/static/chunks/pages/dashboard/documents/[pid]-074b0698fa4a1671.js",
       "SourceId": "ObaGWebroup",
       "SourceType": "Discovered",
@@ -2446,6 +2633,40 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/_next/static/chunks/pages/dashboard/documents/[pid]-6c0ffd6575c6fd37.js"
+    },
+    {
+      "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/_next/static/chunks/pages/dashboard/documents/details.jsx/[pid]-cd63d96439b5b61c.js",
+      "SourceId": "ObaGWebroup",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/",
+      "BasePath": "_content/ObaGWebroup",
+      "RelativePath": "_next/static/chunks/pages/dashboard/documents/details.jsx/[pid]-cd63d96439b5b61c.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/_next/static/chunks/pages/dashboard/documents/details.jsx/[pid]-cd63d96439b5b61c.js"
+    },
+    {
+      "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/_next/static/chunks/pages/dashboard/documents/details/[pid]-707cd1ffb6d403e3.js",
+      "SourceId": "ObaGWebroup",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/",
+      "BasePath": "_content/ObaGWebroup",
+      "RelativePath": "_next/static/chunks/pages/dashboard/documents/details/[pid]-707cd1ffb6d403e3.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/_next/static/chunks/pages/dashboard/documents/details/[pid]-707cd1ffb6d403e3.js"
     },
     {
       "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/_next/static/chunks/pages/dashboard/profile-0ec08ca01905e13d.js",
@@ -2601,6 +2822,23 @@
       "OriginalItemSpec": "wwwroot/_next/static/chunks/pages/dashboard/profile-b58ec1bb1efa6413.js"
     },
     {
+      "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/_next/static/chunks/pages/dashboard/profile-c0890c913c510022.js",
+      "SourceId": "ObaGWebroup",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/",
+      "BasePath": "_content/ObaGWebroup",
+      "RelativePath": "_next/static/chunks/pages/dashboard/profile-c0890c913c510022.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/_next/static/chunks/pages/dashboard/profile-c0890c913c510022.js"
+    },
+    {
       "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/_next/static/chunks/pages/dashboard/profile-ddd46f29f931e61a.js",
       "SourceId": "ObaGWebroup",
       "SourceType": "Discovered",
@@ -2616,6 +2854,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/_next/static/chunks/pages/dashboard/profile-ddd46f29f931e61a.js"
+    },
+    {
+      "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/_next/static/chunks/pages/dashboard/upload-1b61acf02a8d7297.js",
+      "SourceId": "ObaGWebroup",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/",
+      "BasePath": "_content/ObaGWebroup",
+      "RelativePath": "_next/static/chunks/pages/dashboard/upload-1b61acf02a8d7297.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/_next/static/chunks/pages/dashboard/upload-1b61acf02a8d7297.js"
     },
     {
       "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/_next/static/chunks/pages/dashboard/upload-2c5ee8acb729724a.js",
@@ -2822,6 +3077,23 @@
       "OriginalItemSpec": "wwwroot/_next/static/chunks/pages/dashboard/users-e777150a42652f4d.js"
     },
     {
+      "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/_next/static/chunks/pages/dashboard/users-f15b368e9e866cb5.js",
+      "SourceId": "ObaGWebroup",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/",
+      "BasePath": "_content/ObaGWebroup",
+      "RelativePath": "_next/static/chunks/pages/dashboard/users-f15b368e9e866cb5.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/_next/static/chunks/pages/dashboard/users-f15b368e9e866cb5.js"
+    },
+    {
       "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/_next/static/chunks/pages/index-49b63d4cc2f8f5b6.js",
       "SourceId": "ObaGWebroup",
       "SourceType": "Discovered",
@@ -3024,6 +3296,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/_next/static/css/a13004a857951dd9.css"
+    },
+    {
+      "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/_next/static/css/b998d1c4a61e954f.css",
+      "SourceId": "ObaGWebroup",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/",
+      "BasePath": "_content/ObaGWebroup",
+      "RelativePath": "_next/static/css/b998d1c4a61e954f.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/_next/static/css/b998d1c4a61e954f.css"
     },
     {
       "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/_next/static/css/dca4116a9a9d38a2.css",
@@ -4131,6 +4420,40 @@
       "OriginalItemSpec": "wwwroot/_next/static/wMjnFs3eCrFl-QU6GiSoK/_ssgManifest.js"
     },
     {
+      "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/_next/static/X1wHXndVxn78iO-e5gWwN/_buildManifest.js",
+      "SourceId": "ObaGWebroup",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/",
+      "BasePath": "_content/ObaGWebroup",
+      "RelativePath": "_next/static/X1wHXndVxn78iO-e5gWwN/_buildManifest.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/_next/static/X1wHXndVxn78iO-e5gWwN/_buildManifest.js"
+    },
+    {
+      "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/_next/static/X1wHXndVxn78iO-e5gWwN/_ssgManifest.js",
+      "SourceId": "ObaGWebroup",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/",
+      "BasePath": "_content/ObaGWebroup",
+      "RelativePath": "_next/static/X1wHXndVxn78iO-e5gWwN/_ssgManifest.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/_next/static/X1wHXndVxn78iO-e5gWwN/_ssgManifest.js"
+    },
+    {
       "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/_next/static/XIeaNKwmucOGUPGLvQUEw/_buildManifest.js",
       "SourceId": "ObaGWebroup",
       "SourceType": "Discovered",
@@ -4163,6 +4486,40 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/_next/static/XIeaNKwmucOGUPGLvQUEw/_ssgManifest.js"
+    },
+    {
+      "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/_next/static/YtTj4bC9j0esJb98bQibh/_buildManifest.js",
+      "SourceId": "ObaGWebroup",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/",
+      "BasePath": "_content/ObaGWebroup",
+      "RelativePath": "_next/static/YtTj4bC9j0esJb98bQibh/_buildManifest.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/_next/static/YtTj4bC9j0esJb98bQibh/_buildManifest.js"
+    },
+    {
+      "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/_next/static/YtTj4bC9j0esJb98bQibh/_ssgManifest.js",
+      "SourceId": "ObaGWebroup",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/",
+      "BasePath": "_content/ObaGWebroup",
+      "RelativePath": "_next/static/YtTj4bC9j0esJb98bQibh/_ssgManifest.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/_next/static/YtTj4bC9j0esJb98bQibh/_ssgManifest.js"
     },
     {
       "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/_next/static/z_1UEJIj2bU3xJnVeLbMp/_buildManifest.js",
@@ -4420,6 +4777,23 @@
       "OriginalItemSpec": "wwwroot/dashboard/documents/[pid]/index.html"
     },
     {
+      "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/dashboard/documents/details/[pid]/index.html",
+      "SourceId": "ObaGWebroup",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/",
+      "BasePath": "_content/ObaGWebroup",
+      "RelativePath": "dashboard/documents/details/[pid]/index.html",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/dashboard/documents/details/[pid]/index.html"
+    },
+    {
       "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/dashboard/documents/index.html",
       "SourceId": "ObaGWebroup",
       "SourceType": "Discovered",
@@ -4675,12 +5049,12 @@
       "OriginalItemSpec": "wwwroot/icons/hand.png"
     },
     {
-      "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/icons/login.jpg",
+      "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/icons/login.jpeg",
       "SourceId": "ObaGWebroup",
       "SourceType": "Discovered",
       "ContentRoot": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/",
       "BasePath": "_content/ObaGWebroup",
-      "RelativePath": "icons/login.jpg",
+      "RelativePath": "icons/login.jpeg",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Primary",
@@ -4689,15 +5063,15 @@
       "AssetTraitValue": "",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot/icons/login.jpg"
+      "OriginalItemSpec": "wwwroot/icons/login.jpeg"
     },
     {
-      "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/icons/login2.jpg",
+      "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/icons/login2.jpeg",
       "SourceId": "ObaGWebroup",
       "SourceType": "Discovered",
       "ContentRoot": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/",
       "BasePath": "_content/ObaGWebroup",
-      "RelativePath": "icons/login2.jpg",
+      "RelativePath": "icons/login2.jpeg",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Primary",
@@ -4706,15 +5080,15 @@
       "AssetTraitValue": "",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot/icons/login2.jpg"
+      "OriginalItemSpec": "wwwroot/icons/login2.jpeg"
     },
     {
-      "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/icons/login3.jpg",
+      "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/icons/login3.jpeg",
       "SourceId": "ObaGWebroup",
       "SourceType": "Discovered",
       "ContentRoot": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/",
       "BasePath": "_content/ObaGWebroup",
-      "RelativePath": "icons/login3.jpg",
+      "RelativePath": "icons/login3.jpeg",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Primary",
@@ -4723,7 +5097,7 @@
       "AssetTraitValue": "",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot/icons/login3.jpg"
+      "OriginalItemSpec": "wwwroot/icons/login3.jpeg"
     },
     {
       "Identity": "/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/wwwroot/icons/ObaLogo.jpg",

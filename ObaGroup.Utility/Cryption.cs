@@ -25,8 +25,9 @@ public class Cryption : Icryption
         try
         {
             using var aesAlg = Aes.Create();
-            aesAlg.Key = Encoding.UTF8.GetBytes(key);
-            aesAlg.IV = Encoding.UTF8.GetBytes(iv);
+          
+            aesAlg.Key = Convert.FromBase64String(key);
+            aesAlg.IV = Convert.FromBase64String(iv);
 
             var encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
 
@@ -42,7 +43,7 @@ public class Cryption : Icryption
         }
         catch (Exception e)
         {
-            _logger.LogError("Could not encrypt data");
+            _logger.LogError("Could not encrypt data because"+e);
             return "";
         }
     }
@@ -52,8 +53,9 @@ public class Cryption : Icryption
         try
         {
             using var aesAlg = Aes.Create();
-            aesAlg.Key = Encoding.UTF8.GetBytes(key);
-            aesAlg.IV = Encoding.UTF8.GetBytes(iv);
+        
+            aesAlg.Key = Convert.FromBase64String(key);
+            aesAlg.IV = Convert.FromBase64String(iv);
 
             var decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
 

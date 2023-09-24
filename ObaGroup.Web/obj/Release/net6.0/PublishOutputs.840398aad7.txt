@@ -386,6 +386,9 @@
 /Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/bin/Release/net6.0/publish/Microsoft.VisualStudio.Web.CodeGenerators.Mvc.dll
 /Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/bin/Release/net6.0/publish/Microsoft.Win32.SystemEvents.dll
 /Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/bin/Release/net6.0/publish/MimeKit.dll
+/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/bin/Release/net6.0/publish/MimeTypeMap.List.dll
+/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/bin/Release/net6.0/publish/MimeTypes.dll
+/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/bin/Release/net6.0/publish/MimeTypesMap.dll
 /Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/bin/Release/net6.0/publish/MySql.Data.dll
 /Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/bin/Release/net6.0/publish/Ubiety.Dns.Core.dll
 /Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/bin/Release/net6.0/publish/Zstandard.Net.dll

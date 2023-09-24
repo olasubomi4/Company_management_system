@@ -492,7 +492,7 @@ public class CalenderController : Controller
         var referringUrl = HttpContext.Request.Headers["Referer"];
 
         var loginHint = User.Identity.Name;
-
+        
         var redirectUrl = "https://accounts.google.com/o/oauth2/v2/auth?" +
                           "scope=https://www.googleapis.com/auth/calendar+https://www.googleapis.com/auth/calendar.events&" +
                           "access_type=offline&" +
