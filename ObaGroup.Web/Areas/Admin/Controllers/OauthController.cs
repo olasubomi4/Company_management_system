@@ -83,7 +83,6 @@ public class OauthController : Controller
                 _oAuthTokenProperties.RevokeAppAccessToCalendar(oauthToken.access_token);
         }
 
-        Console.WriteLine(oauthToken);
 
         SetCsrfToken(oauthToken);
 
@@ -94,7 +93,6 @@ public class OauthController : Controller
 
             _keyVaultManager.UpsertSecret("GoogleCalendarToken", response.Content);
 
-            Console.WriteLine("hello");
             Console.WriteLine(response.Content);
             return $"{Request.Scheme}://{Request.Host}{Constants.Create_Event_Endpoint}";
         }

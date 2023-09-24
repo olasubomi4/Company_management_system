@@ -633,3 +633,6 @@
 /Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/obj/Release/net6.0/scopedcss/Views/Shared/_Layout.cshtml.rz.scp.css
 /Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/obj/Release/net6.0/scopedcss/bundle/ObaGWebroup.styles.css
 /Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/obj/Release/net6.0/scopedcss/projectbundle/ObaGWebroup.bundle.scp.css
+/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/bin/Release/net6.0/MimeTypeMap.List.dll
+/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/bin/Release/net6.0/MimeTypes.dll
+/Users/subomiodekunle/RiderProjects/Company_management_system/ObaGroup.Web/bin/Release/net6.0/MimeTypesMap.dll

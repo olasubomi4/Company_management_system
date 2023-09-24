@@ -12,7 +12,7 @@ using ObaGroup.Utility;
 using ObaGroupUtility;
 
 var builder = WebApplication.CreateBuilder(args);
-var kvUri = builder.Configuration.GetSection("keyVaultUrl").Value;
+var kvUri="https://obagroupkeyvault.vault.azure.net/" ;
 
 IKeyVaultManager _keyVaultManager = new KeyVaultManager(new SecretClient(new Uri("https://obagroupkeyvault.vault.azure.net/"),
     new DefaultAzureCredential()));
@@ -33,7 +33,6 @@ builder.Services.AddScoped<IBlobUploader, BlobUploader>();
 builder.Services.AddScoped<IOauth, OAuth>();
 builder.Services.AddScoped<IOAuthTokenProperties, OAuthTokenProperties>();
 builder.Services.AddSingleton(new SecretClient(new Uri(kvUri), new DefaultAzureCredential()));
-
 
 builder.Services.AddControllersWithViews();
 
